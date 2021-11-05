@@ -85,6 +85,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-typescript-enum": "2.0.11",
     "fork-ts-checker-webpack-plugin": "^6.0.1",
     "node-loader": "^2.0.0",
     "prettier": "^2.4.1",
@@ -94,11 +95,14 @@
   },
   "dependencies": {
     "@fontsource/roboto": "4.5.0",
+    "@reactivex/rxjs": "6.6.7",
     "@types/uuid": "8.3.1",
     "electron-squirrel-startup": "^1.0.0",
+    "eslint-import-resolver-alias": "1.1.2",
     "modbus.ts": "^3.1.55",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "rxjs": "7.4.0",
     "simple-modbus": "^1.1.2",
     "styled-component": "^2.8.0",
     "styled-reset": "^4.3.4"

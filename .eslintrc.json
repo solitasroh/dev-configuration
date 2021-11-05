@@ -24,7 +24,13 @@
     "import/resolver": { 
       "node": {
          "extensions": [".js", ".jsx", ".ts", ".tsx", "d.ts"] 
-         } 
+         },
+       "alias" : {
+           "map": [
+            ["@src", "./src"]
+           ],
+           "extensions": [".js", ".jsx", ".ts", ".tsx", "d.ts"] 
+         }   
       }
   },
   "rules": { 
@@ -35,6 +41,8 @@
     "@typescript-eslint/no-unused-vars": ["error"],
     "react/jsx-filename-extension": [1, {"extensions": [".ts", ".tsx"]}],
     "no-use-before-define": "off",
-    "@typescript-eslint/no-use-before-define": ["error"]
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"]
   }
 }

@@ -1,34 +1,46 @@
-import * as modbus from 'modbus.ts';
-
+import * as modbusTs from 'modbus.ts';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import A2700Data from '@src/Data/A2700Data';
 import LMSetupData from '../../Data/A2700.LMSetup';
-import A2700DataType from '../../Data/A2700DATA_TYPE';
-import A2700Data from '../../Data/A2700Data';
+import A2700DataType from '../../Data/A2700DataType';
 
-interface RegisterSetup {
-    address: number,
-    length: number,
-    access: number,
-    getter: () => void;
-    setter: () => void;
+class A2700Register {
+  private Client: modbusTs.tcp.Client;
+
+  constructor(client: modbusTs.tcp.Client) {
+    this.Client = client;
+  }
+
+  Request(data: A2700DataType): Observable<A2700Data> {
+    if (data === A2700DataType.LMSetup) {
+      return this.Client.readHoldingRegisters(64010, 5).pipe(
+        map((res) => {
+          const result = new LMSetupData();
+          const { values } = res.data;
+
+          const [
+            access,
+            operationMode, // 64011
+            digitalOperation, // 64012
+            alarmThreshold, // 64013
+            analogDeadband, // 64014
+          ] = values as number[];
+
+          result.access = access;
+          result.operationMode = operationMode;
+          result.digitalOperation = digitalOperation;
+          result.alarmThreshold = alarmThreshold;
+          result.analogDeadband = analogDeadband;
+
+          // console.log(values);
+
+          return result;
+        }),
+      );
+    }
+    return null;
+  }
 }
 
-
-class ModbusService {
-    private Client: modbus.tcp.Client;
-
-    constructor(client: modbus.tcp.Client) {
-        this.Client = client;    
-    }
-    
-     RequestA2700Data(data: A2700DataType): A2700Data {
-        if (data === A2700DataType.LMSetup) {
-            this.Client.readHoldingRegisters(64010, 7)
-            .pipe(res => {
-                
-            });
-        }
-        return null;
-    }
-}
-
-export default A2750LMSetup;
+export default A2700Register;

@@ -13,7 +13,8 @@
     "resolveJsonModule": true,
     "downlevelIteration": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
+      "@src/*": ["src/*"]
     }
   },
   "include": ["src/**/*"]

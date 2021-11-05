@@ -1,5 +1,9 @@
-import { app, BrowserWindow, Menu, nativeImage, Tray } from 'electron';
-
+import { RequestChannel } from './ipc/requestChannel';
+import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
+import { IpcChannel } from './ipc/IPCChannel';
+import { IpcRequest } from './ipc/IPCRequest';
+import IpcService from './IPCService';
+import ModbusService from './ModbusService';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -12,47 +16,57 @@ if (require('electron-squirrel-startup')) {
 class Main {
   private mainWindow: BrowserWindow;
 
-  init() {
-   
+  private modbusService: ModbusService;
+
+  private ipcService: IpcService;
+
+  init(ipcChannels: IpcChannel<IpcRequest>[]) {
+    this.modbusService = ModbusService.getInstance();
+
     app.on('ready', (): void => {
       this.createWindow();
     });
 
     app.on('window-all-closed', this.onWindowClosed);
     app.on('activate', this.onActivate);
-    let tray;
+
     app.whenReady().then(() => {
-      const iconImage = nativeImage.createFromPath('./src/assets/icons/win/icon.ico');
-      tray = new Tray(iconImage);
-      const contextMenu = Menu.buildFromTemplate([
-        {
-          label: 'program exit',
-          type: 'normal',
-          click: () => {
-            if (this.mainWindow.isEnabled()) this.mainWindow.destroy();
-            app.quit();
-          },
+      // initTray();
+      this.modbusService.start('localhost', 502);
+    });
+
+    this.registerIpcChannels(ipcChannels);
+  }
+
+  private initTray() {
+    const iconImage = nativeImage.createFromPath(
+      './src/assets/icons/win/icon.ico',
+    );
+    const tray = new Tray(iconImage);
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'program exit',
+        type: 'normal',
+        click: () => {
+          if (this.mainWindow.isEnabled()) this.mainWindow.destroy();
+          app.quit();
         },
-      ]);
-      tray.setToolTip('File-Watcher');
-      tray.setTitle('File-Watcher');
-      tray.setContextMenu(contextMenu);
-      tray.on('click', () => {
-        if (this.mainWindow != null) {
-          if (!this.mainWindow.isVisible()) {
-            this.mainWindow.show();
-          }
+      },
+    ]);
+    tray.setToolTip('File-Watcher');
+    tray.setTitle('File-Watcher');
+    tray.setContextMenu(contextMenu);
+    tray.on('click', () => {
+      if (this.mainWindow != null) {
+        if (!this.mainWindow.isVisible()) {
+          this.mainWindow.show();
         }
-      });
+      }
     });
   }
 
   private onWindowClosed = (): void => {
-    if (process.platform !== 'darwin') {
-      // app.quit();
-      // app.hide();
-      // this.mainWindow.hide();
-    }
+    app.quit();
   };
 
   private onActivate() {
@@ -64,7 +78,7 @@ class Main {
   }
 
   private createWindow() {
-    const iconImage = nativeImage.createFromPath('../src/assets/icons/win/icon.ico');
+    // const iconImage = nativeImage.createFromPath('../src/assets/icons/win/icon.ico');
 
     this.mainWindow = new BrowserWindow({
       height: 600,
@@ -74,20 +88,33 @@ class Main {
         contextIsolation: false,
         nativeWindowOpen: true,
       },
-      icon: iconImage,
+      // icon: iconImage,
     });
     // and load the index.html of the app.
     this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     this.mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    this.mainWindow.webContents.openDevTools({ mode: 'detach' });
-   
-    this.mainWindow.on('close', (e) => {
-      e.preventDefault();
-      this.mainWindow.hide();
+    // this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    this.ipcService = IpcService.getInstance();
+    this.ipcService.registerCallback((channel, ...args) => {
+      this.mainWindow.webContents.send(channel, ...args);
     });
+    // this.mainWindow.on('close', (e) => {
+    //   e.preventDefault();
+    //   this.mainWindow.hide();
+    // });
   }
+
+  private registerIpcChannels = (
+    ipcChannels: IpcChannel<IpcRequest>[],
+  ): void => {
+    ipcChannels.forEach((channel) =>
+      ipcMain.on(channel.getChannelName(), (event, request) =>
+        channel.handle(event, request),
+      ),
+    );
+  };
 }
 
-new Main().init();
+new Main().init([new RequestChannel()]);
