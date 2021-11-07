@@ -1,6 +1,6 @@
 import A2700Data from '@src/Data/A2700Data';
 import A2700DataType from '@src/Data/A2700DataType';
-import { REQ_DATA } from '@src/ipcChannels';
+import { REQ_DATA } from '@src/IpcChannels';
 import RequestChannelProps from '@src/main/ipc/RequestChannelProps';
 import IpcService from '@src/main/IPCService';
 import React, { FunctionComponent } from 'react';

@@ -1,5 +1,5 @@
 import { IpcMainEvent } from 'electron';
-import { REQ_DATA } from '@src/ipcChannels';
+import { REQ_DATA } from '@src/IpcChannels';
 import { IpcChannel } from './IPCChannel';
 import A2700Register from '../modbus.a2700m/A2700M.Register';
 import ModbusService from '../ModbusService';
@@ -20,7 +20,6 @@ class RequestChannel implements IpcChannel<RequestChannelProps> {
     const reg = new A2700Register(ModbusService.GetClient());
 
     reg.Request(request.requestType).subscribe((e) => {
-      console.log(`resp ch = ${request.responseChannel}`);
       event.sender.send(request.responseChannel, {
         data: e,
       });
