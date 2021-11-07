@@ -18,8 +18,6 @@ class IpcService {
 
   private renderSendCallback?: senderCallback;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-
   public send<T>(channel: string, request: IpcRequest = {}): Promise<T> {
     if (!this.ipcRenderer) {
       this.initIpcRenderer();
@@ -28,11 +26,11 @@ class IpcService {
     if (!request.responseChannel) {
       request.responseChannel = `${channel}_response_${new Date().getTime()}`;
     }
-    const { ipcRenderer } = this;
-    ipcRenderer.send(channel, request);
+    this.ipcRenderer.send(channel, request);
 
     return new Promise((resolve) => {
-      ipcRenderer.once(request.responseChannel, (event, response) =>
+      // response channel 대한 이벤트를 1회 등록
+      this.ipcRenderer.once(request.responseChannel, (event, response) =>
         resolve(response),
       );
     });

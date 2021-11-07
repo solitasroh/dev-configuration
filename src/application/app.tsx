@@ -1,3 +1,4 @@
+import A2700Data from '@src/Data/A2700Data';
 import A2700DataType from '@src/Data/A2700DataType';
 import { REQ_DATA } from '@src/ipcChannels';
 import RequestChannelProps from '@src/main/ipc/RequestChannelProps';
@@ -9,9 +10,8 @@ const App: FunctionComponent = () => {
   const props = new RequestChannelProps();
   props.requestType = A2700DataType.LMSetup;
 
-  ipcService.on(REQ_DATA, (evt, ...args) => {
-    console.log(evt);
-    console.log(args);
+  ipcService.send<{ data: A2700Data }>(REQ_DATA, props).then((data) => {
+    console.log(data);
   });
 
   return <div>test</div>;

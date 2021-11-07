@@ -20,12 +20,13 @@ class RequestChannel implements IpcChannel<RequestChannelProps> {
     const reg = new A2700Register(ModbusService.GetClient());
 
     reg.Request(request.requestType).subscribe((e) => {
+      console.log(`resp ch = ${request.responseChannel}`);
       event.sender.send(request.responseChannel, {
         data: e,
       });
     });
 
-    console.log(`request channel ${this.name} ${event} ${request}`);
+    console.log(`request channel ${this.name} ${event} ${request.requestType}`);
   }
 }
 

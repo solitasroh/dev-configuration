@@ -1,6 +1,8 @@
 import LMSetupData from '@src/Data/A2700.LMSetup';
 import A2700DataType from '@src/Data/A2700DataType';
 import * as modbusTs from 'modbus.ts';
+import { MasterError } from 'modbus.ts/adu';
+import { delay, delayWhen, interval, switchMap } from 'rxjs';
 import A2700Register from './modbus.a2700m/A2700M.Register';
 
 class ModbusService {
@@ -20,7 +22,15 @@ class ModbusService {
       this.client.destroy();
     }
 
-    this.client = new modbusTs.tcp.Client({ host: ip, port });
+    this.client = new modbusTs.tcp.Client({
+      host: ip,
+      port,
+      inactivityTimeout: 5000,
+    });
+
+    const connectionObservable = this.client.connect();
+
+    connectionObservable.pipe().subscribe();
 
     this.client.connect().subscribe({
       next: () => {
@@ -32,9 +42,15 @@ class ModbusService {
           }
         });
       },
-      error: (e) => console.error(e),
-      complete: () => console.info('complete'),
+      error: (e) => {},
     });
+
+    interval(1000)
+      .pipe(switchMap(() => this.client.readHoldingRegisters(1, 1)))
+      .subscribe({
+        next: (resp) => console.log(`client connected..${resp}`),
+        error: (e) => console.log(`connection closed .. ${e}`),
+      });
   }
 
   static GetClient(): modbusTs.tcp.Client {

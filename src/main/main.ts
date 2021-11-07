@@ -1,5 +1,5 @@
-import { RequestChannel } from './ipc/requestChannel';
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
+import RequestChannel from './ipc/requestChannel';
 import { IpcChannel } from './ipc/IPCChannel';
 import { IpcRequest } from './ipc/IPCRequest';
 import IpcService from './IPCService';
@@ -95,7 +95,7 @@ class Main {
     this.mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    this.mainWindow.webContents.openDevTools({ mode: 'detach' });
     this.ipcService = IpcService.getInstance();
     this.ipcService.registerCallback((channel, ...args) => {
       this.mainWindow.webContents.send(channel, ...args);
