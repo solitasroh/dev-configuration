@@ -20,7 +20,6 @@ class RequestChannel implements IpcChannel<RequestChannelProps> {
   }
 
   handle(event: IpcMainEvent, request: RequestChannelProps): void {
-    
     this.register.Get(request.requestType).subscribe((res) => {
       event.sender.send(request.responseChannel, {
         data: res,
