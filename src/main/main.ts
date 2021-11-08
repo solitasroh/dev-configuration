@@ -1,9 +1,10 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
-import RequestChannel from './ipc/requestChannel';
+import RequestChannel from './ipc/RequestChannel';
 import { IpcChannel } from './ipc/IPCChannel';
 import { IpcRequest } from './ipc/IPCRequest';
 import IpcService from './IPCService';
 import ModbusService from './ModbusService';
+import WriteRequestChannel from './ipc/WriteRequestChannel';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -32,7 +33,7 @@ class Main {
 
     app.whenReady().then(() => {
       // initTray();
-      this.modbusService.start('localhost', 502);
+      this.modbusService.start('10.10.23.41', 502);
     });
 
     this.registerIpcChannels(ipcChannels);
@@ -117,4 +118,4 @@ class Main {
   };
 }
 
-new Main().init([new RequestChannel()]);
+new Main().init([new RequestChannel(), new WriteRequestChannel()]);
