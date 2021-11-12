@@ -1,10 +1,9 @@
 import LDInformation from '@src/Data/A2700.LDInformation';
-import LMInformation from '@src/Data/A2700.LMInformation';
-import A2700Data from '@src/Data/A2700Data';
 import { REQ_DATA } from '@src/ipcChannels';
 import RequestChannelProps from '@src/main/ipc/RequestChannelProps';
 import IpcService from '@src/main/IPCService';
 import React, { FC, useEffect, useState } from 'react';
+
 import {
   CardHeader,
   CardHeading,
@@ -23,9 +22,8 @@ const LDInformationView: FC = () => {
     const props = new RequestChannelProps();
 
     props.requestType = 'A2750LDInformation';
-    
-    ipcService.send<{data: LDInformation}>(REQ_DATA, props).then((data) => {
-        console.log(data.data);
+
+    ipcService.send<{ data: LDInformation }>(REQ_DATA, props).then((data) => {
       setInformation(data.data);
     });
   }, []);
@@ -45,11 +43,11 @@ const LDInformationView: FC = () => {
       </CardLabelSet>
       <CardLabelSet>
         <CardLabel>serial number</CardLabel>
-        <CardValue>{information.serialNumber??"null"}</CardValue>
+        <CardValue>{information.serialNumber ?? 'null'}</CardValue>
       </CardLabelSet>
       <CardLabelSet>
         <CardLabel>hardware revision</CardLabel>
-        <CardValue>{information.hardwareRevision??"null"}</CardValue>
+        <CardValue>{information.hardwareRevision ?? 'null'}</CardValue>
       </CardLabelSet>
       <CardLabelSet>
         <CardLabel>application version</CardLabel>
@@ -57,11 +55,11 @@ const LDInformationView: FC = () => {
       </CardLabelSet>
       <CardLabelSet>
         <CardLabel>kernel version</CardLabel>
-        <CardValue>{information.kernelVersion}</CardValue>
+        <CardValue>{information.kernelVersion ?? '0'}</CardValue>
       </CardLabelSet>
       <CardLabelSet>
         <CardLabel>bootloader version</CardLabel>
-        <CardValue>{information.bootloaderVersion??"null"}</CardValue>
+        <CardValue>{information.bootloaderVersion ?? 'null'}</CardValue>
       </CardLabelSet>
     </CardWrapper>
   );
