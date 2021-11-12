@@ -70,9 +70,10 @@
     "@electron-forge/maker-zip": "^6.0.0-beta.61",
     "@electron-forge/plugin-webpack": "6.0.0-beta.61",
     "@types/node": "^14.17.32",
+    "@types/ping": "^0.4.0",
     "@types/react": "17.0.21",
     "@types/react-dom": "17.0.9",
-    "@types/styled-components": "^5.1.12",
+    "@types/styled-components": "^5.1.15",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.0",
@@ -100,11 +101,13 @@
     "electron-squirrel-startup": "^1.0.0",
     "eslint-import-resolver-alias": "1.1.2",
     "modbus-serial": "^8.0.4",
+    "ping": "^0.4.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "rxjs": "7.4.0",
     "simple-modbus": "^1.1.2",
     "styled-component": "^2.8.0",
+    "styled-components": "^5.3.3",
     "styled-reset": "^4.3.4"
   }
 }

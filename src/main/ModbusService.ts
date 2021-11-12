@@ -1,13 +1,10 @@
 import ModbusRTU from 'modbus-serial';
+
 import {
   catchError,
   from,
-  interval,
   map,
-  mergeMap,
-  of,
-  takeUntil,
-  timeout,
+  Observable,
 } from 'rxjs';
 
 class ModbusService {
@@ -26,16 +23,17 @@ class ModbusService {
 
   private client: ModbusRTU;
 
-  async connect(ip: string, port = 502): Promise<void> {
+  public async connect(ip: string, port = 502): Promise<boolean> {
     this.ip = ip;
     this.port = port;
+    
     try {
+      this.client = new ModbusRTU();
       await this.client.connectTCP(ip, { port });
-    } catch (error) {
-      console.log(error);
+      return true;
+    } catch(err) {
+      return false;
     }
-
-    this.maintainConnection();
   }
 
   static GetClient(): ModbusRTU {
@@ -46,24 +44,39 @@ class ModbusService {
     return this.instance.client;
   }
 
-  private maintainConnection(): void {
-    const readFail = from(this.client.readHoldingRegisters(1, 1)).pipe(
-      catchError(() => of(true)),
+  static read(
+    address: number,
+    length: number,
+    options?: { isCoil?: boolean },
+  ): Observable<number[] | boolean[] | string> {
+    if (options === undefined) {
+      return from(this.GetClient().readHoldingRegisters(address, length)).pipe(
+        map((value) => value.data),
+        catchError(() => []),
+      );
+    }
+    return from(this.GetClient().readCoils(address, length)).pipe(
+      map((value) => value.data),
+      catchError(() => []),
     );
-    const fetch = interval(3000).pipe(
-      takeUntil(readFail),
-      mergeMap(() =>
-        from(this.client.readHoldingRegisters(1, 1)).pipe(
-          catchError(() => of(false)),
-        ),
-      ),
-    );
+  }
 
-    fetch.subscribe((res) => {
-      if (res === false) {
-        this.connect(this.ip, this.port);
-      }
-    });
+  static write(
+    address: number,
+    data: number[] | boolean[],
+  ): Observable<number | string> {
+    if (data as boolean[]) {
+      const coil = data as boolean[];
+      return from(this.GetClient().writeCoils(address, coil)).pipe(
+        map((result) => result.address),
+        catchError(() => []),
+      );
+    }
+    const register = data as number[];
+    return from(this.GetClient().writeRegisters(address, register)).pipe(
+      map((result) => result.address),
+      catchError(() => []),
+    );
   }
 }
 

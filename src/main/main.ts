@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
-import RequestChannel from './ipc/RequestChannel';
+import RequestChannel from './ipc/requestChannel';
 import { IpcChannel } from './ipc/IPCChannel';
 import { IpcRequest } from './ipc/IPCRequest';
 import IpcService from './IPCService';
@@ -33,7 +33,7 @@ class Main {
 
     app.whenReady().then(() => {
       // initTray();
-      this.modbusService.start('10.10.23.41', 502);
+      this.modbusService.connect('10.10.20.208', 502);
     });
 
     this.registerIpcChannels(ipcChannels);
@@ -98,6 +98,7 @@ class Main {
     // Open the DevTools.
     this.mainWindow.webContents.openDevTools({ mode: 'detach' });
     this.ipcService = IpcService.getInstance();
+    
     this.ipcService.registerCallback((channel, ...args) => {
       this.mainWindow.webContents.send(channel, ...args);
     });

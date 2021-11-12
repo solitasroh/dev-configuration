@@ -2,7 +2,6 @@ import { IpcMainEvent } from 'electron';
 import { WRITE_REQ } from '@src/ipcChannels';
 import { IpcChannel } from './IPCChannel';
 import A2700Register from '../modbus.a2700m/A2700M.Register';
-import ModbusService from '../ModbusService';
 import RequestChannelProps from './RequestChannelProps';
 
 class WriteRequestChannel implements IpcChannel<RequestChannelProps> {
@@ -12,7 +11,7 @@ class WriteRequestChannel implements IpcChannel<RequestChannelProps> {
 
   constructor() {
     this.name = WRITE_REQ;
-    this.register = new A2700Register(ModbusService.GetClient());
+    this.register = new A2700Register();
   }
 
   getChannelName(): string {

@@ -46,6 +46,7 @@
     "@typescript-eslint/no-shadow": ["error"],
     "max-classes-per-file": [
       "error", 2
-    ]
+    ],
+    "no-bitwise": ["error", { "allow": ["~", "|", ">>", "<<", "&"] }]
   }
 }
