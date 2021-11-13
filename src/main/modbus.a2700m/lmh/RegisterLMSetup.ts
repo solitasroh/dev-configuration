@@ -1,11 +1,11 @@
 import LMSetupData from '@src/Data/A2700.LMSetup';
 import A2700Data from '@src/Data/A2700Data';
-import {  map, Observable, throwError } from 'rxjs';
+import { map, Observable, throwError } from 'rxjs';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
 
 export default class A2750LMSetupReg extends RegisterBase {
-  setter(data: A2700Data): void {
+  setter = (data: A2700Data): void => {
     if (data instanceof LMSetupData) {
       const buf = [
         data.operationMode,
@@ -24,14 +24,15 @@ export default class A2750LMSetupReg extends RegisterBase {
           return true;
         }),
       );
-      
+
       dataWrite.subscribe(() => {
         ModbusService.write(64010, [1]).subscribe();
       });
     }
-  }
+  };
 
-  getter = (): Observable<A2700Data>  => ModbusService.read(64010, 5).pipe(
+  getter = (): Observable<A2700Data> =>
+    ModbusService.read(64010, 5).pipe(
       map((data) => {
         const result = new LMSetupData();
 
@@ -51,5 +52,5 @@ export default class A2750LMSetupReg extends RegisterBase {
 
         return result;
       }),
-    )
+    );
 }

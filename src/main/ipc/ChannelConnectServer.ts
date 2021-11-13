@@ -12,7 +12,7 @@ export class ConnectionProps implements IpcRequest {
   responseChannel: string;
 }
 
-export class ConnectChannel implements IpcChannel<ConnectionProps> {
+export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
   protected channelName: string;
 
   constructor() {

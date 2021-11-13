@@ -18,7 +18,7 @@ const Navigation = styled.div`
   background-color: #a1a1a1;
   flex-direction: column;
   padding: 10px;
-  margin: 0px
+  margin: 0px;
 `;
 
 const MainRouter: FC = () => (

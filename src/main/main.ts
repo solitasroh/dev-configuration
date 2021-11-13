@@ -1,10 +1,10 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
-import RequestChannel from './ipc/requestChannel';
+import { ChannelReadData } from './ipc/ChannelReadData';
 import { IpcChannel } from './ipc/IPCChannel';
 import { IpcRequest } from './ipc/IPCRequest';
 import IpcService from './IPCService';
 import ModbusService from './ModbusService';
-import WriteRequestChannel from './ipc/WriteRequestChannel';
+import ChannelWriteData from './ipc/ChannelWriteData';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -98,10 +98,7 @@ class Main {
     // Open the DevTools.
     this.mainWindow.webContents.openDevTools({ mode: 'detach' });
     this.ipcService = IpcService.getInstance();
-    
-    this.ipcService.registerCallback((channel, ...args) => {
-      this.mainWindow.webContents.send(channel, ...args);
-    });
+
     // this.mainWindow.on('close', (e) => {
     //   e.preventDefault();
     //   this.mainWindow.hide();
@@ -119,4 +116,4 @@ class Main {
   };
 }
 
-new Main().init([new RequestChannel(), new WriteRequestChannel()]);
+new Main().init([new ChannelReadData(), new ChannelWriteData()]);

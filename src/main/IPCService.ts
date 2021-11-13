@@ -1,8 +1,7 @@
 import { IpcRenderer, IpcRendererEvent } from 'electron';
 import { IpcRequest } from './ipc/IPCRequest';
 
-type senderCallback = (channel: string, ...args: any[]) => void;
-type ipcEventCallback = (event: IpcRendererEvent, ...args: any[]) => void;
+type IpcEventCallback<T> = (event: IpcRendererEvent, ...args: T[]) => void;
 
 class IpcService {
   private static instance: IpcService;
@@ -16,9 +15,10 @@ class IpcService {
 
   private ipcRenderer?: IpcRenderer;
 
-  private renderSendCallback?: senderCallback;
-
-  public send<T>(channel: string, request: IpcRequest = {}): Promise<T> {
+  public send<T, R extends IpcRequest>(
+    channel: string,
+    request: R,
+  ): Promise<T> {
     if (!this.ipcRenderer) {
       this.initIpcRenderer();
     }
@@ -36,29 +36,8 @@ class IpcService {
     });
   }
 
-  public on(channel: string, eventhandler: ipcEventCallback): void {
+  public on<T>(channel: string, eventhandler: IpcEventCallback<T>): void {
     this.ipcRenderer.on(channel, eventhandler);
-  }
-
-  public registerCallback(senderFunction: senderCallback): void {
-    this.renderSendCallback = senderFunction;
-  }
-
-  public sendToRender(channel: string, ...args: any[]): void {
-    if (this.renderSendCallback != null) {
-      try {
-        this.renderSendCallback(channel, ...args);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
-
-  public unregisterListener(
-    channel: string,
-    eventHandler: (...args: any[]) => void,
-  ): void {
-    this.ipcRenderer.removeListener(channel, eventHandler);
   }
 
   private initIpcRenderer() {
