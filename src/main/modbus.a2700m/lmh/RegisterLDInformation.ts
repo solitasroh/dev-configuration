@@ -22,7 +22,6 @@ export default class RegisterLDInformation extends RegisterBase {
           pcbVersion, //
         ] = data as number[];
 
-        console.log(data);
         result.setOperationState(operationState);
         result.setProductCode(productCode >> 8, productCode & 0xff);
         result.setSerialNumber((hSerialNumber << 16) | lSerialNumber);

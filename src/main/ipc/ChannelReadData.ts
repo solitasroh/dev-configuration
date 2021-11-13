@@ -2,15 +2,9 @@ import { IpcMainEvent } from 'electron';
 import { REQ_DATA } from '@src/ipcChannels';
 import { IpcChannel } from './IPCChannel';
 import A2700Register from '../modbus.a2700m/A2700M.Register';
-import { IpcRequest } from './IPCRequest';
+import ChannelReadDataProps from './ChannelReadDataProps';
 
 export type ReadData = Buffer;
-
-export class ChannelReadDataProps implements IpcRequest {
-  requestType?: string;
-
-  responseChannel?: string;
-}
 
 export class ChannelReadData implements IpcChannel<ChannelReadDataProps> {
   private name: string;

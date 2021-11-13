@@ -1,6 +1,6 @@
 import LMInformation from '@src/Data/A2700.LMInformation';
 import { REQ_DATA } from '@src/ipcChannels';
-import { ChannelReadDataProps } from '@src/main/ipc/ChannelReadData';
+import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import IpcService from '@src/main/IPCService';
 import React, { FC, useEffect, useState } from 'react';
 import {
@@ -24,6 +24,7 @@ const LMInformationView: FC = () => {
     ipcService
       .send<LMInformation, ChannelReadDataProps>(REQ_DATA, {
         requestType: 'A2750LMInformation',
+        responseChannel: 'RES-LM',
       })
       .then((data) => {
         setInformation(data);

@@ -1,6 +1,6 @@
 import LDInformation from '@src/Data/A2700.LDInformation';
 import { REQ_DATA } from '@src/ipcChannels';
-import { ChannelReadDataProps } from '@src/main/ipc/ChannelReadData';
+import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import IpcService from '@src/main/IPCService';
 import React, { FC, useEffect, useState } from 'react';
 
@@ -19,13 +19,11 @@ const LDInformationView: FC = () => {
 
   useEffect(() => {
     const ipcService = IpcService.getInstance();
-    const props = new ChannelReadDataProps();
-
-    props.requestType = 'A2750LDInformation';
 
     ipcService
       .send<LDInformation, ChannelReadDataProps>(REQ_DATA, {
         requestType: 'A2750LDInformation',
+        responseChannel: 'RES-LD',
       })
       .then((data) => {
         setInformation(data);

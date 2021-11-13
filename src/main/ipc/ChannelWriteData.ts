@@ -1,19 +1,10 @@
 import { IpcMainEvent } from 'electron';
 import { WRITE_REQ } from '@src/ipcChannels';
 
-import A2700Data from '@src/Data/A2700Data';
 import { IpcChannel } from './IPCChannel';
-import { IpcRequest } from './IPCRequest';
 
 import A2700Register from '../modbus.a2700m/A2700M.Register';
-
-class ChannelWriteDataProps implements IpcRequest {
-  requestType: string;
-
-  writeData: A2700Data;
-
-  responseChannel?: string;
-}
+import ChannelWriteDataProps from './ChannelWriteDataProps';
 
 class ChannelWriteData implements IpcChannel<ChannelWriteDataProps> {
   private name: string;

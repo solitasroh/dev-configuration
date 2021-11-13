@@ -1,41 +1,37 @@
-import React, { FC } from 'react';
-import { HashRouter } from 'react-router-dom';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import LDInformationView from './lmh/LDInformationView';
-import LMInformationView from './lmh/LMInformationView';
+import Control from './Control';
+import Information from './Information';
+import Layout from './Layout';
+import Setup from './Setup';
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  overflow-y: auto;
-  height: 100%;
-  flex-wrap: wrap;
-  padding: 0px;
+  height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+  justify-content: flex-start;
 `;
 
-const Navigation = styled.div`
-  display: flex;
-  background-color: #a1a1a1;
-  flex-direction: column;
-  padding: 10px;
-  margin: 0px;
-`;
+const NoMatch: React.FC = () => (
+  <Container>
+    <div> no matched page</div>
+  </Container>
+);
 
-const MainRouter: FC = () => (
-  <HashRouter>
-    <Container>
-      <Navigation id="navigation">
-        <div>information</div>
-        <div>measure</div>
-        <div>setup</div>
-      </Navigation>
-
-      <div id="contents">
-        <LMInformationView />
-        <LDInformationView />
-      </div>
-    </Container>
-  </HashRouter>
+const MainRouter: React.FC = () => (
+  <Container>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Information />} />
+        <Route path="/Control" element={<Control />} />
+        <Route path="/Setup" element={<Setup />} />
+        <Route path="*" element={<NoMatch />} />
+      </Route>
+    </Routes>
+  </Container>
 );
 
 export default MainRouter;
