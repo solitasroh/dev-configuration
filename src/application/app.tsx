@@ -9,7 +9,16 @@ const GlobalStyle = createGlobalStyle`
   /* other styles */
   * {
     box-sizing: border-box;
-  }
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    :focus {
+      outline: none;
+    }
+  }     
   a {
       text-decoration: none;
       color: inherit;

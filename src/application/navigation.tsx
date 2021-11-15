@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import Conn from './Conn';
 
 type NaviItemProps = {
   current?: boolean;
@@ -36,9 +37,18 @@ const NaviLink = styled(Link)`
 
 const Navigation: React.FC = () => {
   const location = useLocation();
+  const [isConnVisible, setConnVisible] = useState(false);
+  const onClick = () => {
+    setConnVisible(true);
+  };
+  const onHandleClose = () => {
+    setConnVisible(false);
+  };
 
   return (
     <Container>
+      <input type="button" value="connect" onClick={onClick} />
+      <Conn visible={isConnVisible} close={onHandleClose} />
       <NaviItem current={location.pathname === '/'}>
         <NaviLink to="/">Information</NaviLink>
       </NaviItem>

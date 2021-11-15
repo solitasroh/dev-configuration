@@ -97,6 +97,7 @@
   "dependencies": {
     "@fontsource/roboto": "4.5.0",
     "@reactivex/rxjs": "6.6.7",
+    "@types/react-modal": "3.13.1",
     "@types/react-router": "5.1.17",
     "@types/react-router-dom": "^5.3.2",
     "@types/uuid": "8.3.1",
@@ -106,11 +107,11 @@
     "ping": "^0.4.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-hook-form": "7.19.5",
+    "react-modal": "3.14.4",
     "react-router": "6.0.2",
     "react-router-dom": "^6.0.2",
-    "react-router-prop-types": "1.0.5",
     "rxjs": "7.4.0",
-    "simple-modbus": "^1.1.2",
     "styled-component": "^2.8.0",
     "styled-components": "^5.3.3",
     "styled-reset": "4.3.4"
