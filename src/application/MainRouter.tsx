@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Control from './Control';
 import Information from './Information';
 import Layout from './Layout';
+import RouterApp from './RouterApp';
 import Setup from './Setup';
 
 const Container = styled.div`
@@ -24,7 +25,7 @@ const NoMatch: React.FC = () => (
 const MainRouter: React.FC = () => (
   <Container>
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={<RouterApp />}>
         <Route path="/" element={<Information />} />
         <Route path="/Control" element={<Control />} />
         <Route path="/Setup" element={<Setup />} />

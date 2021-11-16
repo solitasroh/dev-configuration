@@ -5,11 +5,13 @@ import { IpcChannel } from './IPCChannel';
 import { IpcRequest } from './IPCRequest';
 
 export class ConnectionProps implements IpcRequest {
-  ip: string;
+  ip?: string;
 
-  port: number;
+  port?: number;
 
-  responseChannel: string;
+  connect: boolean;
+
+  responseChannel?: string;
 }
 
 export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
@@ -27,16 +29,24 @@ export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
     event: IpcMainEvent,
     request: ConnectionProps,
   ): Promise<void> => {
-    const { ip, port } = request;
+    const { ip, port, connect } = request;
 
     const client = ModbusService.GetClient();
 
-    try {
-      await client.connectTCP(ip, { port });
-    } catch (error) {
-      event.sender.send(request.responseChannel, false);
-    }
+    if (connect) {
+      try {
+        await client.connectTCP(ip, { port });
+      } catch (error) {
+        event.sender.send(request.responseChannel, false);
+      }
 
-    event.sender.send(request.responseChannel, true);
+      event.sender.send(request.responseChannel, true);
+    } else {
+      console.log('enter closing');
+      await client.close(() => {
+        console.log('closed');
+      });
+      event.sender.send(request.responseChannel, true);
+    }
   };
 }

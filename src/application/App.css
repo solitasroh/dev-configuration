@@ -1,0 +1,29 @@
+.logo {
+    height: 32px;
+    width: 80%;
+}
+
+.ant-row-rtl .logo {
+    float: right;
+    margin: 16px 0 16px 24px;
+}
+
+.site-layout-background {
+    background: #fff;
+}
+
+.site-layout .site-layout-background {
+    background: #fff;
+}
+
+.connection-title {
+    font-size: 11pt;
+    color: #fff;
+}
+
+.connection-btn {
+    margin: 5px 0 16px 5px;
+    height: 32px;
+    margin: 5px 10px 10px 5px;
+    width: 80%;
+}

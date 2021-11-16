@@ -1,3 +1,4 @@
+import { ChannelConnectServer } from './ipc/ChannelConnectServer';
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
 import { ChannelReadData } from './ipc/ChannelReadData';
 import { IpcChannel } from './ipc/IPCChannel';
@@ -116,4 +117,8 @@ class Main {
   };
 }
 
-new Main().init([new ChannelReadData(), new ChannelWriteData()]);
+new Main().init([
+  new ChannelReadData(),
+  new ChannelWriteData(),
+  new ChannelConnectServer(),
+]);
