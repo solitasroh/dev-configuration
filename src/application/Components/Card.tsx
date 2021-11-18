@@ -100,6 +100,8 @@ export const CardLabelSet = styled.div`
   display: flex;
   align-items: center;
   margin: 5px;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
 export const CardLabel = styled.div`

@@ -9,9 +9,11 @@ export class ConnectionProps implements IpcRequest {
 
   port?: number;
 
-  connect: boolean;
+  connect?: boolean;
 
   responseChannel?: string;
+
+  requestConnectState?: boolean;
 }
 
 export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
@@ -29,12 +31,23 @@ export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
     event: IpcMainEvent,
     request: ConnectionProps,
   ): Promise<void> => {
-    const { ip, port, connect } = request;
+    const { ip, port, connect, requestConnectState } = request;
 
     const client = ModbusService.GetClient();
 
+    if (requestConnectState) {
+      event.sender.send(request.responseChannel, client.isOpen);
+      return;
+    }
+
     if (connect) {
       try {
+        if (client.isOpen) {
+          client.close(() => {
+            console.log('server already connected');
+          });
+        }
+        client.setTimeout(10000);
         await client.connectTCP(ip, { port });
       } catch (error) {
         event.sender.send(request.responseChannel, false);
@@ -43,6 +56,7 @@ export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
       event.sender.send(request.responseChannel, true);
     } else {
       console.log('enter closing');
+
       await client.close(() => {
         console.log('closed');
       });

@@ -6,6 +6,7 @@ import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import IpcService from '@src/main/IPCService';
 
 import { Card, Space } from 'antd';
+import IOInformation from '@src/Data/A2700.IOInformation';
 
 const Label = styled.p`
   width: 110px;
@@ -22,28 +23,24 @@ const Value = styled.p`
   background-color: #f5f5f5;
 `;
 
-const LMInformationView: FC = () => {
-  const tmpInfo = new LMInformation();
-  const [information, setInformation] = useState<LMInformation>(tmpInfo);
+const IOHInformationView: FC = () => {
+  const tmpInfo = new IOInformation();
+  const [information, setInformation] = useState<IOInformation>(tmpInfo);
 
   useEffect(() => {
     const ipcService = IpcService.getInstance();
-    const props = new ChannelReadDataProps();
-
-    props.requestType = 'A2750LMInformation';
     ipcService
       .send<LMInformation, ChannelReadDataProps>(REQ_DATA, {
-        requestType: 'A2750LMInformation',
-        responseChannel: 'RES-LM',
+        requestType: 'A2750IOInformation',
+        responseChannel: 'RES-IO',
       })
       .then((data) => {
         setInformation(data);
       });
   }, []);
-
   return (
     <Card
-      title="LMH Information"
+      title="IOH Information"
       size="small"
       style={{ width: '300px' }}
       type="inner"
@@ -79,4 +76,4 @@ const LMInformationView: FC = () => {
   );
 };
 
-export default LMInformationView;
+export default IOHInformationView;

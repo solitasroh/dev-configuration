@@ -1,11 +1,13 @@
+import { Space } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
+import IOHInformationView from './IOH/IOHInformationView';
 import LDInformationView from './lmh/LDInformationView';
 import LMInformationView from './lmh/LMInformationView';
 
 const Contents = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-wrap: wrap;
   padding: 10px;
   width: 100%;
@@ -13,10 +15,11 @@ const Contents = styled.div`
 `;
 
 const Information: React.FC = () => (
-  <Contents>
+  <Space align="start" size="middle">
     <LMInformationView />
     <LDInformationView />
-  </Contents>
+    <IOHInformationView />
+  </Space>
 );
 
 export default Information;

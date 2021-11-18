@@ -1,17 +1,24 @@
 import LDInformation from '@src/Data/A2700.LDInformation';
+import styled from 'styled-components';
 import { REQ_DATA } from '@src/ipcChannels';
 import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import IpcService from '@src/main/IPCService';
 import React, { FC, useEffect, useState } from 'react';
+import { Card, Space } from 'antd';
 
-import {
-  CardHeader,
-  CardHeading,
-  CardLabel,
-  CardLabelSet,
-  CardValue,
-  CardWrapper,
-} from '../Components/Card';
+const Label = styled.p`
+  width: 110px;
+  text-align: left;
+  font-size: 8pt;
+`;
+const Value = styled.p`
+  width: 150px;
+  text-align: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 9pt;
+  background-color: #f5f5f5;
+`;
 
 const LDInformationView: FC = () => {
   const tmpInfo = new LDInformation();
@@ -31,39 +38,43 @@ const LDInformationView: FC = () => {
   }, []);
 
   return (
-    <CardWrapper>
-      <CardHeader>
-        <CardHeading>LDH Information</CardHeading>
-      </CardHeader>
-      <CardLabelSet>
-        <CardLabel>operation state</CardLabel>
-        <CardValue>{information.operationStatus}</CardValue>
-      </CardLabelSet>
-      <CardLabelSet>
-        <CardLabel>product code</CardLabel>
-        <CardValue>{information.productCode}</CardValue>
-      </CardLabelSet>
-      <CardLabelSet>
-        <CardLabel>serial number</CardLabel>
-        <CardValue>{information.serialNumber ?? 'null'}</CardValue>
-      </CardLabelSet>
-      <CardLabelSet>
-        <CardLabel>hardware revision</CardLabel>
-        <CardValue>{information.hardwareRevision ?? 'null'}</CardValue>
-      </CardLabelSet>
-      <CardLabelSet>
-        <CardLabel>application version</CardLabel>
-        <CardValue>{information.applicationVersion}</CardValue>
-      </CardLabelSet>
-      <CardLabelSet>
-        <CardLabel>kernel version</CardLabel>
-        <CardValue>{information.kernelVersion ?? '0'}</CardValue>
-      </CardLabelSet>
-      <CardLabelSet>
-        <CardLabel>bootloader version</CardLabel>
-        <CardValue>{information.bootloaderVersion ?? 'null'}</CardValue>
-      </CardLabelSet>
-    </CardWrapper>
+    <Card
+      title="LDH Information"
+      size="small"
+      style={{ width: '300px' }}
+      type="inner"
+    >
+      <div>
+        <Space size="small">
+          <Label>operation state</Label>
+          <Value>{information.operationStatus ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>product code</Label>
+          <Value>{information.productCode ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>serial number</Label>
+          <Value>{information.serialNumber ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>hardware revision</Label>
+          <Value>{information.hardwareRevision ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>application version</Label>
+          <Value>{information.applicationVersion ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>kernel version</Label>
+          <Value>{information.kernelVersion ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>bootloader version</Label>
+          <Value>{information.bootloaderVersion ?? 'null'}</Value>
+        </Space>
+      </div>
+    </Card>
   );
 };
 

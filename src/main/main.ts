@@ -34,7 +34,6 @@ class Main {
 
     app.whenReady().then(() => {
       // initTray();
-      this.modbusService.connect('127.0.0.1', 502);
     });
 
     this.registerIpcChannels(ipcChannels);

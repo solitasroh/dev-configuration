@@ -1,21 +1,86 @@
-import React, { useState } from 'react';
-import { Button, Modal, Input, Typography, Divider } from 'antd';
+import React, { useState, useEffect, FC } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { Button, Modal, Input, Typography, Space } from 'antd';
 
 import IPCService from '@src/main/IPCService';
 import { CONNECTION } from '@src/ipcChannels';
 import { ConnectionProps } from '@src/main/ipc/ChannelConnectServer';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
-function ConnectWrapper() {
-  const [connectionState, setConnectionState] = useState(false);
+const InfoLabel = styled(Text)`
+  color: #fefefe;
+  font-size: 10px;
+  margin-bottom: 5px;
+`;
+
+const IpAddress = styled(Text)`
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 5px;
+`;
+const fadeIn = keyframes`
+  0%{
+    opacity: 1;
+  }
+  50%{
+    opacity: 0;
+  }
+  100%{
+    oapcity: 1;
+  }
+`;
+
+const ConnecionState = styled.div<{ connected: boolean }>`
+  color: #fafafa;
+  font-size: 10px;
+  margin-bottom: 5px;
+  opacity: 1;
+  color: ${(prop) => (prop.connected ? '#428e68' : 'red')};
+  animation: ${fadeIn} ${(prop) => (prop.connected ? '0s' : '2.5s')} infinite;
+`;
+
+const STATE_CONNECTED = 1;
+const STATE_DISCONNECTED = 2;
+const STATE_REQUEST_CONNECT = 4;
+
+const ConnectWrapper: FC = () => {
+  const [connectionState, setConnectionState] = useState(STATE_DISCONNECTED);
   const [confirmLoading, setConfirmLoading] = React.useState(false);
   const [visible, setVisible] = useState(false);
   const [ipAddress, setIPAddress] = useState('127.0.0.1');
+
+  useEffect(() => {
+    const service = IPCService.getInstance();
+    // 최초 한번 연결상태를 체크
+    service
+      .send<boolean, ConnectionProps>(CONNECTION, {
+        responseChannel: 'RESP-DISCONN',
+        requestConnectState: true,
+      })
+      .then((connected) => {
+        if (connected) {
+          setConnectionState(STATE_CONNECTED);
+        } else {
+          setConnectionState(STATE_DISCONNECTED);
+        }
+      });
+  }, []);
+
   const onConnect = async () => {
     setConfirmLoading(true);
-
     const service = IPCService.getInstance();
+
+    if (connectionState === STATE_CONNECTED) {
+      await service.send<boolean, ConnectionProps>(CONNECTION, {
+        responseChannel: 'RESP-DISCONN',
+        ip: ipAddress,
+        port: 502,
+        connect: false,
+      });
+    }
+
     const result = await service.send<boolean, ConnectionProps>(CONNECTION, {
       responseChannel: 'RESP-CONNECTION',
       ip: ipAddress,
@@ -23,46 +88,42 @@ function ConnectWrapper() {
       connect: true,
     });
 
-    setConnectionState(result);
+    setConnectionState(result ? STATE_CONNECTED : STATE_DISCONNECTED);
     setVisible(false);
     setConfirmLoading(false);
   };
   const handleConnect = async () => {
-    if (!connectionState) {
-      setVisible(true);
-    } else {
-      const service = IPCService.getInstance();
-      await service.send<boolean, ConnectionProps>(CONNECTION, {
-        responseChannel: 'RESP-DISCONN',
-        ip: ipAddress,
-        port: 502,
-        connect: false,
-      });
+    setVisible(true);
+  };
 
-      setConnectionState(false);
+  const StateToDisplay = (state: number) => {
+    switch (state) {
+      case STATE_CONNECTED:
+        return 'CONNECTED';
+      case STATE_DISCONNECTED:
+        return 'DISCONNECTED';
+      case STATE_REQUEST_CONNECT:
+        return 'try to connect';
+      default:
+        return 'INVALID';
     }
   };
+
   return (
-    <div>
-      {connectionState ? (
-        <Text type="success" className="connection-title">
-          `connected to device`
-        </Text>
-      ) : (
-        <Divider style={{ borderColor: 'white', margin: '10px 0 10 0' }}>
-          <Text className="connection-title">connect to device</Text>
-        </Divider>
-      )}
-      <Button
-        type="primary"
-        style={{ backgroundColor: connectionState ? 'green' : 'red' }}
-        className="connection-btn"
-        onClick={handleConnect}
-      >
-        {connectionState ? 'disconnect' : 'Connect'}
+    <Space style={{ margin: 20, padding: 5 }} direction="vertical">
+      <Space align="start">
+        <InfoLabel>device IP</InfoLabel>
+        <IpAddress>{ipAddress}</IpAddress>
+      </Space>
+      <ConnecionState connected={connectionState === STATE_CONNECTED}>
+        {StateToDisplay(connectionState)}
+      </ConnecionState>
+
+      <Button type="primary" className="connection-btn" onClick={handleConnect}>
+        change connect
       </Button>
       <Modal
-        title="Connect to device"
+        title="Connect to A2700 device"
         centered
         visible={visible}
         confirmLoading={confirmLoading}
@@ -70,9 +131,12 @@ function ConnectWrapper() {
         onCancel={() => setVisible(false)}
       >
         <p>A2700IP</p>
-        <Input onChange={(e) => setIPAddress(e.target.value)} />
+        <Input
+          onChange={(e) => setIPAddress(e.target.value)}
+          onPressEnter={onConnect}
+        />
       </Modal>
-    </div>
+    </Space>
   );
-}
+};
 export default ConnectWrapper;

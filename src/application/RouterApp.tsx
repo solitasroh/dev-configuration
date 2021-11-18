@@ -30,10 +30,19 @@ const RouterApp: FC = () => (
     </Sider>
     <Layout className="site-layout" style={{ marginLeft: 200 }}>
       <Header className="site-layout-background" style={{ padding: 0 }} />
-      <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+      <Content
+        style={{ margin: '24px 16px 0', overflow: 'scroll', overflowX: 'auto' }}
+      >
         <div
           className="site-layout-background"
-          style={{ padding: 24, textAlign: 'center' }}
+          style={{
+            padding: 24,
+            textAlign: 'left',
+            overflowX: 'auto',
+            flexWrap: 'wrap',
+            width: '100vw',
+            height: '100vh',
+          }}
         >
           <Outlet />
         </div>
