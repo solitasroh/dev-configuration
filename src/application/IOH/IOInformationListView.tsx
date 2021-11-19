@@ -19,6 +19,7 @@ const IOInformationListView: FC = () => {
         params: { id: 0 },
       })
       .then((data) => {
+          console.log(data);
         setInformation(data);
       });
   }, []);
@@ -27,12 +28,7 @@ const IOInformationListView: FC = () => {
     <List
       grid={{
         gutter: 16,
-        xs: 1,
-        sm: 2,
-        md: 4,
-        lg: 4,
-        xl: 6,
-        xxl: 3,
+        column: 5,
       }}
       dataSource={information}
       renderItem={(item) => (
