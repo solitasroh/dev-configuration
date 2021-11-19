@@ -1,9 +1,6 @@
-import React, { FC, useEffect, useState } from 'react';
-import LMInformation from '@src/Data/A2700.LMInformation';
+import React, { FC } from 'react';
 import styled from 'styled-components';
-import { REQ_DATA } from '@src/ipcChannels';
-import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
-import IpcService from '@src/main/IPCService';
+
 
 import { Card, Space } from 'antd';
 import IOInformation from '@src/Data/A2700.IOInformation';
@@ -22,27 +19,38 @@ const Value = styled.p`
   font-size: 9pt;
   background-color: #f5f5f5;
 `;
-type IOInforParams = {
-  id: number;
-}
-const IOHInformationView: FC<IOInforParams> = ({ id }: IOInforParams) => {
-  const tmpInfo = new IOInformation();
-  const [information, setInformation] = useState<IOInformation>(tmpInfo);
+  // const tmpInfo = new IOInformation();
+  // const [information, setInformation] = useState<IOInformation>(tmpInfo);
 
-  useEffect(() => {
-    const ipcService = IpcService.getInstance();
-    ipcService
-      .send<IOInformation[], ChannelReadDataProps>(REQ_DATA, {
-        requestType: 'A2750IOInformation',
-        responseChannel: 'RES-IO',
-        params: { id },
-      })
-      .then((data) => {
-        console.log(data);
-        setInformation(data[0]);
-      });
-      return () => setInformation(null);
-  }, []);
+  // useEffect(() => {
+  //   const ipcService = IpcService.getInstance();
+  //   ipcService
+  //     .send<IOInformation[], ChannelReadDataProps>(REQ_DATA, {
+  //       requestType: 'A2750IOInformation',
+  //       responseChannel: 'RES-IO',
+  //       params: { id },
+  //     })
+  //     .then((data) => {
+  //       console.log(data);
+  //       setInformation(data[0]);
+  //     });
+  //     return () => setInformation(null);
+  // }, []);
+  type props = {
+    information: IOInformation;
+  }
+
+const IOHInformationView: FC<props> = ({information}) => {
+  const {
+    id,
+    operationStatus,
+    productCode,
+    serialNumber,
+    hardwareRevision,
+    applicationVersion,
+    bootloaderVersion
+  } = information;
+
   return (
     <Card
       title={`IOH Information (${id})`}
@@ -53,28 +61,28 @@ const IOHInformationView: FC<IOInforParams> = ({ id }: IOInforParams) => {
       <div>
         <Space size="small">
           <Label>operation state</Label>
-          <Value>{information.operationStatus ?? 'null'}</Value>
+          <Value>{operationStatus ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>product code</Label>
-          <Value>{information.productCode ?? 'null'}</Value>
+          <Value>{productCode ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>serial number</Label>
-          <Value>{information.serialNumber ?? 'null'}</Value>
+          <Value>{serialNumber ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>hardware revision</Label>
-          <Value>{information.hardwareRevision ?? 'null'}</Value>
+          <Value>{hardwareRevision ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>application version</Label>
-          <Value>{information.applicationVersion ?? 'null'}</Value>
+          <Value>{applicationVersion ?? 'null'}</Value>
         </Space>
 
         <Space size="small">
           <Label>bootloader version</Label>
-          <Value>{information.bootloaderVersion ?? 'null'}</Value>
+          <Value>{bootloaderVersion ?? 'null'}</Value>
         </Space>
       </div>
     </Card>

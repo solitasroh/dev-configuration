@@ -46,7 +46,7 @@ export default class A2750IOInformationReg extends RegisterBase {
     return ModbusService.read(addr, length).pipe(
       map((data) => {
         const iosdata = chunkArray(data, 12);
-        return iosdata.map(item => {
+        return iosdata.map((item, index) => {
           const tmpInfo = new IOInformation();
           const [
             operationState,
@@ -59,7 +59,7 @@ export default class A2750IOInformationReg extends RegisterBase {
             hardwareRevision,
             pcbVersion,
           ] = item as number[];
-
+          tmpInfo.id = index+1;
           tmpInfo.moduleType = moduleType;
           tmpInfo.setOperationState(operationState);
           tmpInfo.setProductCode(productCode >> 8, productCode & 0xff);

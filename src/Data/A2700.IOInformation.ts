@@ -3,6 +3,8 @@ import A2700DataType from './A2700DataType';
 
 class IOInformation implements A2700Data {
   type: A2700DataType = A2700DataType.LMInfo;
+  
+  id: number;
 
   operationStatus: string;
 
