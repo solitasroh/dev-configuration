@@ -52,7 +52,10 @@ class ModbusService {
     if (options === undefined) {
       return from(this.GetClient().readHoldingRegisters(address, length)).pipe(
         map((value) => value.data),
-        catchError(() => []),
+        catchError((e) => {
+          console.log(e);
+          return []
+        }),
       );
     }
     return from(this.GetClient().readCoils(address, length)).pipe(

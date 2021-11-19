@@ -19,26 +19,14 @@ const Value = styled.p`
   font-size: 9pt;
   background-color: #f5f5f5;
 `;
-  // const tmpInfo = new IOInformation();
-  // const [information, setInformation] = useState<IOInformation>(tmpInfo);
 
-  // useEffect(() => {
-  //   const ipcService = IpcService.getInstance();
-  //   ipcService
-  //     .send<IOInformation[], ChannelReadDataProps>(REQ_DATA, {
-  //       requestType: 'A2750IOInformation',
-  //       responseChannel: 'RES-IO',
-  //       params: { id },
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-  //       setInformation(data[0]);
-  //     });
-  //     return () => setInformation(null);
-  // }, []);
-  type props = {
-    information: IOInformation;
-  }
+const Wrapper = styled.div<{enable: boolean}>`
+  background-color: ${(props) => props.enable ? 'white' : 'gray'};
+`
+
+type props = {
+  information: IOInformation;
+}
 
 const IOHInformationView: FC<props> = ({information}) => {
   const {
@@ -48,7 +36,8 @@ const IOHInformationView: FC<props> = ({information}) => {
     serialNumber,
     hardwareRevision,
     applicationVersion,
-    bootloaderVersion
+    bootloaderVersion,
+    moduleType
   } = information;
 
   return (
@@ -58,10 +47,14 @@ const IOHInformationView: FC<props> = ({information}) => {
       style={{ width: '300px' }}
       type="inner"
     >
-      <div>
+      <Wrapper enable>
         <Space size="small">
           <Label>operation state</Label>
           <Value>{operationStatus ?? 'null'}</Value>
+        </Space>
+        <Space size="small">
+          <Label>module type</Label>
+          <Value>{moduleType ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>product code</Label>
@@ -79,12 +72,11 @@ const IOHInformationView: FC<props> = ({information}) => {
           <Label>application version</Label>
           <Value>{applicationVersion ?? 'null'}</Value>
         </Space>
-
         <Space size="small">
           <Label>bootloader version</Label>
           <Value>{bootloaderVersion ?? 'null'}</Value>
         </Space>
-      </div>
+      </Wrapper>
     </Card>
   );
 };
