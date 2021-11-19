@@ -4,4 +4,6 @@ export default class ChannelReadDataProps implements IpcRequest {
   requestType?: string;
 
   responseChannel?: string;
+
+  params?: any;
 }

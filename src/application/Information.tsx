@@ -1,24 +1,17 @@
-import { Space } from 'antd';
+import { Space, List } from 'antd';
 import React from 'react';
-import styled from 'styled-components';
-import IOHInformationView from './IOH/IOHInformationView';
+import IOHInformationView from './ioh/IOHInformationView';
 import LDInformationView from './lmh/LDInformationView';
 import LMInformationView from './lmh/LMInformationView';
-
-const Contents = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  padding: 10px;
-  width: 100%;
-  height: 100%;
-`;
+import PCStatusView from './pc/PCStatusView';
 
 const Information: React.FC = () => (
   <Space align="start" size="middle">
     <LMInformationView />
     <LDInformationView />
-    <IOHInformationView />
+   
+    <IOHInformationView id={1}/>
+    <PCStatusView id={1}/>
   </Space>
 );
 

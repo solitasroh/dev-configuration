@@ -35,6 +35,7 @@ const LDInformationView: FC = () => {
       .then((data) => {
         setInformation(data);
       });
+      return () => setInformation(null);
   }, []);
 
   return (

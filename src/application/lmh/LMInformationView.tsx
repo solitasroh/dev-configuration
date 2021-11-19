@@ -39,6 +39,7 @@ const LMInformationView: FC = () => {
       .then((data) => {
         setInformation(data);
       });
+      return () => setInformation(null);
   }, []);
 
   return (
@@ -69,7 +70,6 @@ const LMInformationView: FC = () => {
           <Label>application version</Label>
           <Value>{information.applicationVersion ?? 'null'}</Value>
         </Space>
-
         <Space size="small">
           <Label>bootloader version</Label>
           <Value>{information.bootloaderVersion ?? 'null'}</Value>

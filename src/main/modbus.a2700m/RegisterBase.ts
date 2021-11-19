@@ -4,7 +4,7 @@ import ModbusService from '../ModbusService';
 import IStuff from './IStuff';
 
 abstract class RegisterBase implements IStuff {
-  public getter = (): Observable<A2700Data> => null;
+  public getter = (params?: any): Observable<A2700Data | A2700Data[]> => null;
 
   public setter = (data: A2700Data): void => {
     console.log(`default setter : ${data}`);

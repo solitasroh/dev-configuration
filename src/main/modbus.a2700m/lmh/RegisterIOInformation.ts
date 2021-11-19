@@ -4,43 +4,73 @@ import { map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
 
+/**
+ * Returns an array with arrays of the given size.
+ *
+ * @param myArray {Array} Array to split
+ * @param chunkSize {Integer} Size of every group
+ */
+function chunkArray(myArray: any, chunkSize: number) {
+
+  if (!(myArray instanceof Array)) {
+    return null;
+  }
+
+  const results = [];
+  while (myArray.length) {
+    results.push(myArray.splice(0, chunkSize));
+  }
+
+  return results;
+}
+
 export default class A2750IOInformationReg extends RegisterBase {
+  private id: number;
+
   setter = (data: A2700Data): void => {
     console.log(`empty setter ${data.type}`);
   };
 
-  getter = (): Observable<A2700Data> =>
-    ModbusService.read(12351, 11).pipe(
+  getter = (params: any): Observable<A2700Data | A2700Data[]> => {
+    const { id } = params;
+    let addr = 61552;
+    let length = 12;
+    if (id === 0) {
+      length = 12 * 15;
+      addr = 61542;
+    } else {
+      addr = 61552 + (id - 1) * 12;
+      length = 12;
+    }
+
+    return ModbusService.read(addr, length).pipe(
       map((data) => {
-        const result = new IOInformation();
+        const iosdata = chunkArray(data, 12);
+        return iosdata.map(item => {
+          const tmpInfo = new IOInformation();
+          const [
+            operationState,
+            moduleType,
+            hSerialNumber,
+            lSerialNumber,
+            productCode,
+            applicationVersion, // 61510
+            bootloaderVersion, // 61511
+            hardwareRevision,
+            pcbVersion,
+          ] = item as number[];
 
-        const [
-          operationState, // 61501
-          productCode, // 61502
-          hSerialNumber, // 61503-4
-          lSerialNumber,
-          hHardwareRevision, // 61505
-          lHardwareRevision, // 61506
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          reserved1,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          reserved2,
-          pcbVersion, // 61509
-          applicationVersion, // 61510
-          bootloaderVersion, // 61511
-        ] = data as number[];
-
-        result.setOperationState(operationState);
-        result.setProductCode(productCode >> 8, productCode & 0xff);
-        result.setSerialNumber((hSerialNumber << 16) | lSerialNumber);
-        result.hardwareRevision = (hHardwareRevision << 16) | lHardwareRevision;
-        result.pcbVersion = pcbVersion;
-        result.applicationVersion =
-          IOInformation.getAppVersion(applicationVersion);
-        result.bootloaderVersion =
-          IOInformation.getAppVersion(bootloaderVersion);
-
-        return result;
+          tmpInfo.moduleType = moduleType;
+          tmpInfo.setOperationState(operationState);
+          tmpInfo.setProductCode(productCode >> 8, productCode & 0xff);
+          tmpInfo.setSerialNumber((hSerialNumber << 16) | lSerialNumber);
+          tmpInfo.hardwareRevision = hardwareRevision;
+          tmpInfo.pcbVersion = pcbVersion;
+          tmpInfo.applicationVersion = IOInformation.getAppVersion(applicationVersion);
+          tmpInfo.bootloaderVersion =  IOInformation.getAppVersion(bootloaderVersion);
+          return tmpInfo;
+        });
       }),
     );
+  };
 }

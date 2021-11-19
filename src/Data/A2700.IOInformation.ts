@@ -18,10 +18,13 @@ class IOInformation implements A2700Data {
 
   bootloaderVersion: string;
 
+  moduleType : number;
+
   setOperationState(operationStatus: number): void {
     if (operationStatus === 0) this.operationStatus = 'UNINDENTIFIED';
-    if (operationStatus === 1) this.operationStatus = 'BOOTING';
-    if (operationStatus === 2) this.operationStatus = 'OPERATING';
+    if (operationStatus === 1) this.operationStatus = 'ID conflict';
+    if (operationStatus === 2) this.operationStatus = 'BOOTING';
+    if (operationStatus === 3) this.operationStatus = 'OPERATING';
   }
 
   setProductCode(...productCode: number[]): void {

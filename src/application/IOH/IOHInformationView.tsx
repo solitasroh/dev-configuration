@@ -22,25 +22,30 @@ const Value = styled.p`
   font-size: 9pt;
   background-color: #f5f5f5;
 `;
-
-const IOHInformationView: FC = () => {
+type IOInforParams = {
+  id: number;
+}
+const IOHInformationView: FC<IOInforParams> = ({ id }: IOInforParams) => {
   const tmpInfo = new IOInformation();
   const [information, setInformation] = useState<IOInformation>(tmpInfo);
 
   useEffect(() => {
     const ipcService = IpcService.getInstance();
     ipcService
-      .send<LMInformation, ChannelReadDataProps>(REQ_DATA, {
+      .send<IOInformation[], ChannelReadDataProps>(REQ_DATA, {
         requestType: 'A2750IOInformation',
         responseChannel: 'RES-IO',
+        params: { id },
       })
       .then((data) => {
-        setInformation(data);
+        console.log(data);
+        setInformation(data[0]);
       });
+      return () => setInformation(null);
   }, []);
   return (
     <Card
-      title="IOH Information"
+      title={`IOH Information (${id})`}
       size="small"
       style={{ width: '300px' }}
       type="inner"

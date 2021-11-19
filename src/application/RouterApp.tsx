@@ -1,9 +1,24 @@
 import React, { FC } from 'react';
+import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 import ConnectWrapper from './Components/ConnectWrapper';
 
 const { Header, Content, Sider, Footer } = Layout;
+
+const ContentWrapper = styled(Layout)`
+  display: flex;
+`
+
+const Contents = styled(Content)`
+  flex: 1;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+  margin: 24px 16px ;
+  overflow-x: auto;
+  overflow-y: auto;
+  padding: 16px;
+`
 
 const RouterApp: FC = () => (
   <Layout>
@@ -16,7 +31,7 @@ const RouterApp: FC = () => (
       }}
     >
       <ConnectWrapper />
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
+      <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
         <Menu.Item key="1">
           <Link to="/">Information</Link>
         </Menu.Item>
@@ -28,29 +43,15 @@ const RouterApp: FC = () => (
         </Menu.Item>
       </Menu>
     </Sider>
-    <Layout className="site-layout" style={{ marginLeft: 200 }}>
+    <ContentWrapper className="site-layout" style={{ marginLeft: 200 }}>
       <Header className="site-layout-background" style={{ padding: 0 }} />
-      <Content
-        style={{ margin: '24px 16px 0', overflow: 'scroll', overflowX: 'auto' }}
-      >
-        <div
-          className="site-layout-background"
-          style={{
-            padding: 24,
-            textAlign: 'left',
-            overflowX: 'auto',
-            flexWrap: 'wrap',
-            width: '100vw',
-            height: '100vh',
-          }}
-        >
-          <Outlet />
-        </div>
-      </Content>
+      <Contents>
+        <Outlet />
+      </Contents>
       <Footer style={{ textAlign: 'center' }}>
-        Ant Design ©2018 Created by Ant UED
+        Rootech ©2021 Created by S.J
       </Footer>
-    </Layout>
+    </ContentWrapper>
   </Layout>
 );
 
