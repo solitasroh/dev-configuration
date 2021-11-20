@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import Control from './Control';
 import Information from './Information';
-import Layout from './Layout';
 import RouterApp from './RouterApp';
 import Setup from './Setup';
 

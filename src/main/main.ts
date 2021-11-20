@@ -1,5 +1,5 @@
-import { ChannelConnectServer } from './ipc/ChannelConnectServer';
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
+import { ChannelConnectServer } from './ipc/ChannelConnectServer';
 import { ChannelReadData } from './ipc/ChannelReadData';
 import { IpcChannel } from './ipc/IPCChannel';
 import { IpcRequest } from './ipc/IPCRequest';

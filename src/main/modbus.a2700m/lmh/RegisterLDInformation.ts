@@ -5,6 +5,10 @@ import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
 
 export default class RegisterLDInformation extends RegisterBase {
+  setter = (_data: A2700Data): void => {
+    // do nothing
+  };
+
   getter = (): Observable<A2700Data> =>
     ModbusService.read(61524, 10).pipe(
       map((data) => {

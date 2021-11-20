@@ -6,7 +6,6 @@ import React, { FC, useState, useEffect } from 'react';
 import { List } from 'antd';
 import IOHInformationView from './IOHInformationView';
 
-
 const IOInformationListView: FC = () => {
   const tmpInfo: IOInformation[] = [];
   const [information, setInformation] = useState<IOInformation[]>(tmpInfo);
@@ -16,12 +15,13 @@ const IOInformationListView: FC = () => {
       .send<IOInformation[], ChannelReadDataProps>(REQ_DATA, {
         requestType: 'A2750IOInformation',
         responseChannel: 'RES-IO',
-        params: { id: 0 },
+        props: { id: 0 },
       })
       .then((data) => {
-          console.log(data);
+        console.log(data);
         setInformation(data);
       });
+    return () => setInformation(null);
   }, []);
 
   return (

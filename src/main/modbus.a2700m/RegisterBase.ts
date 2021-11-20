@@ -1,14 +1,12 @@
-import A2700Data from '@src/Data/A2700Data';
 import { Observable } from 'rxjs';
+import A2700Data from '@src/Data/A2700Data';
+import RegisterProps from './RegisterProps';
 import ModbusService from '../ModbusService';
-import IStuff from './IStuff';
 
-abstract class RegisterBase implements IStuff {
-  public getter = (params?: any): Observable<A2700Data | A2700Data[]> => null;
+abstract class RegisterBase {
+  abstract getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]>;
 
-  public setter = (data: A2700Data): void => {
-    console.log(`default setter : ${data}`);
-  };
+  abstract setter(_data: A2700Data): void;
 
   unlockSetup = (): void => {
     ModbusService.write(51000, [2300, 0, 1, 700]).subscribe();

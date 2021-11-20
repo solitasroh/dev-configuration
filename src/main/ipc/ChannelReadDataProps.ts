@@ -1,3 +1,4 @@
+import RegisterProps from '../modbus.a2700m/RegisterProps';
 import { IpcRequest } from './IPCRequest';
 
 export default class ChannelReadDataProps implements IpcRequest {
@@ -5,5 +6,5 @@ export default class ChannelReadDataProps implements IpcRequest {
 
   responseChannel?: string;
 
-  params?: any;
+  props?: RegisterProps;
 }

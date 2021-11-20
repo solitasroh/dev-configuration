@@ -4,7 +4,7 @@ import { map, Observable, throwError } from 'rxjs';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
 
-export default class A2750LMSetupReg extends RegisterBase {
+export default class RegisterLMSetup extends RegisterBase {
   setter = (data: A2700Data): void => {
     if (data instanceof LMSetupData) {
       const buf = [
@@ -31,7 +31,7 @@ export default class A2750LMSetupReg extends RegisterBase {
     }
   };
 
-  getter = (): Observable<A2700Data> =>
+  getter = (): Observable<A2700Data | A2700Data[]> =>
     ModbusService.read(64010, 5).pipe(
       map((data) => {
         const result = new LMSetupData();

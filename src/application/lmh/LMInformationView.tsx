@@ -35,11 +35,15 @@ const LMInformationView: FC = () => {
       .send<LMInformation, ChannelReadDataProps>(REQ_DATA, {
         requestType: 'A2750LMInformation',
         responseChannel: 'RES-LM',
+        props: {
+          id: 0,
+          data: false,
+        },
       })
       .then((data) => {
         setInformation(data);
       });
-      return () => setInformation(null);
+    return () => setInformation(null);
   }, []);
 
   return (
