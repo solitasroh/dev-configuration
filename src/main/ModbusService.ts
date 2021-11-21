@@ -48,7 +48,7 @@ class ModbusService {
       return from(
         this.GetClient().readHoldingRegisters(address - 1, length),
       ).pipe(
-        map((value) => value.data),
+        map((value) => value.data || value.buffer),
         catchError((e) => {
           console.log(e);
           return [];
@@ -57,6 +57,28 @@ class ModbusService {
     }
     return from(this.GetClient().readCoils(address - 1, length)).pipe(
       map((value) => value.data),
+      catchError(() => []),
+    );
+  }
+
+  static readBuffer(
+    address: number,
+    length: number,
+    options?: { isCoil?: boolean },
+  ): Observable<Buffer> {
+    if (options === undefined) {
+      return from(
+        this.GetClient().readHoldingRegisters(address - 1, length),
+      ).pipe(
+        map((value) => value.buffer),
+        catchError((e) => {
+          console.log(e);
+          return [];
+        }),
+      );
+    }
+    return from(this.GetClient().readCoils(address - 1, length)).pipe(
+      map((value) => value.buffer),
       catchError(() => []),
     );
   }

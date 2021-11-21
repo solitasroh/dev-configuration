@@ -21,6 +21,7 @@ const Value = styled.p`
   font-size: 9pt;
   background-color: #f5f5f5;
 `;
+
 const PCStatusView: FC<{ id: number }> = ({ id }) => {
   const ipcService = IpcService.getInstance();
   const tmpStatus = new A2750PCStatus();

@@ -1,5 +1,6 @@
 import { Space } from 'antd';
 import React from 'react';
+import IOHAnalogMeasure from './ioh/IOHAnalogMeasure';
 
 import IOInformationListView from './ioh/IOInformationListView';
 import LDInformationView from './lmh/LDInformationView';
@@ -12,9 +13,13 @@ const Information: React.FC = () => (
       <LMInformationView />
       <LDInformationView />
       <PCStatusView id={1} />
+     
     </Space>
     <Space>
       <IOInformationListView />
+    </Space>
+    <Space>
+      <IOHAnalogMeasure id={2}/>
     </Space>
   </Space>
 );
