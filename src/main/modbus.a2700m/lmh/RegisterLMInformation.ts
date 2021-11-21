@@ -13,7 +13,7 @@ export default class RegisterLMInformation extends RegisterBase {
   getter = (_props?: RegisterProps): Observable<A2700Data> => {
     const { data: reqPartnerInfo } = _props;
     const addr = !reqPartnerInfo ? 61501 : 61513;
-    return ModbusService.read(addr, 11).pipe(
+    return ModbusService.read<number[]>(addr, 11).pipe(
       map((data) => {
         const result = new LMInformation();
 

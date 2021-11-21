@@ -10,21 +10,21 @@ export default class RegisterPCStatus extends RegisterBase {
   };
 
   getter = (): Observable<A2700Data> =>
-    ModbusService.read(2, 6, {isCoil: true}).pipe(
+    ModbusService.read<boolean[]>(2, 6, { isCoil: true }).pipe(
       map((data) => {
         const result = new A2750PCStatus();
 
         const [
-            startingBlock,
-            motorOperationState,
-            remoteModeState,
-            abnormalState,
-            alarmState,
-            faultState,
+          startingBlock,
+          motorOperationState,
+          remoteModeState,
+          abnormalState,
+          alarmState,
+          faultState,
         ] = data as boolean[];
 
         result.startingBlock = startingBlock;
-        result.motorOperationState =motorOperationState;
+        result.motorOperationState = motorOperationState;
         result.remoteStatus = remoteModeState;
         result.abnormalState = abnormalState;
         result.alarmState = alarmState;

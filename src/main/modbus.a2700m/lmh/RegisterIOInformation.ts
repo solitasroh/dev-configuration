@@ -30,8 +30,8 @@ export default class RegisterIOInformation extends RegisterBase {
   };
 
   getter = (): Observable<A2700Data | A2700Data[]> => {
-    const first = ModbusService.read(61552, 125);
-    const second = ModbusService.read(61552 + 125, 55);
+    const first = ModbusService.read<number[]>(61552, 125);
+    const second = ModbusService.read<number[]>(61552 + 125, 55);
 
     return forkJoin([first, second])
       .pipe(map(([s1, s2]) => [...s1, ...s2]))

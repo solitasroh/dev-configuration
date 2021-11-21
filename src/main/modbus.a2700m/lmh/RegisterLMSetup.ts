@@ -32,7 +32,7 @@ export default class RegisterLMSetup extends RegisterBase {
   };
 
   getter = (): Observable<A2700Data | A2700Data[]> =>
-    ModbusService.read(64010, 5).pipe(
+    ModbusService.read<number[]>(64010, 5).pipe(
       map((data) => {
         const result = new LMSetupData();
 

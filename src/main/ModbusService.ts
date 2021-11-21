@@ -39,11 +39,11 @@ class ModbusService {
     return this.instance.client;
   }
 
-  static read(
+  static read<T>(
     address: number,
     length: number,
     options?: { isCoil?: boolean },
-  ): Observable<number[] | boolean[] | string> {
+  ): Observable<T> {
     if (options === undefined) {
       return from(
         this.GetClient().readHoldingRegisters(address - 1, length),

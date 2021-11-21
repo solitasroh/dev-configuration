@@ -10,7 +10,7 @@ export default class RegisterLDInformation extends RegisterBase {
   };
 
   getter = (): Observable<A2700Data> =>
-    ModbusService.read(61524, 10).pipe(
+    ModbusService.read<number[]>(61524, 10).pipe(
       map((data) => {
         const result = new LDInformation();
 
