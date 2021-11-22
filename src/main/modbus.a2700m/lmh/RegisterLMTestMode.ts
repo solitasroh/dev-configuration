@@ -12,19 +12,9 @@ export default class RegisterLMTestMode extends RegisterBase {
   };
 
   // eslint-disable-next-line class-methods-use-this
-  setter<T extends A2700Data>(_data: T ): void {
-    const {
-        data
-    } = _data as unknown as LMTestModeData;
-    console.log(data);
-    const values = data.map((item) => item.value);
-    
+  setter = (test: any): void =>{
+    const arg = test as LMTestModeData;
+    const values = arg.data.map((item) => item.value);
     ModbusService.write(63640, values).subscribe();
-
-    if (_data instanceof LMTestModeData) {
-        console.log('lm test mode set ', _data);
-        console.log('test mode set to a2700m', _data);
-        
-    }
   };
 }
