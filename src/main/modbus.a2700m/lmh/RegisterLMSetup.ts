@@ -16,7 +16,7 @@ export default class RegisterLMSetup extends RegisterBase {
 
       this.unlockSetup();
 
-      const dataWrite = ModbusService.write(64011, buf).pipe(
+      const dataWrite = ModbusService.write(64010, buf).pipe(
         map((x) => {
           if (x as string) {
             throwError(() => false);

@@ -4,6 +4,7 @@ import RegisterLDInformation from './lmh/RegisterLDInformation';
 import RegisterIOInformation from './lmh/RegisterIOInformation';
 import RegisterPCStatus from './pc/RegisterPCStatus';
 import RegisterAIMeausre from './ioh/RegisterAIMeasure';
+import RegisterLMTestMode from './lmh/RegisterLMTestMode';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -12,6 +13,7 @@ const userMap = {
   A2750PCStatus: RegisterPCStatus,
   A2750LMSetup: RegisterLMSetup,
   AIMeasure: RegisterAIMeausre,
+  LMTestSet: RegisterLMTestMode,
 };
 
 export type UserMap = typeof userMap;

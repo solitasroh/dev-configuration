@@ -4,7 +4,7 @@ import { IpcRequest } from './IPCRequest';
 export default class ChannelWriteDataProps implements IpcRequest {
   requestType: string;
 
-  writeData: A2700Data;
+  writeData: A2700Data ;
 
   responseChannel?: string;
 }

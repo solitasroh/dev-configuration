@@ -6,7 +6,7 @@ import ModbusService from '../ModbusService';
 abstract class RegisterBase {
   abstract getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]>;
 
-  abstract setter(_data: A2700Data): void;
+  abstract setter<T extends A2700Data>(_data: T): void;
 
   unlockSetup = (): void => {
     ModbusService.write(51000, [2300, 0, 1, 700]).subscribe();

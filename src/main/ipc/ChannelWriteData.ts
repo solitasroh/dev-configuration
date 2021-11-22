@@ -21,6 +21,7 @@ class ChannelWriteData implements IpcChannel<ChannelWriteDataProps> {
   }
 
   handle(event: IpcMainEvent, request: ChannelWriteDataProps): void {
+    console.log(request.requestType);
     this.register.Set(request.requestType, request.writeData);
   }
 }

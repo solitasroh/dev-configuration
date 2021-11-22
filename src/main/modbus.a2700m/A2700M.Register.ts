@@ -15,6 +15,8 @@ export default class A2700Register {
 
   Set = (key: any, data: A2700Data): void => {
     const reg = RegisterFactory.getRegister(key);
+    console.log(data);
+    console.log(typeof(data));
     reg.setter(data);
   };
 }
