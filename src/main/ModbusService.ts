@@ -83,21 +83,24 @@ class ModbusService {
     );
   }
 
-  static write(
-    address: number,
-    data: number[] | boolean[],
-  ): Observable<number | string> {
-    if (data as boolean[]) {
-      const coil = data as boolean[];
-      return from(this.GetClient().writeCoils(address - 1, coil)).pipe(
-        map((result) => result.address),
-        catchError(() => []),
-      );
-    }
+  static write(address: number, data: number[]): Observable<number | string> {
     const register = data as number[];
     return from(this.GetClient().writeRegisters(address - 1, register)).pipe(
       map((result) => result.address),
-      catchError(() => []),
+      catchError((error) => {
+        console.log(error);
+        return [];
+      }),
+    );
+  }
+
+  static writeCoils(address: number, data: boolean[]): Observable<number> {
+    return from(this.GetClient().writeCoils(address, data)).pipe(
+      map((result) => result.address),
+      catchError((error) => {
+        console.log(error);
+        return [];
+      }),
     );
   }
 }
