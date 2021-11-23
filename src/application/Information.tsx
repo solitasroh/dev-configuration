@@ -61,7 +61,7 @@ const Information: React.FC = () => {
       <Space align="start" size="middle">
         <LMInformationView />
         <LDInformationView />
-        <PCStatusView id={1} />
+       
       </Space>
       <Space>
         <IOInformationListView />
@@ -72,6 +72,9 @@ const Information: React.FC = () => {
       <Space  align="start">
         <LMDigitalMeasure />
         <LMDOMeasure />
+      </Space>
+      <Space>
+        <PCStatusView id={1} />
       </Space>
     </Space>
   );
