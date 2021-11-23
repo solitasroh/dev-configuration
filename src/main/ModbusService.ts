@@ -95,7 +95,7 @@ class ModbusService {
   }
 
   static writeCoils(address: number, data: boolean[]): Observable<number> {
-    return from(this.GetClient().writeCoils(address, data)).pipe(
+    return from(this.GetClient().writeCoils(address-1, data)).pipe(
       map((result) => result.address),
       catchError((error) => 
         // console.log(error);
