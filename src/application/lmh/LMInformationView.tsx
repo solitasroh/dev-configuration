@@ -1,12 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import LMInformation from '@src/Data/A2700.LMInformation';
+import { Card, Space } from 'antd';
 import styled from 'styled-components';
-import { REQ_DATA } from '@src/ipcChannels';
-import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
-import IpcService from '@src/main/IPCService';
 import { usePolling } from '../hooks/ipcHook';
 
-import { Card, Space } from 'antd';
 
 const Label = styled.p`
   width: 110px;
@@ -29,7 +26,6 @@ const LMInformationView: FC = () => {
 
   usePolling("POLL-LM-Information", (evt,resp) => {
     const data = resp as LMInformation;
-    console.log(data);
     setInformation(data);
   });
 

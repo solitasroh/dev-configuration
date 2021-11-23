@@ -7,6 +7,7 @@ import RegisterAIMeausre from './ioh/RegisterAIMeasure';
 import RegisterLMTestMode from './lmh/RegisterLMTestMode';
 import RegisterIOTestMode from './lmh/RegisterIOTestMode';
 import RegisterAITestMode from './lmh/RegisterAITestMode';
+import RegisterMissmatchState from './lmh/RegisterMissmatchState';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -18,6 +19,7 @@ const userMap = {
   LMTestSet: RegisterLMTestMode,
   IODiTest: RegisterIOTestMode,
   IOAiTest: RegisterAITestMode,
+  MissMatchState: RegisterMissmatchState,
 };
 
 export type UserMap = typeof userMap;
