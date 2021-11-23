@@ -9,6 +9,7 @@ import RegisterIOTestMode from './lmh/RegisterIOTestMode';
 import RegisterAITestMode from './lmh/RegisterAITestMode';
 import RegisterLMDIMeasure from './lmh/RegisterLMDIMeasure';
 import RegisterMissmatchState from './lmh/RegisterMissmatchState';
+import RegisterLMDOMeasure from './lmh/RegisterLMDOMeasure';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -18,6 +19,7 @@ const userMap = {
   A2750LMSetup: RegisterLMSetup,
   AIMeasure: RegisterAIMeausre,
   LMDIData:RegisterLMDIMeasure, 
+  LMDOData:RegisterLMDOMeasure, 
   LMTestSet: RegisterLMTestMode,
   IODiTest: RegisterIOTestMode,
   IOAiTest: RegisterAITestMode,

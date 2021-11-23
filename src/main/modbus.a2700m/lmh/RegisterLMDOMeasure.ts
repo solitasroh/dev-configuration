@@ -5,14 +5,14 @@ import { map, Observable } from "rxjs"
 import RegisterBase from "../RegisterBase"
 import RegisterProps from "../RegisterProps"
 
-export default class RegisterLMDIMeasure extends RegisterBase {
+export default class RegisterLMDOMeasure extends RegisterBase {
     getter = (_params?: RegisterProps) : Observable<A2700Data|A2700Data[]> => {
-        const address = 2000 ;   
+        const address = 2348 ;   
 
-        return ModbusService.read<boolean[]>(address, 18, {isCoil: true})
+        return ModbusService.read<boolean[]>(address, 9, {isCoil: true})
         .pipe(map(data => {
             const result: LMDIData[] = [];
-            for (let i = 0; i < 18; i+=1) {
+            for (let i = 0; i < 9; i+=1) {
                 const measure = new LMDIData();
                 measure.channel = i+1;
                 measure.value = data[i];    // boolean 이어야 함

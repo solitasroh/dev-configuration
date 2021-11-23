@@ -8,6 +8,7 @@ import IOHAnalogMeasure from './ioh/IOHAnalogMeasure';
 import IOInformationListView from './ioh/IOInformationListView';
 import LDInformationView from './lmh/LDInformationView';
 import LMDigitalMeasure from './lmh/LMDigitalMeasure';
+import LMDOMeasure from './lmh/LMDOMeasure';
 import LMInformationView from './lmh/LMInformationView';
 import MissmatchInfo from './lmh/MissmatchInfo';
 import PCStatusView from './pc/PCStatusView';
@@ -38,7 +39,13 @@ const Information: React.FC = () => {
 
     inst.sendPolling(REQ_DATA, {
       responseChannel: "POLL-LM-DI-Data",
-      requestType: "LMDIData", // 이거는 어따써? 그게 factory 에 등록한 이름
+      requestType: "LMDIData", 
+      props: { id: 0 },
+    });
+
+    inst.sendPolling(REQ_DATA, {
+      responseChannel: "POLL-LM-DO-Data",
+      requestType: "LMDOData", 
       props: { id: 0 },
     });
 
@@ -62,8 +69,9 @@ const Information: React.FC = () => {
       <Space>
         <IOHAnalogMeasure id={2} />
       </Space>      
-      <Space>
+      <Space  align="start">
         <LMDigitalMeasure />
+        <LMDOMeasure />
       </Space>
     </Space>
   );
