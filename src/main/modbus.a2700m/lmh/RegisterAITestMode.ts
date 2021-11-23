@@ -16,7 +16,6 @@ export default class RegisterIOTestMode extends RegisterBase {
     const idType = arg.id << 8 | 8;
     const values = arg.data.map(item => item.value);
     const buffer = [idType, 0, 0xFFF, 0].concat(values);
-    console.log("AI Test Buffer",buffer);
     ModbusService.write(63658, buffer).subscribe();
   };
 }

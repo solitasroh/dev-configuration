@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { REQ_DATA } from '@src/ipcChannels';
 import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import IpcService from '@src/main/IPCService';
+import { usePolling } from '../hooks/ipcHook';
 
 import { Card, Space } from 'antd';
 
@@ -26,25 +27,11 @@ const LMInformationView: FC = () => {
   const tmpInfo = new LMInformation();
   const [information, setInformation] = useState<LMInformation>(tmpInfo);
 
-  useEffect(() => {
-    const ipcService = IpcService.getInstance();
-    const props = new ChannelReadDataProps();
-
-    props.requestType = 'A2750LMInformation';
-    ipcService
-      .send<LMInformation, ChannelReadDataProps>(REQ_DATA, {
-        requestType: 'A2750LMInformation',
-        responseChannel: 'RES-LM',
-        props: {
-          id: 0,
-          data: false,
-        },
-      })
-      .then((data) => {
-        setInformation(data);
-      });
-    return () => setInformation(null);
-  }, []);
+  usePolling("POLL-LM-Information", (evt,resp) => {
+    const data = resp as LMInformation;
+    console.log(data);
+    setInformation(data);
+  });
 
   return (
     <Card

@@ -35,8 +35,29 @@ class IpcService {
     });
   }
 
+  public sendPolling<R extends IpcRequest>(
+    channel: string,
+    request: R,
+  ): void {
+    if (!this.ipcRenderer) {
+      this.initIpcRenderer();
+    }
+
+    if (!request.responseChannel) {
+      request.responseChannel = `${channel}_response_${new Date().getTime()}`;
+    }
+    this.ipcRenderer.send(channel, request);
+  }
+
   public on<T>(channel: string, eventhandler: IpcEventCallback<T>): void {
     this.ipcRenderer.on(channel, eventhandler);
+  }
+
+  public removeListner(
+    channel: string,
+    eventHandler: (evt: any, rest: any) => void,
+  ): void {
+    this.ipcRenderer.removeListener(channel, eventHandler);
   }
 
   private initIpcRenderer() {

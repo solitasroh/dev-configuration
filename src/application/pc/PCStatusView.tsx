@@ -1,11 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
-import { REQ_DATA } from '@src/ipcChannels';
-import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
-import IpcService from '@src/main/IPCService';
 import A2750PCStatus from '@src/Data/A2750PCStatus';
 
 import { Card, Space } from 'antd';
+import { usePolling } from '../hooks/ipcHook';
 
 const Label = styled.p`
   width: 110px;
@@ -23,21 +21,14 @@ const Value = styled.p`
 `;
 
 const PCStatusView: FC<{ id: number }> = ({ id }) => {
-  const ipcService = IpcService.getInstance();
+
   const tmpStatus = new A2750PCStatus();
   const [status, setStatus] = useState<A2750PCStatus>(tmpStatus);
- 
-  useEffect(() => {
-    ipcService
-      .send<A2750PCStatus, ChannelReadDataProps>(REQ_DATA, {
-        requestType: 'A2750PCStatus',
-        responseChannel: 'RES-PCStatus',
-      })
-      .then((data) => {
-        setStatus(data);
-      });
-      return () => setStatus(null);
-  }, []);
+  
+  usePolling("POLL-PC-STATUS", (evt,resp) => {
+    const data = resp as A2750PCStatus;
+    setStatus(data);
+  });
 
   return (
     <Card

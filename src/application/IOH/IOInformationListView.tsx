@@ -1,28 +1,17 @@
 import IOInformation from '@src/Data/A2700.IOInformation';
-import { REQ_DATA } from '@src/ipcChannels';
-import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
-import IpcService from '@src/main/IPCService';
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState } from 'react';
 import { List } from 'antd';
 import IOHInformationView from './IOHInformationView';
+import { usePolling } from '../hooks/ipcHook';
 
 const IOInformationListView: FC = () => {
   const tmpInfo: IOInformation[] = [];
   const [information, setInformation] = useState<IOInformation[]>(tmpInfo);
-  useEffect(() => {
-    const ipcService = IpcService.getInstance();
-    ipcService
-      .send<IOInformation[], ChannelReadDataProps>(REQ_DATA, {
-        requestType: 'A2750IOInformation',
-        responseChannel: 'RES-IO',
-        props: { id: 0 },
-      })
-      .then((data) => {
-        setInformation(data);
-      });
-    return () => setInformation(null);
-  }, []);
-
+  usePolling("POLL-IO-Information",  (evt, rest) => {
+    const data = rest as IOInformation[];
+    setInformation(data);
+  })
+  
   return (
     <List
       grid={{
