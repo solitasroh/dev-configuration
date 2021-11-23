@@ -7,6 +7,7 @@ import RegisterAIMeausre from './ioh/RegisterAIMeasure';
 import RegisterLMTestMode from './lmh/RegisterLMTestMode';
 import RegisterIOTestMode from './lmh/RegisterIOTestMode';
 import RegisterAITestMode from './lmh/RegisterAITestMode';
+import RegisterLMDIMeasure from './lmh/RegisterLMDIMeasure';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -15,6 +16,7 @@ const userMap = {
   A2750PCStatus: RegisterPCStatus,
   A2750LMSetup: RegisterLMSetup,
   AIMeasure: RegisterAIMeausre,
+  LMDIData:RegisterLMDIMeasure, 
   LMTestSet: RegisterLMTestMode,
   IODiTest: RegisterIOTestMode,
   IOAiTest: RegisterAITestMode,
