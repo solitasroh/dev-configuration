@@ -22,13 +22,13 @@ const Value = styled.p`
 
   export default function LMDigitalMeasure(): ReactElement {
 
-    const setDIState = (Status: boolean ): string => {
-      if (Status === false) return 'De-Energized';
-      if (Status === true) return 'Energized';
+    const setDOState = (Status: boolean ): string => {
+      if (Status === false) return 'Open';
+      if (Status === true) return 'Close';
       return 'Invaild';
     }
     const [measureData, setMeasureData] = useState<LMDIData[]>([]);
-    usePolling("POLL-LM-DI-Data", (evt,resp) =>{
+    usePolling("POLL-LM-DO-Data", (evt,resp) =>{
       const data = resp as LMDIData[];
       setMeasureData(data); 
       
@@ -36,7 +36,7 @@ const Value = styled.p`
     
     return (
       <Card
-        title="LM DI Status"
+        title="LM DO Status"
         size="small"
         style={{ width: '300px' }}
         type="inner"
@@ -44,7 +44,7 @@ const Value = styled.p`
         {measureData.map((measure) => (
             <Space size="small" key={measure.channel}>
               <Label>ch {measure.channel}</Label>
-              <Value>{setDIState(measure.value)}</Value>
+              <Value>{setDOState(measure.value)}</Value>
             </Space>
         ))}
       </Card>
