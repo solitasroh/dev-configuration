@@ -31,7 +31,6 @@ const Value = styled.p`
     usePolling("POLL-LM-DI-Data", (evt,resp) =>{
       const data = resp as LMDIData[];
       setMeasureData(data); 
-      
     });  // resp 에 니가 요청한 LMDIData가 들어올꺼야(as == 형변환)
     // 1초에 한번 요청할꺼야 (sendPolling으로)될까?ㅇㅇ 될꺼임ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ안돼....
     // 아래 터미널로 들어오네..

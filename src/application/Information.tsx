@@ -38,7 +38,7 @@ const Information: React.FC = () => {
 
     inst.sendPolling(REQ_DATA, {
       responseChannel: "POLL-LM-DI-Data",
-      requestType: "LMDIData", // 이거는 어따써? 그게 factory 에 등록한 이름
+      requestType: "LMDIData", 
       props: { id: 0 },
     });
 
@@ -54,7 +54,7 @@ const Information: React.FC = () => {
       <Space align="start" size="middle">
         <LMInformationView />
         <LDInformationView />
-        <PCStatusView id={1} />
+       
       </Space>
       <Space>
         <IOInformationListView />
@@ -64,6 +64,9 @@ const Information: React.FC = () => {
       </Space>      
       <Space>
         <LMDigitalMeasure />
+      </Space>
+      <Space>
+        <PCStatusView id={1} />
       </Space>
     </Space>
   );
