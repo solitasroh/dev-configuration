@@ -18,7 +18,6 @@ const IOInformationListView: FC = () => {
         props: { id: 0 },
       })
       .then((data) => {
-        console.log(data);
         setInformation(data);
       });
     return () => setInformation(null);
@@ -28,7 +27,12 @@ const IOInformationListView: FC = () => {
     <List
       grid={{
         gutter: 16,
-        column: 5,
+        xs: 1,
+        sm: 2,
+        md: 3,
+        lg: 3,
+        xl: 3,
+        xxl: 5,
       }}
       dataSource={information}
       renderItem={(item) => (

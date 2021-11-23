@@ -47,7 +47,7 @@
     "max-classes-per-file": [
       "error", 4
     ],
-    "no-bitwise": ["error", { "allow": ["~", "|", ">>", "<<", "&"] }],
+    "no-bitwise": ["error", { "allow": ["~", "|", ">>", "<<", "&", "|="] }],
     "react/jsx-props-no-spreading": "off"
   }
 }

@@ -68,7 +68,6 @@ const Conn: React.FC<Props> = ({ visible, close }) => {
   const onSubmit = handleSubmit((data) => {
     // const service = IpcService.getInstance();
     // service.send(CONNECTION, {});
-    console.log(data);
     close();
   });
 

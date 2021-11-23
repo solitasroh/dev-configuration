@@ -34,7 +34,6 @@ const PCStatusView: FC<{ id: number }> = ({ id }) => {
         responseChannel: 'RES-PCStatus',
       })
       .then((data) => {
-          console.log("status data", data)
         setStatus(data);
       });
       return () => setStatus(null);

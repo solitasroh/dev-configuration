@@ -27,7 +27,6 @@ class IpcService {
       request.responseChannel = `${channel}_response_${new Date().getTime()}`;
     }
     this.ipcRenderer.send(channel, request);
-    console.log(request);
     return new Promise((resolve) => {
       // response channel 대한 이벤트를 1회 등록
       this.ipcRenderer.once(request.responseChannel, (event, response) =>
