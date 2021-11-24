@@ -12,6 +12,9 @@ import RegisterMissmatchState from './lmh/RegisterMissmatchState';
 import RegisterPCCommand from './pc/RegisterPCCommand';
 import RegisterLMDOMeasure from './lmh/RegisterLMDOMeasure';
 import RegisterDIMeasure from './ioh/RegisterDIMeasure';
+import RegisterDOMeasure from './ioh/RegisterDOMeasure';
+import RegisterIOCommand from './ioh/RegisterIOCommand';
+import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -23,11 +26,14 @@ const userMap = {
   LMDIData:RegisterLMDIMeasure, 
   LMDOData:RegisterLMDOMeasure, 
   IODIData:RegisterDIMeasure, 
+  IODOData:RegisterDOMeasure,
   LMTestSet: RegisterLMTestMode,
   IODiTest: RegisterIOTestMode,
   IOAiTest: RegisterAITestMode,
   MissMatchState: RegisterMissmatchState,
   PCCommand: RegisterPCCommand,
+  LMCommand: RegisterLMCommand,
+  IOCommand: RegisterIOCommand,
 };
 
 export type UserMap = typeof userMap;

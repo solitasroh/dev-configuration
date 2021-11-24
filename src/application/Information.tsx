@@ -8,6 +8,7 @@ import IOHAnalogMeasure from './ioh/IOHAnalogMeasure';
 import IOInformationListView from './ioh/IOInformationListView';
 import LDInformationView from './lmh/LDInformationView';
 import LMDigitalMeasure from './lmh/LMDigitalMeasure';
+import LMDOControl from './lmh/LMDOControl';
 import LMDOMeasure from './lmh/LMDOMeasure';
 import LMInformationView from './lmh/LMInformationView';
 import MissmatchInfo from './lmh/MissmatchInfo';
@@ -71,6 +72,9 @@ const Information: React.FC = () => {
       <Space  align="start">
         <LMDigitalMeasure />
         <LMDOMeasure />
+      </Space>     
+      <Space>
+        <LMDOControl />
       </Space>
       <Space>
         {/* <PCStatusView id={1} /> */}
