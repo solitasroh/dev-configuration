@@ -1,11 +1,8 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 import AIMeasure from '@src/Data/AIMeasure';
-import { REQ_DATA } from '@src/ipcChannels';
-import IpcService from '@src/main/IPCService';
-import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import styled from 'styled-components';
 import { Card, Space } from 'antd';
-import { useInterval, usePolling } from '../hooks/ipcHook';
+import { usePolling2 } from '../hooks/ipcHook';
 
 const Label = styled.p`
   width: 110px;
@@ -28,19 +25,18 @@ interface Props {
 
 export default function IOHAnalogMeasure({ id }: Props): ReactElement {
   const [measureData, setMeasureData] = useState<AIMeasure[]>([]);
-  
-  useInterval(() => {
-    const service = IpcService.getInstance();
-    service.sendPolling(REQ_DATA, {
-      requestType: 'AIMeasure',
-      responseChannel: "RES-AI",
-      props: { id },
-    })
-  }, 500);
 
-  usePolling("RES-AI",(evt, resp)=> {
-    setMeasureData(resp as AIMeasure[]);
-  });
+  usePolling2(
+    {
+      requestType: 'AIMeasure',
+      responseChannel: 'RES-AI',
+      props: { id },
+    },
+    (evt, resp) => {
+      setMeasureData(resp as AIMeasure[]);
+    },
+    1000,
+  );
 
   return (
     <Card
@@ -50,10 +46,10 @@ export default function IOHAnalogMeasure({ id }: Props): ReactElement {
       type="inner"
     >
       {measureData.map((measure) => (
-          <Space size="small" key={measure.ch}>
-            <Label>ch {measure.ch}</Label>
-            <Value>{measure.data}</Value>
-          </Space>
+        <Space size="small" key={measure.ch}>
+          <Label>ch {measure.ch}</Label>
+          <Value>{measure.data}</Value>
+        </Space>
       ))}
     </Card>
   );

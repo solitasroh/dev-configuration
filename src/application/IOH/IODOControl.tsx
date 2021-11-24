@@ -13,21 +13,15 @@ const Label = styled.p`
   min-width: 50px;
   width: 70px;
 `;
-const Value = styled.p`
-  width: 150px;
-  text-align: center;
-  align-items: center;
-  font-weight: 600;
-  font-size: 9pt;
-  background-color: #f5f5f5;
-`;
+
 type props = {
   id: number;
 };
+
 export default function IODOControl({ id }: props): ReactElement {
   const temp = new IOCommand(6);
 
-  const [channelValue, setChannelValue] = useState<IOCommand>(temp);
+  const [channelValue] = useState<IOCommand>(temp);
   channelValue.id = id;
   const setValue = () => {
     const service = IpcService.getInstance();
@@ -43,7 +37,7 @@ export default function IODOControl({ id }: props): ReactElement {
     setValue();
   };
   return id === 0 ? (
-    <Empty description="Invalid ID"/>
+    <Empty description="Invalid ID" />
   ) : (
     <Card title={`IOH -${id} DO Control`} size="small" type="inner">
       {channelValue.data.map((item) => (

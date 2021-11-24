@@ -16,7 +16,7 @@ const Label = styled.p`
 type props = { id:number }
 export default function AITestView({id}:props): ReactElement {
   const tmp = new LMTestModeData(12);
-  const [channelValue, setValues] = useState(tmp);
+  const [channelValue] = useState(tmp);
   
 
   const setValue = () => {

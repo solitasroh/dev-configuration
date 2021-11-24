@@ -16,4 +16,5 @@ export default class RegisterLMCommand extends RegisterBase {
     const values = arg.data.map(item => item.value === 1);
     const addr = 2348;    
     ModbusService.writeCoils(addr, values).subscribe();
+  }
 }

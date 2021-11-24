@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 import ConnectWrapper from './Components/ConnectWrapper';
+import MissmatchInfo from './lmh/MissmatchInfo';
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -20,19 +21,6 @@ const Contents = styled(Content)`
   padding: 16px;
 `;
 
-const InforHeaderMenu: FC = () => (
-  <Menu theme="light" mode="horizontal">
-    <Menu.Item key="1">
-      <Link to="/">LMH</Link>
-    </Menu.Item>
-    <Menu.Item key="2">
-      <Link to="/LM">IOH</Link>
-    </Menu.Item>
-    <Menu.Item key="3">
-      <Link to="/PC">PC</Link>
-    </Menu.Item>
-  </Menu>
-);
 
 const RouterApp: FC = () => (
   <Layout>
@@ -59,7 +47,7 @@ const RouterApp: FC = () => (
     </Sider>
     <ContentWrapper className="site-layout" style={{ marginLeft: 200 }}>
       <Header className="site-layout-background" style={{ padding: 0 }}>
-       <InforHeaderMenu />
+        <MissmatchInfo/>
       </Header>
       <Contents>
         <Outlet />

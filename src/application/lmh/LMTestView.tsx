@@ -15,7 +15,7 @@ const Label = styled.p`
 `;
 
 export default function LMTestView(): ReactElement {
-  const [channelValue, setChannelValue] = useState<LMTestModeData>(() => {
+  const [channelValue] = useState<LMTestModeData>(() => {
     const data = new LMTestModeData();
     data.data = [];
     for (let i = 0; i < 18; i += 1) {

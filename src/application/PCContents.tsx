@@ -2,14 +2,13 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { Collapse, Empty, Pagination, Space } from 'antd';
 import A2750PCStatus from '@src/Data/A2750PCStatus';
 import IpcService from '@src/main/IPCService';
-import { REQ_DATA } from '@src/ipcChannels';
 import {
   DefaultView,
   DIStatusView,
   DOStatusView,
   ProtectionView,
 } from './pc/PCStatusView';
-import { useInterval, usePolling } from './hooks/ipcHook';
+import {  usePolling2 } from './hooks/ipcHook';
 import PCCommandView from './pc/PCCommandView';
 
 const { Panel } = Collapse;
@@ -28,21 +27,16 @@ export default function PCContents(): ReactElement {
     });
   }, []);
 
-  useInterval(() => {
-    const service = IpcService.getInstance();
-    service.sendPolling(REQ_DATA, {
-      requestType: 'A2750PCStatus',
-      responseChannel: 'POLL-PC-STATUS',
-      props: {
-        id,
-      },
-    });
-  }, 2000);
-
-  usePolling('POLL-PC-STATUS', (evt, resp) => {
+  usePolling2({
+    requestType: 'A2750PCStatus',
+    responseChannel: 'POLL-PC-STATUS',
+    props: {
+      id,
+    },
+  }, (evt, resp) => {
     const data = resp as A2750PCStatus[];
     setStatusList(data);
-  });
+  },1000);
 
   const onChange = (page: number, pageSize: number) => {
     // 요청하는 ID만 달라지면 된다.

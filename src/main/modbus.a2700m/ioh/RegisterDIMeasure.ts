@@ -1,5 +1,5 @@
 import A2700Data from "@src/Data/A2700Data"
-import LMDIData from "@src/Data/LMDIData"
+import DigitalChannelData from "@src/Data/DigitalChannelData"
 import ModbusService from "@src/main/ModbusService"
 import { map, Observable } from "rxjs"
 import RegisterBase from "../RegisterBase"
@@ -12,9 +12,9 @@ export default class RegisterDIMeasure extends RegisterBase {
 
         return ModbusService.read<boolean[]>(address, 11, {isCoil: true})
         .pipe(map(data => {
-            const result: LMDIData[] = [];
+            const result: DigitalChannelData[] = [];
             for (let i = 0; i < 11; i+=1) {
-                const measure = new LMDIData();
+                const measure = new DigitalChannelData();
                 measure.channel = i+1;
                 measure.value = data[i];    // boolean 이어야 함
                 result.push(measure);

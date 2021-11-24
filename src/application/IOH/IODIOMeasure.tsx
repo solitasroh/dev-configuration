@@ -1,12 +1,9 @@
 import React, { ReactElement, useState } from 'react';
-
 import { Card, Empty, Space } from 'antd';
 import styled from 'styled-components';
-import LMDIData from '@src/Data/LMDIData';
-import IpcService from '@src/main/IPCService';
-import { REQ_DATA } from '@src/ipcChannels';
-import { useInterval, usePolling } from '../hooks/ipcHook';
-// shift + alt +f
+import DigitalChannelData from '@src/Data/DigitalChannelData';
+import { usePolling2 } from '../hooks/ipcHook';
+
 const Label = styled.p`
   text-align: left;
   font-size: 8pt;
@@ -26,6 +23,8 @@ type props = {
 };
 
 export default function IODIOMeasure({ id }: props): ReactElement {
+  const [measureData, setMeasureData] = useState<DigitalChannelData[]>([]);
+  const [DOmeasureData, setDOMeasureData] = useState<DigitalChannelData[]>([]);
 
   const setDIState = (Status: boolean): string => {
     if (Status === false) return 'De-Energized';
@@ -39,36 +38,35 @@ export default function IODIOMeasure({ id }: props): ReactElement {
     return 'Invaild';
   };
 
-  useInterval(() => {
-    const inst = IpcService.getInstance();
-    inst.sendPolling(REQ_DATA, {
+  usePolling2(
+    {
       responseChannel: 'POLL-IO-DI-Data',
       requestType: 'IODIData',
       props: {
         id,
       },
-    });
+    },
+    (evt, resp) => {
+      const data = resp as DigitalChannelData[];
+      setMeasureData(data);
+    },
+    1000,
+  );
 
-    inst.sendPolling(REQ_DATA, {
+  usePolling2(
+    {
       responseChannel: 'POLL-IO-DO-Data',
       requestType: 'IODOData',
       props: {
         id,
       },
-    });
-  }, 1000);
-
-  const [measureData, setMeasureData] = useState<LMDIData[]>([]);
-  const [DOmeasureData, setDOMeasureData] = useState<LMDIData[]>([]);
-  usePolling('POLL-IO-DI-Data', (evt, resp) => {
-    const data = resp as LMDIData[];
-    setMeasureData(data);
-  });
-
-  usePolling('POLL-IO-DO-Data', (evt, resp) => {
-    const data = resp as LMDIData[];
-    setDOMeasureData(data);
-  });
+    },
+    (evt, resp) => {
+      const data = resp as DigitalChannelData[];
+      setDOMeasureData(data);
+    },
+    1000,
+  );
 
   return id === 0 ? (
     <Empty />

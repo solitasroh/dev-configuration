@@ -1,9 +1,9 @@
 import React, { ReactElement, useState } from 'react';
 
-import { Card, Space,  } from 'antd';
+import { Card, Space } from 'antd';
 import styled from 'styled-components';
-import LMDIData from '@src/Data/LMDIData';
-import { usePolling } from '../hooks/ipcHook';
+import DigitalChannelData from '@src/Data/DigitalChannelData';
+import { usePolling2 } from '../hooks/ipcHook';
 // shift + alt +f
 const Label = styled.p`
   text-align: left;
@@ -20,34 +20,41 @@ const Value = styled.p`
   background-color: #f5f5f5;
 `;
 
-  export default function LMDigitalMeasure(): ReactElement {
+export default function LMDigitalMeasure(): ReactElement {
+  const setDOState = (Status: boolean): string => {
+    if (Status === false) return 'Open';
+    if (Status === true) return 'Close';
+    return 'Invaild';
+  };
 
-    const setDOState = (Status: boolean ): string => {
-      if (Status === false) return 'Open';
-      if (Status === true) return 'Close';
-      return 'Invaild';
-    }
-    const [measureData, setMeasureData] = useState<LMDIData[]>([]);
-    usePolling("POLL-LM-DO-Data", (evt,resp) =>{
-      const data = resp as LMDIData[];
-      setMeasureData(data); 
-      
-    }); 
-    
-    return (
-      <Card
-        title="LM DO Status"
-        size="small"
-        style={{ width: '300px' }}
-        type="inner"
-      >
-        {measureData.map((measure) => (
-            <Space size="small" key={measure.channel}>
-              <Label>ch {measure.channel}</Label>
-              <Value>{setDOState(measure.value)}</Value>
-            </Space>
-        ))}
-      </Card>
-    );
-  }
-  
+  const [measureData, setMeasureData] = useState<DigitalChannelData[]>([]);
+
+  usePolling2(
+    {
+      requestType: 'LMDOData',
+      responseChannel: 'POLL-LM-DO-Data',
+      props: { id: 0 },
+    },
+    (event, resp) => {
+      const data = resp as DigitalChannelData[];
+      setMeasureData(data);
+    },
+    1000,
+  );
+
+  return (
+    <Card
+      title="LM DO Status"
+      size="small"
+      style={{ width: '300px' }}
+      type="inner"
+    >
+      {measureData.map((measure) => (
+        <Space size="small" key={measure.channel}>
+          <Label>ch {measure.channel}</Label>
+          <Value>{setDOState(measure.value)}</Value>
+        </Space>
+      ))}
+    </Card>
+  );
+}

@@ -1,3 +1,5 @@
+import { REQ_DATA } from '@src/ipcChannels';
+import { IpcRequest } from '@src/main/ipc/IPCRequest';
 import IpcService from '@src/main/IPCService';
 import { useEffect, useRef } from 'react';
 
@@ -39,4 +41,14 @@ export function usePolling(respCh: string, callback: ipcFunc) : void {
 
         return () => instance.removeListner(respCh, eventHandler);
     }, [respCh])
+}
+
+export function usePolling2<R extends IpcRequest>(request: R,  callback: ipcFunc, interval: number) : void {
+  const ipcService = IpcService.getInstance();
+  
+  useInterval(() => {
+    ipcService.sendPolling(REQ_DATA, request);
+  }, interval);
+
+  usePolling(request.responseChannel, callback);
 }

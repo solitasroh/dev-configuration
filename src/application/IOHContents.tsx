@@ -1,9 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { Collapse, Pagination, Space } from 'antd';
-import IpcService from '@src/main/IPCService';
-import { REQ_DATA } from '@src/ipcChannels';
 import IOInformation from '@src/Data/A2700.IOInformation';
-import { useInterval, usePolling } from './hooks/ipcHook';
+import { usePolling2 } from './hooks/ipcHook';
 import IOHInformationView from './ioh/IOHInformationView';
 import IODOControl from './ioh/IODOControl';
 import IODIOMeasure from './ioh/IODIOMeasure';
@@ -36,29 +34,22 @@ export default function IOHContents(): ReactElement {
     setType(typeTmp);
   };
 
-  useInterval(() => {
-    const inst = IpcService.getInstance();
-
-    inst.sendPolling(REQ_DATA, {
+  usePolling2(
+    {
       responseChannel: 'POLL-IO-information',
       requestType: 'A2750IOInformation',
       props: { id: 0 },
-    });
-
-    inst.sendPolling(REQ_DATA, {
-      responseChannel: 'POLL-MISSMATCH-STATE',
-      requestType: 'MissMatchState',
-    });
-  }, 1000);
-
-  usePolling('POLL-IO-information', (evt, rest) => {
-    const infoList = rest as IOInformation[];
-    const validIO = infoList.filter(
-      (data) => data.operationStatus === 'OPERATING',
-    );
-    setInformation(validIO);
-    setTotalCount(validIO.length);
-  });
+    },
+    (evt, rest) => {
+      const infoList = rest as IOInformation[];
+      const validIO = infoList.filter(
+        (data) => data.operationStatus === 'OPERATING',
+      );
+      setInformation(validIO);
+      setTotalCount(validIO.length);
+    },
+    1000,
+  );
 
   return (
     <Space direction="vertical">

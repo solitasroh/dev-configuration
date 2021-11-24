@@ -2,8 +2,8 @@ import React, { ReactElement, useState } from 'react';
 
 import { Card, Space,  } from 'antd';
 import styled from 'styled-components';
-import LMDIData from '@src/Data/LMDIData';
-import { usePolling } from '../hooks/ipcHook';
+import DigitalChannelData from '@src/Data/DigitalChannelData';
+import { usePolling2 } from '../hooks/ipcHook';
 // shift + alt +f
 const Label = styled.p`
   text-align: left;
@@ -27,12 +27,20 @@ const Value = styled.p`
       if (Status === true) return 'Energized';
       return 'Invaild';
     }
-    const [measureData, setMeasureData] = useState<LMDIData[]>([]);
-    usePolling("POLL-LM-DI-Data", (evt,resp) =>{
-      const data = resp as LMDIData[];
-      setMeasureData(data); 
-      
-    }); 
+    const [measureData, setMeasureData] = useState<DigitalChannelData[]>([]);
+ 
+    usePolling2(
+      {
+        requestType: 'LMDIData',
+        responseChannel: 'POLL-LM-DI-Data',
+        props: { id: 0 },
+      },
+      (event, resp) => {
+        const data = resp as DigitalChannelData[];
+        setMeasureData(data); 
+      },
+      1000,
+    );
     
     return (
       <Card

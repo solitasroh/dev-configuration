@@ -1,10 +1,8 @@
 /* eslint-disable no-nested-ternary */
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import A2750PCStatus from '@src/Data/A2750PCStatus';
-import { Card, Empty, List, Select, Space } from 'antd';
-
-const { Option } = Select;
+import { Card, List, Space } from 'antd';
 
 const Label = styled.p`
   text-align: left;

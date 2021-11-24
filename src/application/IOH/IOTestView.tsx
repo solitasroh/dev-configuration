@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 
 import { Card, Space, Switch } from 'antd';
 import styled from 'styled-components';
@@ -17,9 +17,10 @@ type Props = {
   id: number;
 };
 
-export default function IOTestView({id} :Props): ReactElement {
-  const channelValue = new LMTestModeData(11);
-  
+export default function IOTestView({ id }: Props): ReactElement {
+  const channelValueTmp = new LMTestModeData(11);
+  const [channelValue] = useState<LMTestModeData>(channelValueTmp);
+
   const setValue = () => {
     const service = IpcService.getInstance();
     channelValue.id = id;
@@ -28,6 +29,7 @@ export default function IOTestView({id} :Props): ReactElement {
       requestType: 'IODiTest',
     });
   };
+
   const checkTestValue = (ch: number, value: boolean) => {
     const st = channelValue.data.find((cv) => cv.channel === ch);
     st.value = value ? 1 : 0;

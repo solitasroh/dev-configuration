@@ -12,9 +12,10 @@ export default class RegisterIOCommand extends RegisterBase {
 
   // eslint-disable-next-line class-methods-use-this
   setter = (cmd: any): void => {
-    const arg = cmd as IOCommand;    
-    const {id} = arg;
-    const values = arg.data.map(item => item.value === 1);
-    const addr = 2357 + (id - 1) * 12 ;    
+    const arg = cmd as IOCommand;
+    const { id } = arg;
+    const values = arg.data.map((item) => item.value === 1);
+    const addr = 2357 + (id - 1) * 12;
     ModbusService.writeCoils(addr, values).subscribe();
+  };
 }

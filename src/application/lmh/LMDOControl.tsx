@@ -13,18 +13,10 @@ const Label = styled.p`
   min-width: 50px;
   width: 70px;
 `;
-const Value = styled.p`
-  width: 150px;
-  text-align: center;
-  align-items: center;
-  font-weight: 600;
-  font-size: 9pt;
-  background-color: #f5f5f5;
-`;
 
 export default function LMDOControl(): ReactElement {
     const temp = new IOCommand(9);
-  const [channelValue, setChannelValue] = useState<IOCommand>(temp);
+  const [channelValue] = useState<IOCommand>(temp);
 
   const setValue = () => {
     const service = IpcService.getInstance();
@@ -41,7 +33,7 @@ export default function LMDOControl(): ReactElement {
   };
   return (
     <Card
-      title={`LMH DO Control`}
+      title="LMH DO Control"
       size="small"
       type="inner"
     >

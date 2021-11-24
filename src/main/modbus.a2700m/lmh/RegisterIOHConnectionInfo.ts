@@ -1,6 +1,6 @@
 import A2700Data from '@src/Data/A2700Data';
 import chunkArray from '@src/Utils';
-import { concat, map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   LMHChainViewModuleInfo,
   LMHChainViewData,
@@ -50,11 +50,6 @@ export default class RegisterIOHConnectionInfo extends RegisterBase {
   };
 
   getter = (_props?: RegisterProps): Observable<A2700Data> => {
-    const { data: id } = _props;
-    // const fetchId = id === 1 ? 1 : 2;
-
-    // const write = ModbusService.write(61733, [fetchId]);
-
     const read = ModbusService.read<number[]>(61734, 99).pipe(
       map((data) => this.parse(data)),
     );

@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import LMInformation from '@src/Data/A2700.LMInformation';
 import { Card, Space } from 'antd';
 import styled from 'styled-components';
-import { usePolling } from '../hooks/ipcHook';
+import { usePolling2 } from '../hooks/ipcHook';
 
 
 const Label = styled.p`
@@ -24,10 +24,17 @@ const LMInformationView: FC = () => {
   const tmpInfo = new LMInformation();
   const [information, setInformation] = useState<LMInformation>(tmpInfo);
 
-  usePolling("POLL-LM-Information", (evt,resp) => {
+  usePolling2({
+    requestType:"A2750LMInformation",
+    responseChannel: "POLL-LM-Information",
+    props :{
+      id: 0,
+      data: false,
+    }
+  }, (evt, resp) => {
     const data = resp as LMInformation;
     setInformation(data);
-  });
+  },1000);
 
   return (
     <Card

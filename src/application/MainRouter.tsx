@@ -1,13 +1,10 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import Control from './Control';
-import Information from './Information';
 import IOHContents from './IOHContents';
 import LMHContents from './LMHContents';
 import PCContents from './PCContents';
 import RouterApp from './RouterApp';
-import Setup from './Setup';
 
 const Container = styled.div`
   display: flex;
