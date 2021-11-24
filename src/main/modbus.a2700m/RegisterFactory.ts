@@ -11,6 +11,7 @@ import RegisterLMDIMeasure from './lmh/RegisterLMDIMeasure';
 import RegisterMissmatchState from './lmh/RegisterMissmatchState';
 import RegisterPCCommand from './pc/RegisterPCCommand';
 import RegisterLMDOMeasure from './lmh/RegisterLMDOMeasure';
+import RegisterDIMeasure from './ioh/RegisterDIMeasure';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -21,6 +22,7 @@ const userMap = {
   AIMeasure: RegisterAIMeausre,
   LMDIData:RegisterLMDIMeasure, 
   LMDOData:RegisterLMDOMeasure, 
+  IODIData:RegisterDIMeasure, 
   LMTestSet: RegisterLMTestMode,
   IODiTest: RegisterIOTestMode,
   IOAiTest: RegisterAITestMode,
