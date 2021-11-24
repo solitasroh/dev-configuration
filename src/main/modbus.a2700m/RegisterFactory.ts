@@ -13,6 +13,7 @@ import RegisterPCCommand from './pc/RegisterPCCommand';
 import RegisterLMDOMeasure from './lmh/RegisterLMDOMeasure';
 import RegisterDIMeasure from './ioh/RegisterDIMeasure';
 import RegisterDOMeasure from './ioh/RegisterDOMeasure';
+import RegisterIOCommand from './ioh/RegisterIOCommand';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -30,6 +31,7 @@ const userMap = {
   IOAiTest: RegisterAITestMode,
   MissMatchState: RegisterMissmatchState,
   PCCommand: RegisterPCCommand,
+  IOCommand: RegisterIOCommand,
 };
 
 export type UserMap = typeof userMap;
