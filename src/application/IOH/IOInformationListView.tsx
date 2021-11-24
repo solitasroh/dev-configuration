@@ -7,8 +7,7 @@ import IODIOMeasure from './IODIOMeasure';
 import IODOControl from './IODOControl';
 
 const IOInformationListView: FC = () => {
-  const tmpInfo: IOInformation[] = [];
-  const [information, setInformation] = useState<IOInformation[]>(tmpInfo);
+  const [information, setInformation] = useState<IOInformation[]>([]);
 
   usePolling('POLL-IO-Information', (evt, rest) => {
     const data = rest as IOInformation[];

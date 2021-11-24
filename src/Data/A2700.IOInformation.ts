@@ -54,6 +54,8 @@ class IOInformation implements A2700Data {
       ? str
       : new Array(width - str.length + 1).join('0') + str;
   }
+
+  
 }
 
 export default IOInformation;

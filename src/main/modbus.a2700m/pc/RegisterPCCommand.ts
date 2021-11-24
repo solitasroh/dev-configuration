@@ -16,7 +16,6 @@ export default class RegisterPCCommand extends RegisterBase {
     const { id, command } = arg;
     if (command === 1) {    // start
         const address = 1 + (id-1) * 33;
-        console.log("write pc command ", address);
         ModbusService.writeCoils(address, [true]).subscribe();
     } else if (command === 2) {
         const address = 2 + (id - 1 ) * 33;

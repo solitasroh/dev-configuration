@@ -5,6 +5,7 @@ import IpcService from '@src/main/IPCService';
 import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import styled from 'styled-components';
 import { Card, Space } from 'antd';
+import { useInterval, usePolling } from '../hooks/ipcHook';
 
 const Label = styled.p`
   width: 110px;
@@ -27,21 +28,20 @@ interface Props {
 
 export default function IOHAnalogMeasure({ id }: Props): ReactElement {
   const [measureData, setMeasureData] = useState<AIMeasure[]>([]);
-  useEffect(() => {
-    IpcService.getInstance()
-      .send<AIMeasure[], ChannelReadDataProps>(REQ_DATA, {
-        requestType: 'AIMeasure',
-        responseChannel: 'RES-AI',
-        props: { id },
-      })
-      .then((measure) => {
-        setMeasureData(measure);
-      });
+  
+  useInterval(() => {
+    const service = IpcService.getInstance();
+    service.sendPolling(REQ_DATA, {
+      requestType: 'AIMeasure',
+      responseChannel: "RES-AI",
+      props: { id },
+    })
+  }, 500);
 
-    return () => {
-      setMeasureData(null);
-    };
-  }, []);
+  usePolling("RES-AI",(evt, resp)=> {
+    setMeasureData(resp as AIMeasure[]);
+  });
+
   return (
     <Card
       title="AI Status"

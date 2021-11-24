@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 
-import { Card, Space } from 'antd';
+import { Card, Empty, Space } from 'antd';
 import IOInformation from '@src/Data/A2700.IOInformation';
 
 const Label = styled.p`
@@ -28,21 +28,12 @@ type props = {
   information: IOInformation;
 }
 
-const IOHInformationView: FC<props> = ({information}) => {
-  const {
-    id,
-    operationStatus,
-    productCode,
-    serialNumber,
-    hardwareRevision,
-    applicationVersion,
-    bootloaderVersion,
-    moduleType
-  } = information;
-
-  return (
-    <Card
-      title={`IOH Information (${id})`}
+const IOHInformationView: FC<props> = ({information}) => (
+    information == null ? (
+      <Empty/>
+    ):(
+      <Card
+      title={`IOH Information (${information.id})`}
       size="small"
       style={{ width: '300px' }}
       type="inner"
@@ -50,35 +41,35 @@ const IOHInformationView: FC<props> = ({information}) => {
       <Wrapper enable>
         <Space size="small">
           <Label>operation state</Label>
-          <Value>{operationStatus ?? 'null'}</Value>
+          <Value>{information.operationStatus ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>module type</Label>
-          <Value>{moduleType ?? 'null'}</Value>
+          <Value>{information.moduleType ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>product code</Label>
-          <Value>{productCode ?? 'null'}</Value>
+          <Value>{information.productCode ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>serial number</Label>
-          <Value>{serialNumber ?? 'null'}</Value>
+          <Value>{information.serialNumber ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>hardware revision</Label>
-          <Value>{hardwareRevision ?? 'null'}</Value>
+          <Value>{information.hardwareRevision ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>application version</Label>
-          <Value>{applicationVersion ?? 'null'}</Value>
+          <Value>{information.applicationVersion ?? 'null'}</Value>
         </Space>
         <Space size="small">
           <Label>bootloader version</Label>
-          <Value>{bootloaderVersion ?? 'null'}</Value>
+          <Value>{information.bootloaderVersion ?? 'null'}</Value>
         </Space>
       </Wrapper>
     </Card>
+    )
   );
-};
 
 export default IOHInformationView;

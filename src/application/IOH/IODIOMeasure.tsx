@@ -1,11 +1,11 @@
 import React, { ReactElement, useState } from 'react';
 
-import { Card, Space } from 'antd';
+import { Card, Empty, Space } from 'antd';
 import styled from 'styled-components';
 import LMDIData from '@src/Data/LMDIData';
-import { useInterval, usePolling } from '../hooks/ipcHook';
 import IpcService from '@src/main/IPCService';
 import { REQ_DATA } from '@src/ipcChannels';
+import { useInterval, usePolling } from '../hooks/ipcHook';
 // shift + alt +f
 const Label = styled.p`
   text-align: left;
@@ -26,7 +26,7 @@ type props = {
 };
 
 export default function IODIOMeasure({ id }: props): ReactElement {
-  console.log('io status id ', id);
+
   const setDIState = (Status: boolean): string => {
     if (Status === false) return 'De-Energized';
     if (Status === true) return 'Energized';
@@ -69,8 +69,10 @@ export default function IODIOMeasure({ id }: props): ReactElement {
     const data = resp as LMDIData[];
     setDOMeasureData(data);
   });
-  
-  return (
+
+  return id === 0 ? (
+    <Empty />
+  ) : (
     <Card
       title={`IOH -${id} DIO Status`}
       size="small"

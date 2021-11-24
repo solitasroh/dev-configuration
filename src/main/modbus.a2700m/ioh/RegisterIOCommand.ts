@@ -16,8 +16,5 @@ export default class RegisterIOCommand extends RegisterBase {
     const {id} = arg;
     const values = arg.data.map(item => item.value === 1);
     const addr = 2357 + (id - 1) * 12 ;    
-    console.log("id:", id);
-    console.log("address:", addr);    
-    console.log("data:", values);
     ModbusService.writeCoils(addr, values).subscribe();
 }

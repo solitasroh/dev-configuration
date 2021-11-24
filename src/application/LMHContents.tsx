@@ -8,6 +8,7 @@ import LDInformationView from './lmh/LDInformationView';
 import LMDigitalMeasure from './lmh/LMDigitalMeasure';
 import LMDOMeasure from './lmh/LMDOMeasure';
 import LMTestView from './lmh/LMTestView';
+import LMDOControl from './lmh/LMDOControl';
 
 const { Panel } = Collapse;
 
@@ -72,6 +73,7 @@ export default function LMHContents(): ReactElement {
         <Panel header="IO Control" key="1">
           <Space align="start">
             <LMTestView />
+            <LMDOControl />
           </Space>
         </Panel>
       </Collapse>

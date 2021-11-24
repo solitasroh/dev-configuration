@@ -15,7 +15,7 @@ export default class RegisterAIMeausre extends RegisterBase {
             for (let i = 0; i < 12; i+=1) {
                 const measure = new AIMeasure();
                 measure.ch = i+1;
-                measure.data = data.readFloatBE(i);
+                measure.data = data.readFloatBE(i*4);
                 result.push(measure);
             }
             return result;

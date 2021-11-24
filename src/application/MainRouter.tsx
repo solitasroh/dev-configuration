@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import Control from './Control';
 import Information from './Information';
+import IOHContents from './IOHContents';
 import LMHContents from './LMHContents';
 import PCContents from './PCContents';
 import RouterApp from './RouterApp';
@@ -27,10 +28,8 @@ const MainRouter: React.FC = () => (
   <Container>
     <Routes>
       <Route path="/" element={<RouterApp />}>
-        <Route path="/" element={<Information />} />
-        <Route path="/Control" element={<Control />} />
-        <Route path="/Setup" element={<Setup />} />
         <Route path="/LMHContents" element={<LMHContents />} />
+        <Route path="/IOHContents" element={<IOHContents />} />
         <Route path="/PCContents" element={<PCContents />} />
         <Route path="*" element={<NoMatch />} />
       </Route>

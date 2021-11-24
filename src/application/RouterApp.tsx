@@ -47,18 +47,12 @@ const RouterApp: FC = () => (
       <ConnectWrapper />
       <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
         <Menu.Item key="1">
-          <Link to="/">Information</Link>
-        </Menu.Item>
-        <Menu.Item key="2">
-          <Link to="/Control">Control</Link>
-        </Menu.Item>
-        <Menu.Item key="3">
-          <Link to="/Setup">Setup</Link>
-        </Menu.Item>
-        <Menu.Item key="4">
           <Link to="/LMHContents">LMH Contents</Link>
         </Menu.Item>
-        <Menu.Item key="5">
+        <Menu.Item key="2">
+          <Link to="/IOHContents">A2750IOH Contents</Link>
+        </Menu.Item>
+        <Menu.Item key="3">
           <Link to="/PCContents">A2750PC Contents</Link>
         </Menu.Item>
       </Menu>

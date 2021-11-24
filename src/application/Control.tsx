@@ -3,14 +3,13 @@ import React from 'react';
 import AITestView from './ioh/AITestView';
 import IOTestView from './ioh/IOTestView';
 import LMTestView from './lmh/LMTestView';
-import PCCommandView from './pc/PCCommandView';
 
 const Control: React.FC = () => (
   <Space direction="vertical">
     <Space align="start" size="middle" direction="vertical">
       <LMTestView />
-      <IOTestView />
-      <AITestView />
+      <IOTestView id={1}/>
+      <AITestView id={2}/>
     </Space>
   </Space>
 );

@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 
-import { Card, Space, Switch } from 'antd';
+import { Card, Empty, Space, Switch } from 'antd';
 import styled from 'styled-components';
 import IpcService from '@src/main/IPCService';
 import { WRITE_REQ } from '@src/ipcChannels';
@@ -26,12 +26,11 @@ type props = {
 };
 export default function IODOControl({ id }: props): ReactElement {
   const temp = new IOCommand(6);
-  
+
   const [channelValue, setChannelValue] = useState<IOCommand>(temp);
   channelValue.id = id;
   const setValue = () => {
     const service = IpcService.getInstance();
-    console.log(channelValue);
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: channelValue,
       requestType: 'IOCommand',
@@ -43,12 +42,10 @@ export default function IODOControl({ id }: props): ReactElement {
     st.value = value ? 1 : 0;
     setValue();
   };
-  return (
-    <Card
-      title={`IOH -${id} DO Control`}
-      size="small"
-      type="inner"
-    >
+  return id === 0 ? (
+    <Empty description="Invalid ID"/>
+  ) : (
+    <Card title={`IOH -${id} DO Control`} size="small" type="inner">
       {channelValue.data.map((item) => (
         <Space key={item.channel} style={{ margin: '10px' }}>
           <Label>{`channel ${item.channel}`}</Label>
