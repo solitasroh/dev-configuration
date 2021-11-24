@@ -6,14 +6,17 @@ export default class IOCommand implements A2700Data {
 
   id: number;
 
+  channelCount : number;
+
   data: {
     channel: number;
     value: number;
   }[];
 
   constructor(channelCount = 6) {
+    this.channelCount = channelCount;
     this.data = [];
-    for (let i = 0; i < channelCount; i+=1) {
+    for (let i = 0; i < this.channelCount; i+=1) {
       this.data.push({
         channel: i+1, value: 0
       });

@@ -21,20 +21,16 @@ const Value = styled.p`
   font-size: 9pt;
   background-color: #f5f5f5;
 `;
-type props = {
-  id: number;
-};
-export default function IODOControl({ id }: props): ReactElement {
-  const temp = new IOCommand(6);
-  
+
+export default function LMDOControl(): ReactElement {
+    const temp = new IOCommand(9);
   const [channelValue, setChannelValue] = useState<IOCommand>(temp);
-  channelValue.id = id;
+
   const setValue = () => {
     const service = IpcService.getInstance();
-    console.log(channelValue);
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: channelValue,
-      requestType: 'IOCommand',
+      requestType: 'LMCommand',
     });
   };
 
@@ -45,7 +41,7 @@ export default function IODOControl({ id }: props): ReactElement {
   };
   return (
     <Card
-      title={`IOH -${id} DO Control`}
+      title={`LMH DO Control`}
       size="small"
       type="inner"
     >

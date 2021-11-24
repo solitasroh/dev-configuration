@@ -14,6 +14,7 @@ import RegisterLMDOMeasure from './lmh/RegisterLMDOMeasure';
 import RegisterDIMeasure from './ioh/RegisterDIMeasure';
 import RegisterDOMeasure from './ioh/RegisterDOMeasure';
 import RegisterIOCommand from './ioh/RegisterIOCommand';
+import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -31,6 +32,7 @@ const userMap = {
   IOAiTest: RegisterAITestMode,
   MissMatchState: RegisterMissmatchState,
   PCCommand: RegisterPCCommand,
+  LMCommand: RegisterLMCommand,
   IOCommand: RegisterIOCommand,
 };
 
