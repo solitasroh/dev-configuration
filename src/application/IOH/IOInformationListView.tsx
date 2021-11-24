@@ -2,12 +2,8 @@ import IOInformation from '@src/Data/A2700.IOInformation';
 import React, { FC, useState } from 'react';
 import { List } from 'antd';
 import IOHInformationView from './IOHInformationView';
-import { useInterval, usePolling } from '../hooks/ipcHook';
-import IODIMeasure from './IODIMeasure';
-import LMDIData from '@src/Data/LMDIData';
-import { map } from 'rxjs';
-import IpcService from '@src/main/IPCService';
-import { REQ_DATA } from '@src/ipcChannels';
+import {usePolling } from '../hooks/ipcHook';
+import IODIOMeasure from './IODIOMeasure';
 
 const IOInformationListView: FC = () => {
   const tmpInfo: IOInformation[] = [];
@@ -47,7 +43,7 @@ const IOInformationListView: FC = () => {
         dataSource={idArray}
         renderItem={(item) => (
           <List.Item>
-             <IODIMeasure id={item.id}/>
+             <IODIOMeasure id={item.id}/>
           </List.Item>
         )}
       />
