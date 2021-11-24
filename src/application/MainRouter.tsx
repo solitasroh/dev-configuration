@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import Control from './Control';
 import Information from './Information';
+import LMHContents from './LMHContents';
 import RouterApp from './RouterApp';
 import Setup from './Setup';
 
@@ -28,6 +29,7 @@ const MainRouter: React.FC = () => (
         <Route path="/" element={<Information />} />
         <Route path="/Control" element={<Control />} />
         <Route path="/Setup" element={<Setup />} />
+        <Route path="/LMHContents" element={<LMHContents />} />
         <Route path="*" element={<NoMatch />} />
       </Route>
     </Routes>

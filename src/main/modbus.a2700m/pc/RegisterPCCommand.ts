@@ -21,6 +21,12 @@ export default class RegisterPCCommand extends RegisterBase {
     } else if (command === 2) {
         const address = 2 + (id - 1 ) * 33;
         ModbusService.writeCoils(address, [true]).subscribe();
+    } else if (command === 3) { // control block : on
+        const address = 3 + (id - 1) * 33;
+        ModbusService.writeCoils(address, [true]).subscribe();
+    } else if (command === 4) { // control block : off
+        const address = 3 + (id - 1) * 33;
+        ModbusService.writeCoils(address, [false]).subscribe();
     }
   };
 }

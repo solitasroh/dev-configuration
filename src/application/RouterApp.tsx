@@ -8,17 +8,31 @@ const { Header, Content, Sider, Footer } = Layout;
 
 const ContentWrapper = styled(Layout)`
   display: flex;
-`
+`;
 
 const Contents = styled(Content)`
   flex: 1;
   flex-wrap: wrap;
   background-color: #ffffff;
-  margin: 24px 16px ;
+  margin: 24px 16px;
   overflow-x: auto;
   overflow-y: auto;
   padding: 16px;
-`
+`;
+
+const InforHeaderMenu: FC = () => (
+  <Menu theme="light" mode="horizontal">
+    <Menu.Item key="1">
+      <Link to="/">LMH</Link>
+    </Menu.Item>
+    <Menu.Item key="2">
+      <Link to="/LM">IOH</Link>
+    </Menu.Item>
+    <Menu.Item key="3">
+      <Link to="/PC">PC</Link>
+    </Menu.Item>
+  </Menu>
+);
 
 const RouterApp: FC = () => (
   <Layout>
@@ -41,10 +55,15 @@ const RouterApp: FC = () => (
         <Menu.Item key="3">
           <Link to="/Setup">Setup</Link>
         </Menu.Item>
+        <Menu.Item key="4">
+          <Link to="/LMHContents">LMH Contents</Link>
+        </Menu.Item>
       </Menu>
     </Sider>
     <ContentWrapper className="site-layout" style={{ marginLeft: 200 }}>
-      <Header className="site-layout-background" style={{ padding: 0 }} />
+      <Header className="site-layout-background" style={{ padding: 0 }}>
+       <InforHeaderMenu />
+      </Header>
       <Contents>
         <Outlet />
       </Contents>
