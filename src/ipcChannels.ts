@@ -3,3 +3,4 @@ export const DISCONNECT = 'disconnect';
 export const REQ_DATA = 'req-data';
 export const WRITE_REQ = 'write-request';
 export const SEND_DATA = 'send-data';
+export const REQ_PC_STATUS = 'request-pc-status-list';

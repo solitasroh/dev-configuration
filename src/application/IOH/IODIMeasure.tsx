@@ -26,7 +26,6 @@ type props = {
 }
 
   export default function IODIMeasure({id} : props): ReactElement {
-    console.log("io status id ", id);
     const setDIState = (Status: boolean ): string => {
       if (Status === false) return 'De-Energized';
       if (Status === true) return 'Energized';

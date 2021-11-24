@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
 import { Collapse, Space } from 'antd';
+import IpcService from '@src/main/IPCService';
+import { REQ_DATA } from '@src/ipcChannels';
+import { useInterval } from './hooks/ipcHook';
 import LMInformationView from './lmh/LMInformationView';
 import LDInformationView from './lmh/LDInformationView';
 import LMDigitalMeasure from './lmh/LMDigitalMeasure';
 import LMDOMeasure from './lmh/LMDOMeasure';
-import { useInterval } from './hooks/ipcHook';
-import IpcService from '@src/main/IPCService';
-import { REQ_DATA } from '@src/ipcChannels';
 import LMTestView from './lmh/LMTestView';
 
 const { Panel } = Collapse;
@@ -28,7 +28,6 @@ export default function LMHContents(): ReactElement {
         data: false,
       },
     });
-
     inst.sendPolling(REQ_DATA, {
       responseChannel: 'POLL-IO-Information',
       requestType: 'A2750IOInformation',

@@ -11,7 +11,6 @@ import LMDigitalMeasure from './lmh/LMDigitalMeasure';
 import LMDOMeasure from './lmh/LMDOMeasure';
 import LMInformationView from './lmh/LMInformationView';
 import MissmatchInfo from './lmh/MissmatchInfo';
-import PCStatusView from './pc/PCStatusView';
 
 const Information: React.FC = () => {
   useInterval(() => {
@@ -74,7 +73,7 @@ const Information: React.FC = () => {
         <LMDOMeasure />
       </Space>
       <Space>
-        <PCStatusView id={1} />
+        {/* <PCStatusView id={1} /> */}
       </Space>
     </Space>
   );

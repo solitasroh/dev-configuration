@@ -2,9 +2,7 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 import A2750PCStatus from '@src/Data/A2750PCStatus';
-
-import { Card, List, Select, Space } from 'antd';
-import { usePolling } from '../hooks/ipcHook';
+import { Card, Empty, List, Select, Space } from 'antd';
 
 const { Option } = Select;
 
@@ -23,11 +21,14 @@ const Status = styled.div<statusProps>`
   background-color: ${(props) => (props.on ? '#8ad68e' : '#dd5e5e')};
   border-radius: 10px;
 `;
-type Props = {
-  status: A2750PCStatus;
-};
+interface Props {
+  // eslint-disable-next-line react/require-default-props
+  id?: number;
 
-const DefaultView: FC<Props> = ({ status }) => (
+  status: A2750PCStatus;
+}
+
+export const DefaultView: FC<Props> = ({ id, status }) => (
   <List.Item>
     <Card title={`PC-${status.id} status`} size="small" type="inner">
       <Space size="small" direction="vertical">
@@ -59,7 +60,7 @@ const DefaultView: FC<Props> = ({ status }) => (
     </Card>
   </List.Item>
 );
-const DIStatusView: FC<Props> = ({ status }) => (
+export const DIStatusView: FC<Props> = ({ id, status }) => (
   <List.Item>
     <Card title={`PC-${status.id} DI status`} size="small" type="inner">
       <Space size="small" direction="vertical">
@@ -107,7 +108,8 @@ const DIStatusView: FC<Props> = ({ status }) => (
     </Card>
   </List.Item>
 );
-const DOStatusView: FC<Props> = ({ status }) => (
+
+export const DOStatusView: FC<Props> = ({ id, status }) => (
   <List.Item>
     <Card title={`PC-${status.id} DI status`} size="small" type="inner">
       <Space size="small" direction="vertical">
@@ -131,7 +133,8 @@ const DOStatusView: FC<Props> = ({ status }) => (
     </Card>
   </List.Item>
 );
-const ProtectionView: FC<Props> = ({ status }) => (
+
+export const ProtectionView: FC<Props> = ({ id, status }) => (
   <List.Item>
     <Card title={`PC-${status.id} Protection status`} size="small" type="inner">
       <Space size="small" direction="vertical">
@@ -184,50 +187,3 @@ const ProtectionView: FC<Props> = ({ status }) => (
   </List.Item>
 );
 
-const PCStatusView: FC<{ id: number }> = ({ id }) => {
-  const [statusType, setStatusType] = useState(1);
-  const [statusList, setStatus] = useState<A2750PCStatus[]>([]);
-
-  usePolling('POLL-PC-STATUS', (evt, resp) => {
-    const data = resp as A2750PCStatus[];
-    setStatus(data);
-  });
-  return (
-    <Space direction="vertical">
-      <Space>
-        <Label>Status Type</Label>
-        <Select defaultValue={1} onChange={(value) => setStatusType(value)} style={{width: 120}}>
-          <Option value={1}>Default</Option>
-          <Option value={2}>DI</Option>
-          <Option value={3}>DO</Option>
-          <Option value={4}>Protection</Option>
-        </Select>
-      </Space>
-      <List
-        grid={{
-          gutter: 16,
-          xs: 3,
-          sm: 3,
-          md: 5,
-          lg: 6,
-          xl: 6,
-          xxl: 10,
-        }}
-        dataSource={statusList}
-        renderItem={(status) =>
-          statusType === 1 ? (
-            <DefaultView status={status} />
-          ) : statusType === 2 ? (
-            <DIStatusView status={status} />
-          ) : statusType === 3 ? (
-            <DOStatusView status={status} />
-          ) : (
-            <ProtectionView status={status} />
-          )
-        }
-      />
-    </Space>
-  );
-};
-
-export default PCStatusView;

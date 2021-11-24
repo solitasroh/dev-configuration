@@ -6,6 +6,8 @@ import { IpcRequest } from './ipc/IPCRequest';
 import IpcService from './IPCService';
 import ModbusService from './ModbusService';
 import ChannelWriteData from './ipc/ChannelWriteData';
+import MotorUnitManagement from './modbus.a2700m/MotorUnitManagement';
+import { ChannelReadPCOperation } from './ipc/ChannelReadPCOperation';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -20,10 +22,13 @@ class Main {
 
   private modbusService: ModbusService;
 
+  private motorUnitManagement : MotorUnitManagement;
+
   private ipcService: IpcService;
 
   init(ipcChannels: IpcChannel<IpcRequest>[]) {
     this.modbusService = ModbusService.getInstance();
+    this.motorUnitManagement = MotorUnitManagement.getInstance();
 
     app.on('ready', (): void => {
       this.createWindow();
@@ -64,6 +69,8 @@ class Main {
         }
       }
     });
+
+    
   }
 
   private onWindowClosed = (): void => {
@@ -96,13 +103,16 @@ class Main {
     this.mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    
     this.ipcService = IpcService.getInstance();
 
     // this.mainWindow.on('close', (e) => {
     //   e.preventDefault();
     //   this.mainWindow.hide();
     // });
+
+    this.motorUnitManagement.start(this.mainWindow.webContents);
   }
 
   private registerIpcChannels = (
@@ -120,4 +130,5 @@ new Main().init([
   new ChannelReadData(),
   new ChannelWriteData(),
   new ChannelConnectServer(),
+  new ChannelReadPCOperation(),
 ]);

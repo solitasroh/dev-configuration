@@ -11,7 +11,6 @@ const Control: React.FC = () => (
       <LMTestView />
       <IOTestView />
       <AITestView />
-      <PCCommandView />
     </Space>
   </Space>
 );

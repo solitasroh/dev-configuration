@@ -58,6 +58,9 @@ const RouterApp: FC = () => (
         <Menu.Item key="4">
           <Link to="/LMHContents">LMH Contents</Link>
         </Menu.Item>
+        <Menu.Item key="5">
+          <Link to="/PCContents">A2750PC Contents</Link>
+        </Menu.Item>
       </Menu>
     </Sider>
     <ContentWrapper className="site-layout" style={{ marginLeft: 200 }}>

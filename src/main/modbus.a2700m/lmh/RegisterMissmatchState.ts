@@ -19,7 +19,6 @@ export default class RegisterMissmatchState extends RegisterBase {
         const [alarm] = missMatchAlarm;
         const [missMatch, detail1, detail2, detail3, detail4, detail5] =
           missMatchState as number[];
-        console.log("alarm:",alarm);
         result.missMatchAlarm = alarm;
 
         result.setMissMatchType(missMatch);
