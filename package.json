@@ -97,6 +97,7 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@fontsource/roboto": "4.5.0",
     "@reactivex/rxjs": "6.6.7",
     "@types/react-modal": "3.13.1",

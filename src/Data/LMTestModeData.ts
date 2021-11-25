@@ -9,13 +9,14 @@ export default class LMTestModeData implements A2700Data {
   data: {
     channel: number;
     value: number;
+    controlled: boolean;
   }[];
 
   constructor(channelCount = 12) {
     this.data = [];
     for (let i = 0; i < channelCount; i+=1) {
       this.data.push({
-        channel: i+1, value: 0
+        channel: i+1, value: 0, controlled: false,
       });
     }
   }

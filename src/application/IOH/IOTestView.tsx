@@ -28,11 +28,17 @@ export default function IOTestView({ id }: Props): ReactElement {
       writeData: channelValue,
       requestType: 'IODiTest',
     });
+     console.log(channelValue);
+    channelValue.data.forEach(element => {
+      // eslint-disable-next-line no-param-reassign
+      element.controlled = false
+    });
   };
 
   const checkTestValue = (ch: number, value: boolean) => {
     const st = channelValue.data.find((cv) => cv.channel === ch);
     st.value = value ? 1 : 0;
+    st.controlled = true;
     setValue();
   };
 

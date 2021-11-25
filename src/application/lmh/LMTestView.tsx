@@ -22,6 +22,7 @@ export default function LMTestView(): ReactElement {
       data.data.push({
         channel: i + 1,
         value: 0,
+        controlled: false
       });
     }
     return data;

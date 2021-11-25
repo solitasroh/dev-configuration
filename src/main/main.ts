@@ -113,6 +113,7 @@ class Main {
     // });
 
     this.motorUnitManagement.start(this.mainWindow.webContents);
+    this.mainWindow.maximize();
   }
 
   private registerIpcChannels = (
