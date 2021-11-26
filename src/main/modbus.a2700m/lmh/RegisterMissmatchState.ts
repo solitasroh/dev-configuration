@@ -1,5 +1,5 @@
 import A2700Data from '@src/Data/A2700Data';
-import LMMissmatchState from '@src/Data/LMMissmatchState';
+import MismatchState from '@src/Data/MismatchState';
 import ModbusService from '@src/main/ModbusService';
 import { catchError, forkJoin, map, Observable } from 'rxjs';
 import RegisterBase from '../RegisterBase';
@@ -14,7 +14,7 @@ export default class RegisterMissmatchState extends RegisterBase {
     return forkJoin([ob1, ob2]).pipe(
       map((item) => {
         const [missMatchAlarm, missMatchState] = item;
-        const result = new LMMissmatchState();
+        const result = new MismatchState();
         // eslint-disable-next-line prefer-destructuring
         const [alarm] = missMatchAlarm;
         const [missMatch, detail1, detail2, detail3, detail4, detail5] =

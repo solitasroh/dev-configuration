@@ -1,5 +1,5 @@
 import A2700Data from '@src/Data/A2700Data';
-import A2750PCInformation from '@src/Data/A2750PCInformation';
+import PCInfoData from '@src/Data/PCInfoData';
 import { map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
@@ -19,14 +19,14 @@ export default class RegisterPCInformation extends RegisterBase {
 
   getter = ({ id }: RegisterProps): Observable<A2700Data | A2700Data[]> => {
     const address = 10001 + (id - 1) * 700;
-    const information = new A2750PCInformation();
+    const information = new PCInfoData();
 
-    return ModbusService.read<number[]>(address, 21).pipe(map((data) => {
-        const [
-            state
-        ] = data;
+    return ModbusService.read<number[]>(address, 21).pipe(
+      map((data) => {
+        const [state] = data;
         information.setOperationState(state);
         return information;
-    }));
+      }),
+    );
   };
 }

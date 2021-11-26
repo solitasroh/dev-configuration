@@ -1,4 +1,4 @@
-import LMSetupData from '@src/Data/A2700.LMSetup';
+import LMHSetupData from '@src/Data/LMHSetupData';
 import A2700Data from '@src/Data/A2700Data';
 import { map, Observable, throwError } from 'rxjs';
 import ModbusService from '../../ModbusService';
@@ -6,7 +6,7 @@ import RegisterBase from '../RegisterBase';
 
 export default class RegisterLMSetup extends RegisterBase {
   setter = (data: A2700Data): void => {
-    if (data instanceof LMSetupData) {
+    if (data instanceof LMHSetupData) {
       const buf = [
         data.operationMode,
         data.digitalOperation,
@@ -34,7 +34,7 @@ export default class RegisterLMSetup extends RegisterBase {
   getter = (): Observable<A2700Data | A2700Data[]> =>
     ModbusService.read<number[]>(64010, 5).pipe(
       map((data) => {
-        const result = new LMSetupData();
+        const result = new LMHSetupData();
 
         const [
           access, // 64010

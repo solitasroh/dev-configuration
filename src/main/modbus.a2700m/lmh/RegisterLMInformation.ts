@@ -1,4 +1,4 @@
-import LMInformation from '@src/Data/A2700.LMInformation';
+import LMHInfoData from '@src/Data/LMHInfoData';
 import A2700Data from '@src/Data/A2700Data';
 import { map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
@@ -16,8 +16,8 @@ export default class RegisterLMInformation extends RegisterBase {
     const addr = !reqPartnerInfo ? 61501 : 61513;
     return ModbusService.read<number[]>(addr, 11).pipe(
       map((data) => {
-        const result = new LMInformation();
-        
+        const result = new LMHInfoData();
+
         const [
           operationState, // 61501
           productCode, // 61502
@@ -40,9 +40,8 @@ export default class RegisterLMInformation extends RegisterBase {
         result.hardwareRevision = (hHardwareRevision << 16) | lHardwareRevision;
         result.pcbVersion = pcbVersion;
         result.applicationVersion =
-          LMInformation.getAppVersion(applicationVersion);
-        result.bootloaderVersion =
-          LMInformation.getAppVersion(bootloaderVersion);
+          LMHInfoData.getAppVersion(applicationVersion);
+        result.bootloaderVersion = LMHInfoData.getAppVersion(bootloaderVersion);
 
         return result;
       }),

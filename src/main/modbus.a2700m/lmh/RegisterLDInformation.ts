@@ -1,4 +1,4 @@
-import LDInformation from '@src/Data/A2700.LDInformation';
+import LDHInfoData from '@src/Data/LDHInfoData';
 import A2700Data from '@src/Data/A2700Data';
 import { map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
@@ -12,7 +12,7 @@ export default class RegisterLDInformation extends RegisterBase {
   getter = (): Observable<A2700Data> =>
     ModbusService.read<number[]>(61525, 10).pipe(
       map((data) => {
-        const result = new LDInformation();
+        const result = new LDHInfoData();
 
         const [
           operationState, //
@@ -32,10 +32,9 @@ export default class RegisterLDInformation extends RegisterBase {
         result.hardwareRevision = hardwareRevision;
         result.pcbVersion = pcbVersion;
         result.applicationVersion =
-          LDInformation.getAppVersion(applicationVersion);
-        result.bootloaderVersion =
-          LDInformation.getAppVersion(bootloaderVersion);
-        result.kernelVersion = LDInformation.getAppVersion(kernelVersion);
+          LDHInfoData.getAppVersion(applicationVersion);
+        result.bootloaderVersion = LDHInfoData.getAppVersion(bootloaderVersion);
+        result.kernelVersion = LDHInfoData.getAppVersion(kernelVersion);
         return result;
       }),
     );

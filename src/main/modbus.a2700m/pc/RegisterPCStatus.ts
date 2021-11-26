@@ -1,5 +1,5 @@
 import A2700Data from '@src/Data/A2700Data';
-import A2750PCStatus from '@src/Data/A2750PCStatus';
+import PCStatus from '@src/Data/PCStatus';
 import chunkArray from '@src/Utils';
 import { map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
@@ -20,7 +20,7 @@ export default class RegisterPCStatus extends RegisterBase {
     const chunkBuf = chunkArray(data, 33);
 
     return chunkBuf.map((buf, index) => {
-      const pcStatus = new A2750PCStatus(index + 1, buf);
+      const pcStatus = new PCStatus(index + 1, buf);
       return pcStatus;
     });
   };

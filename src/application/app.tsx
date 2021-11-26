@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { HashRouter } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
-import MainRouter from './MainRouter';
+import MainRouter from './Routers/MainRouter';
 
 const GlobalStyle = createGlobalStyle`
   ${reset}

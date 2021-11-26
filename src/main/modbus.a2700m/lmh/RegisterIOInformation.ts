@@ -1,4 +1,4 @@
-import IOInformation from '@src/Data/A2700.IOInformation';
+import IOHInfoData from '@src/Data/IOHInfoData';
 import A2700Data from '@src/Data/A2700Data';
 import { forkJoin, map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
@@ -39,7 +39,7 @@ export default class RegisterIOInformation extends RegisterBase {
         map((data) => {
           const iosdata = chunkArray(data, 12);
           return iosdata.map((item, index) => {
-            const tmpInfo = new IOInformation();
+            const tmpInfo = new IOHInfoData();
             const [
               operationState,
               moduleType,
@@ -60,9 +60,9 @@ export default class RegisterIOInformation extends RegisterBase {
             tmpInfo.hardwareRevision = hardwareRevision;
             tmpInfo.pcbVersion = pcbVersion;
             tmpInfo.applicationVersion =
-              IOInformation.getAppVersion(applicationVersion);
+              IOHInfoData.getAppVersion(applicationVersion);
             tmpInfo.bootloaderVersion =
-              IOInformation.getAppVersion(bootloaderVersion);
+              IOHInfoData.getAppVersion(bootloaderVersion);
             return tmpInfo;
           });
         }),
