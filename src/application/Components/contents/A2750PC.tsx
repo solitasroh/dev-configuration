@@ -27,8 +27,14 @@ export default function PCContents(): ReactElement {
       const { length } = buffer.filter((v) => v);
 
       setState(buffer);
-
       setTotalCount(length);
+      return () => {
+        setState([]);
+        setTotalCount(0);
+        setStatusList([]);
+        setId(1);
+        setIndex(1);
+      };
     });
   }, []);
 

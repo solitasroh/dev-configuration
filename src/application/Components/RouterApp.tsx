@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import ConnectWrapper from './ConnectWrapper';
 import MissmatchInfo from './lmh/MissmatchInfo';
 
@@ -23,13 +23,24 @@ const Contents = styled(Content)`
 
 const RouterApp: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [selectedKey, setSelectKey] = useState('1');
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (selectedKey === '1') {
+      navigate('/LMHContents');
+    }
+  }, [selectedKey]);
 
   const onCollapse = () => {
     setCollapsed((prev) => !prev);
   };
 
+  const mainMenuHandleClick = (e: { key: string }) => {
+    setSelectKey(e.key);
+  };
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout>
       <Sider
         collapsible
         collapsed={collapsed}
@@ -37,15 +48,24 @@ const RouterApp: FC = () => {
         style={{}}
       >
         <ConnectWrapper />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={['0']}
+          selectedKeys={[selectedKey]}
+          onClick={mainMenuHandleClick}
+        >
+          <Menu.Item key="0">
+            <NavLink to="/">Home</NavLink>
+          </Menu.Item>
           <Menu.Item key="1">
-            <Link to="/LMHContents">LMH Contents</Link>
+            <NavLink to="/LMHContents">A2750LMH</NavLink>
           </Menu.Item>
           <Menu.Item key="2">
-            <Link to="/IOHContents">A2750IOH Contents</Link>
+            <NavLink to="/IOHContents">A2750IOH</NavLink>
           </Menu.Item>
           <Menu.Item key="3">
-            <Link to="/PCContents">A2750PC Contents</Link>
+            <NavLink to="/PCContents">A2750PC</NavLink>
           </Menu.Item>
         </Menu>
       </Sider>
@@ -57,7 +77,7 @@ const RouterApp: FC = () => {
           <Outlet />
         </Contents>
         <Footer style={{ textAlign: 'center' }}>
-          Rootech ©2021 Created by S.J
+          Rootech ©2021 Created by S.J N.H
         </Footer>
       </ContentWrapper>
     </Layout>

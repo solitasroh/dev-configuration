@@ -1,9 +1,10 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import IOHContents from '../Components/contents/IOHContents';
-import LMHContents from '../Components/contents/LMHContents';
-import PCContents from '../Components/contents/PCContents';
+import IOHContents from '../Components/contents/A2750IOH';
+import LMHContents from '../Components/contents/A2750LMH';
+import PCContents from '../Components/contents/A2750PC';
+import Home from '../Components/contents/Home';
 
 import RouterApp from '../Components/RouterApp';
 
@@ -26,6 +27,7 @@ const MainRouter: React.FC = () => (
   <Container>
     <Routes>
       <Route path="/" element={<RouterApp />}>
+        <Route path="/" element={<Home />} />
         <Route path="/LMHContents" element={<LMHContents />} />
         <Route path="/IOHContents" element={<IOHContents />} />
         <Route path="/PCContents" element={<PCContents />} />

@@ -4,7 +4,7 @@
  * @param myArray {Array} Array to split
  * @param chunkSize {Integer} Size of every group
  */
-function chunkArray(myArray: any, chunkSize: number) {
+function chunkArray(myArray: any, chunkSize: number): Array<any> {
   if (!(myArray instanceof Array)) {
     return null;
   }
