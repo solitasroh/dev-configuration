@@ -1,27 +1,9 @@
 import IOHInfoData from '@src/Data/IOHInfoData';
 import A2700Data from '@src/Data/A2700Data';
 import { forkJoin, map, Observable } from 'rxjs';
+import chunkArray from '@src/Utils';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
-
-/**
- * Returns an array with arrays of the given size.
- *
- * @param myArray {Array} Array to split
- * @param chunkSize {Integer} Size of every group
- */
-function chunkArray(myArray: any, chunkSize: number) {
-  if (!(myArray instanceof Array)) {
-    return null;
-  }
-
-  const results = [];
-  while (myArray.length) {
-    results.push(myArray.splice(0, chunkSize));
-  }
-
-  return results;
-}
 
 export default class RegisterIOInformation extends RegisterBase {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
