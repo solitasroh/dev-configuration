@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 
-import { Card, Space, Switch } from 'antd';
+import { Card, Space, Switch, Radio } from 'antd';
 import styled from 'styled-components';
 import LMTestModeData from '@src/Data/LMTestModeData';
 import IpcService from '@src/main/IPCService';
@@ -22,7 +22,7 @@ export default function LMTestView(): ReactElement {
       data.data.push({
         channel: i + 1,
         value: 0,
-        controlled: false
+        controlled: false,
       });
     }
     return data;
@@ -35,22 +35,42 @@ export default function LMTestView(): ReactElement {
       requestType: 'LMTestSet',
     });
   };
-  const checkTestValue = (ch: number, value: boolean) => {
+  const selectTest = (cmd: number, ch: number) => {
     const st = channelValue.data.find((cv) => cv.channel === ch);
-    st.value = value ? 1 : 0;
+    if (cmd === 0) {
+      st.value = 0;
+    } else if (cmd === 1) {
+      st.value = (1 << 8) | 1;
+    } else {
+      st.value = (1 << 8) | 0;
+    }
     setValue();
   };
   return (
-    <Card title="LMH Test Mode" size="small" type="inner">
+    <Card title="LMH Test Mode" size="small" type="inner" >
       {channelValue.data.map((item) => (
         <Space key={item.channel} style={{ margin: '10px' }}>
           <Label>{`channel ${item.channel}`}</Label>
-          <Switch
+          {/* <Switch
             size="small"
             onChange={(checked: boolean) => {
               checkTestValue(item.channel, checked);
             }}
-          />
+          /> */}
+          <Radio.Group
+            size="small"
+            defaultValue="normal"
+            onChange={(e) => {
+              if (e.target.value === 'normal') selectTest(0, item.channel);
+              else if (e.target.value === 'Energized')
+                selectTest(1, item.channel);
+              else selectTest(2, item.channel);
+            }}
+          >
+            <Radio.Button value="normal">normal</Radio.Button>
+            <Radio.Button value="Energized">Energized</Radio.Button>
+            <Radio.Button value="De-energized">De-energized</Radio.Button>
+          </Radio.Group>
         </Space>
       ))}
     </Card>
