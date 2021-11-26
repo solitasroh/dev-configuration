@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 
-import { Card, Space } from 'antd';
+import { Card, Empty, Space } from 'antd';
 import styled from 'styled-components';
 import DigitalChannelData from '@src/Data/DigitalChannelData';
 import { usePolling2 } from '../hooks/ipcHook';
@@ -42,7 +42,9 @@ export default function LMDigitalMeasure(): ReactElement {
     1000,
   );
 
-  return (
+  return measureData.length === 0 ? (
+    <Empty description="No DO Status" />
+  ) : (
     <Card
       title="LM DO Status"
       size="small"

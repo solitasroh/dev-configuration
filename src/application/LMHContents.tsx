@@ -10,13 +10,15 @@ import LMDOControl from './lmh/LMDOControl';
 const { Panel } = Collapse;
 
 export default function LMHContents(): ReactElement {
-
   return (
     <Space align="start" direction="horizontal">
       <Collapse defaultActiveKey={['1']} bordered={false} ghost>
         <Panel header="Information" key="1">
-          <Space align="start">
-            <LMInformationView />
+          <Space align="start" style={{marginRight: 10}}>
+            <LMInformationView partnerInfo={false} />
+            <LMInformationView partnerInfo />
+          </Space>
+          <Space align="start" >
             <LDInformationView />
           </Space>
         </Panel>

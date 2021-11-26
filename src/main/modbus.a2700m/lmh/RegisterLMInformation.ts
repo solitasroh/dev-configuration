@@ -17,7 +17,7 @@ export default class RegisterLMInformation extends RegisterBase {
     return ModbusService.read<number[]>(addr, 11).pipe(
       map((data) => {
         const result = new LMInformation();
-
+        
         const [
           operationState, // 61501
           productCode, // 61502

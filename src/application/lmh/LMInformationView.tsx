@@ -1,9 +1,8 @@
 import React, { FC, useState } from 'react';
 import LMInformation from '@src/Data/A2700.LMInformation';
-import { Card, Space } from 'antd';
+import { Card, Empty, Space } from 'antd';
 import styled from 'styled-components';
 import { usePolling2 } from '../hooks/ipcHook';
-
 
 const Label = styled.p`
   width: 110px;
@@ -20,23 +19,32 @@ const Value = styled.p`
   background-color: #f5f5f5;
 `;
 
-const LMInformationView: FC = () => {
-  const tmpInfo = new LMInformation();
-  const [information, setInformation] = useState<LMInformation>(tmpInfo);
+type props = {
+  partnerInfo: boolean;
+}
 
-  usePolling2({
-    requestType:"A2750LMInformation",
-    responseChannel: "POLL-LM-Information",
-    props :{
-      id: 0,
-      data: false,
-    }
-  }, (evt, resp) => {
-    const data = resp as LMInformation;
-    setInformation(data);
-  },1000);
+const LMInformationView: FC<props> = ({partnerInfo}) => {
+  const [information, setInformation] = useState<LMInformation>(null);
+  const respChannel = partnerInfo ? "POLL-LM-Information-Partener" : "POLL-LM-Information";
+  usePolling2(
+    {
+      requestType: 'A2750LMInformation',
+      responseChannel: respChannel,
+      props: {
+        id: 0,
+        data: partnerInfo,
+      },
+    },
+    (evt, resp) => {
+      const data = resp as LMInformation;
+      setInformation(data);
+    },
+    1000,
+  );
 
-  return (
+  return information === null ? (
+    <Empty description="LMH No Data"/>
+  ) : (
     <Card
       title="LMH Information"
       size="small"

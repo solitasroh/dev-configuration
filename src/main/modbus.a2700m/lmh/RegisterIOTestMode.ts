@@ -27,7 +27,6 @@ export default class RegisterIOTestMode extends RegisterBase {
         }
     }
     const buffer = [idType, 0, validityCh, 0, data];
-    console.log(buffer);
     ModbusService.write(63658, buffer).subscribe();
   };
 }

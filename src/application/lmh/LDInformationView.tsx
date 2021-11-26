@@ -4,7 +4,7 @@ import { REQ_DATA } from '@src/ipcChannels';
 import ChannelReadDataProps from '@src/main/ipc/ChannelReadDataProps';
 import IpcService from '@src/main/IPCService';
 import React, { FC, useEffect, useState } from 'react';
-import { Card, Space } from 'antd';
+import { Card, Empty, Space } from 'antd';
 
 const Label = styled.p`
   width: 110px;
@@ -21,8 +21,7 @@ const Value = styled.p`
 `;
 
 const LDInformationView: FC = () => {
-  const tmpInfo = new LDInformation();
-  const [information, setInformation] = useState<LDInformation>(tmpInfo);
+  const [information, setInformation] = useState<LDInformation>(null);
 
   useEffect(() => {
     const ipcService = IpcService.getInstance();
@@ -35,10 +34,12 @@ const LDInformationView: FC = () => {
       .then((data) => {
         setInformation(data);
       });
-      return () => setInformation(null);
+    return () => setInformation(null);
   }, []);
 
-  return (
+  return information === null ? (
+    <Empty description="LDH No Data"/>
+  ) : (
     <Card
       title="LDH Information"
       size="small"
