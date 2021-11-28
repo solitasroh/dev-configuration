@@ -9,7 +9,7 @@ export default class A2700Register {
     params?: RegisterProps,
   ): Observable<A2700Data | A2700Data[]> => {
     const reg = RegisterFactory.getRegister(key);
-
+    // console.log(`read register: ${key}`);
     return reg.getter(params);
   };
 

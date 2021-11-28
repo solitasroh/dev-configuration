@@ -1,48 +1,95 @@
-import React, { ReactElement, useState } from 'react';
-
-import { Card, Space, Switch } from 'antd';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Card, Col, Radio, Row } from 'antd';
+
 import IpcService from '@src/main/IPCService';
 import { WRITE_REQ } from '@src/ipcChannels';
 import IOCommand from '@src/Data/IOCommand';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
-// shift + alt +f
+import MeasureData from '@src/Data/MeasureData';
+
 const Label = styled.p`
   text-align: left;
   font-size: 8pt;
-  min-width: 50px;
-  width: 70px;
+`;
+type statusButtonProps = {
+  state: boolean;
+};
+const StatusButton = styled(Radio.Button)<statusButtonProps>`
+  background-color: ${(props) => (props.state ? '#ffffff' : '#2aad65')};
+  color: ${(props) => (props.state ? '#000' : '#ffffff')};
 `;
 
-export default function LMHDOControl(): ReactElement {
-  const temp = new IOCommand(9);
-  const [channelValue] = useState<IOCommand>(temp);
+const service = IpcService.getInstance();
 
-  const setValue = () => {
-    const service = IpcService.getInstance();
+type Props = {
+  doStatus: MeasureData<boolean>;
+};
+
+export default function LMHDOControl({ doStatus }: Props): ReactElement {
+  const [ioCommand] = useState<IOCommand>(new IOCommand(9));
+
+  useEffect(() => {
+    console.log('do status get!');
+    doStatus?.detail.forEach((item) => {
+      ioCommand.command(item.channel, item.value ? 1 : 0);
+    });
+  }, [doStatus]);
+
+  const apply = () => {
+    console.log('send do control', ioCommand);
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
-      writeData: channelValue,
+      writeData: ioCommand,
       requestType: 'LMCommand',
     });
   };
 
-  const checkTestValue = (ch: number, value: boolean) => {
-    const st = channelValue.data.find((cv) => cv.channel === ch);
-    st.value = value ? 1 : 0;
-    setValue();
+  const handleCommand = (value: number, ch: number): void => {
+    console.log(`command ${ch}: ${value}`);
+    ioCommand.command(ch, value);
+
+    apply();
   };
+
   return (
     <Card title="LMH DO Control" size="small" type="inner">
-      {channelValue.data.map((item) => (
-        <Space key={item.channel} style={{ margin: '10px' }}>
-          <Label>{`channel ${item.channel}`}</Label>
-          <Switch
-            size="small"
-            onChange={(checked: boolean) => {
-              checkTestValue(item.channel, checked);
-            }}
-          />
-        </Space>
+      {ioCommand?.data.map((item) => (
+        <Row key={item.channel}>
+          <Col flex="100px">
+            <Label>DO {item.channel}</Label>
+          </Col>
+          <Col flex="auto">
+            <Radio.Group
+              size="small"
+              defaultValue={0}
+              value={doStatus?.detail[item.channel - 1].value}
+              onChange={(e) => handleCommand(e.target.value, item.channel)}
+            >
+              <StatusButton
+                value={0}
+                style={{
+                  fontSize: 9,
+                  width: 80,
+                  textAlign: 'center',
+                }}
+                state={doStatus?.detail[item.channel - 1].value}
+              >
+                Open
+              </StatusButton>
+              <StatusButton
+                value={1}
+                style={{
+                  fontSize: 9,
+                  width: 80,
+                  textAlign: 'center',
+                }}
+                state={!doStatus?.detail[item.channel - 1].value}
+              >
+                Close
+              </StatusButton>
+            </Radio.Group>
+          </Col>
+        </Row>
       ))}
     </Card>
   );

@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from 'react';
 import { Card, Empty, Space } from 'antd';
 import styled from 'styled-components';
 
-import DIOData from '@src/Data/DIOData';
+import MeasureData from '@src/Data/MeasureData';
 import { usePolling } from '@src/application/hooks/ipcHook';
 
 const Label = styled.p`
@@ -24,8 +24,8 @@ type props = {
 };
 
 export default function IOHDIOStatus({ id }: props): ReactElement {
-  const [measureData, setMeasureData] = useState<DIOData[]>([]);
-  const [DOmeasureData, setDOMeasureData] = useState<DIOData[]>([]);
+  const [measureData, setMeasureData] = useState<MeasureData<boolean>>();
+  const [DOmeasureData, setDOMeasureData] = useState<MeasureData<boolean>>();
 
   const setDIState = (Status: boolean): string => {
     if (Status === false) return 'De-Energized';
@@ -48,7 +48,7 @@ export default function IOHDIOStatus({ id }: props): ReactElement {
       },
     },
     (evt, resp) => {
-      const data = resp as DIOData[];
+      const data = resp as MeasureData<boolean>;
       setMeasureData(data);
     },
     1000,
@@ -63,7 +63,7 @@ export default function IOHDIOStatus({ id }: props): ReactElement {
       },
     },
     (evt, resp) => {
-      const data = resp as DIOData[];
+      const data = resp as MeasureData<boolean>;
       setDOMeasureData(data);
     },
     1000,
@@ -78,13 +78,13 @@ export default function IOHDIOStatus({ id }: props): ReactElement {
       style={{ width: '300px' }}
       type="inner"
     >
-      {measureData.map((measure) => (
+      {measureData?.detail.map((measure, index) => (
         <Space size="small" key={measure.channel}>
           <Label>ch {measure.channel}</Label>
           <Value>{setDIState(measure.value)}</Value>
         </Space>
       ))}
-      {DOmeasureData.map((measure) => (
+      {DOmeasureData?.detail.map((measure) => (
         <Space size="small" key={measure.channel}>
           <Label>ch {measure.channel}</Label>
           <Value>{setDOState(measure.value)}</Value>

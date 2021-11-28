@@ -1,5 +1,5 @@
 import A2700Data from '@src/Data/A2700Data';
-import DIOData from '@src/Data/DIOData';
+import MeasureData from '@src/Data/MeasureData';
 import ModbusService from '@src/main/ModbusService';
 import { map, Observable } from 'rxjs';
 import RegisterBase from '../RegisterBase';
@@ -11,19 +11,18 @@ export default class RegisterLMDIMeasure extends RegisterBase {
 
     return ModbusService.read<boolean[]>(address, 18, { isCoil: true }).pipe(
       map((data) => {
-        const result: DIOData[] = [];
-        for (let i = 0; i < 18; i += 1) {
-          const measure = new DIOData();
-          measure.channel = i + 1;
-          measure.value = data[i]; // boolean 이어야 함
-          result.push(measure);
-        }
-        return result;
+        const measureData = new MeasureData<boolean>(18);
+
+        data.forEach((value, index) => {
+          measureData.setValue(index, value);
+        });
+
+        return measureData;
       }),
     );
   };
 
   setter = (_data: A2700Data): void => {
-    console.log('empty setter');
+    // do nothing
   };
 }

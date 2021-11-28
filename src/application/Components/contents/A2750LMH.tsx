@@ -1,42 +1,69 @@
-import React, { ReactElement } from 'react';
-import { Collapse, Space } from 'antd';
+import React, { ReactElement, useState } from 'react';
+import { Space, Row, Col } from 'antd';
+import { usePolling } from '@src/application/hooks/ipcHook';
+
+import MeasureData from '@src/Data/MeasureData';
+
 import LMHInfoContainer from '../lmh/LMHInfoContainer';
 import LDHInfoContainer from '../lmh/LDHInfoContainer';
 import LMHDIStatus from '../lmh/LMHDIStatus';
 import LMHDOStatus from '../lmh/LMHDOStatus';
 import LMHDITestMode from '../lmh/LMHDITestMode';
 import LMHDOControl from '../lmh/LMHDOControl';
-
-const { Panel } = Collapse;
+import Title from '../Title';
 
 export default function LMHContents(): ReactElement {
+  const [doStatus, setDoData] = useState<MeasureData<boolean>>();
+  usePolling(
+    {
+      requestType: 'LMDOData',
+      responseChannel: 'POLL-LM-DO-Data',
+      props: { id: 0 },
+    },
+    (event, resp) => {
+      const data = resp as MeasureData<boolean>;
+      setDoData(data);
+    },
+    300,
+  );
+
   return (
-    <Space align="start" direction="horizontal">
-      <Collapse defaultActiveKey={['1']} bordered={false} ghost>
-        <Panel header="Information" key="1">
-          <Space align="start" style={{ marginRight: 10 }}>
-            <LMHInfoContainer partnerInfo={false} />
-            <LMHInfoContainer partnerInfo />
-          </Space>
-          <Space align="start">
+    <>
+      <Row>
+        <Col flex="1 1 auto">
+          <Space
+            direction="vertical"
+            style={{ width: '95%', marginBottom: 30 }}
+            size="large"
+          >
+            <Title> Information </Title>
+            <LMHInfoContainer />
             <LDHInfoContainer />
           </Space>
-        </Panel>
-        <Panel header="IO Status" key="2">
-          <Space align="start">
+        </Col>
+        <Col flex="1 2 160px">
+          <Space
+            direction="vertical"
+            style={{ width: '95%', marginBottom: 30 }}
+            size="large"
+          >
+            <Title> I/O Status </Title>
             <LMHDIStatus />
-            <LMHDOStatus />
+            <LMHDOStatus doStatus={doStatus} />
           </Space>
-        </Panel>
-      </Collapse>
-      <Collapse defaultActiveKey={['1']} bordered={false} ghost>
-        <Panel header="IO Control" key="1">
-          <Space align="start">
+        </Col>
+        <Col flex="2 0 300px">
+          <Space
+            direction="vertical"
+            style={{ width: '95%', marginBottom: 30 }}
+            size="large"
+          >
+            <Title> I/O Control </Title>
             <LMHDITestMode />
-            <LMHDOControl />
+            <LMHDOControl doStatus={doStatus} />
           </Space>
-        </Panel>
-      </Collapse>
-    </Space>
+        </Col>
+      </Row>
+    </>
   );
 }

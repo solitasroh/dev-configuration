@@ -49,14 +49,19 @@ class ModbusService {
         this.GetClient().readHoldingRegisters(address - 1, length),
       ).pipe(
         map((value) => value.data || value.buffer),
-        catchError((e) => 
+        catchError((e) =>
           // console.log(e);
-           []
+          [],
         ),
       );
     }
     return from(this.GetClient().readCoils(address - 1, length)).pipe(
-      map((value) => value.data),
+      map((value) =>
+        // console.log(
+        //   `modbus coil read length :  ${length}, data length: ${value.data.length}`,
+        // );
+        value.data.slice(0, length + 1),
+      ),
       catchError(() => []),
     );
   }
@@ -71,9 +76,9 @@ class ModbusService {
         this.GetClient().readHoldingRegisters(address - 1, length),
       ).pipe(
         map((value) => value.buffer),
-        catchError((e) => 
+        catchError((e) =>
           // console.log(e);
-           []
+          [],
         ),
       );
     }
@@ -87,19 +92,19 @@ class ModbusService {
     const register = data as number[];
     return from(this.GetClient().writeRegisters(address - 1, register)).pipe(
       map((result) => result.address),
-      catchError((error) => 
+      catchError((error) =>
         // console.log(error);
-         []
+        [],
       ),
     );
   }
 
   static writeCoils(address: number, data: boolean[]): Observable<number> {
-    return from(this.GetClient().writeCoils(address-1, data)).pipe(
+    return from(this.GetClient().writeCoils(address - 1, data)).pipe(
       map((result) => result.address),
-      catchError((error) => 
+      catchError((error) =>
         // console.log(error);
-         []
+        [],
       ),
     );
   }

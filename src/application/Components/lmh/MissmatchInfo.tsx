@@ -38,7 +38,7 @@ export default function MissmatchInfo(): ReactElement {
         setDetailLM2(missMatchStatus.detailType2);
       }
     },
-    1000,
+    5000,
   );
 
   return (

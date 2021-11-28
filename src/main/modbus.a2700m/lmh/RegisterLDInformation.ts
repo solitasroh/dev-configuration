@@ -3,14 +3,17 @@ import A2700Data from '@src/Data/A2700Data';
 import { map, Observable } from 'rxjs';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';
+import RegisterProps from '../RegisterProps';
 
 export default class RegisterLDInformation extends RegisterBase {
   setter = (_data: A2700Data): void => {
     // do nothing
   };
 
-  getter = (): Observable<A2700Data> =>
-    ModbusService.read<number[]>(61525, 10).pipe(
+  getter = (_props?: RegisterProps): Observable<A2700Data> => {
+    const { data: reqPartnerInfo } = _props;
+    const addr = !reqPartnerInfo ? 61525 : 61539;
+    return ModbusService.read<number[]>(addr, 10).pipe(
       map((data) => {
         const result = new LDHInfoData();
 
@@ -38,4 +41,5 @@ export default class RegisterLDInformation extends RegisterBase {
         return result;
       }),
     );
+  };
 }

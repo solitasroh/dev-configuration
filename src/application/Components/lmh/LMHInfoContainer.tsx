@@ -1,85 +1,71 @@
 import React, { FC, useState } from 'react';
-import { Card, Empty, Space } from 'antd';
-import styled from 'styled-components';
+import { Card, Select } from 'antd';
 
 import { usePolling } from '@src/application/hooks/ipcHook';
 import LMHInfoData from '@src/Data/LMHInfoData';
+import Desc from '../Desc';
 
-const Label = styled.p`
-  width: 110px;
-  text-align: left;
-  font-size: 8pt;
-`;
+const { Option } = Select;
 
-const Value = styled.p`
-  width: 150px;
-  text-align: center;
-  align-items: center;
-  font-weight: 600;
-  font-size: 9pt;
-  background-color: #f5f5f5;
-`;
-
-type props = {
-  partnerInfo: boolean;
-};
-
-const LMHInfoContainer: FC<props> = ({ partnerInfo }) => {
+const LMHInfoContainer: FC = () => {
+  const [loading, setLoading] = useState(true);
   const [information, setInformation] = useState<LMHInfoData>(null);
-  const respChannel = partnerInfo
-    ? 'POLL-LM-Information-Partener'
-    : 'POLL-LM-Information';
+  const [requestPartnerInfo, setRequestPartnerInfo] = useState(false);
+
   usePolling(
     {
       requestType: 'A2750LMInformation',
-      responseChannel: respChannel,
+      responseChannel: 'POLL-LM-Information',
       props: {
         id: 0,
-        data: partnerInfo,
+        data: requestPartnerInfo,
       },
     },
     (evt, resp) => {
       const data = resp as LMHInfoData;
       setInformation(data);
+      setLoading(false);
     },
-    1000,
+    3000,
   );
-
-  return information === null ? (
-    <Empty description="LMH No Data" />
-  ) : (
+  const informationSelectionChangeHandle = (value: any) => {
+    if (value === 1) {
+      setRequestPartnerInfo(false);
+    } else {
+      setRequestPartnerInfo(true);
+    }
+  };
+  return (
     <Card
       title="LMH Information"
       size="small"
-      style={{ width: '300px' }}
       type="inner"
+      loading={loading}
+      style={{ minWidth: 150 }}
+      extra={
+        <Select
+          size="small"
+          style={{ fontSize: 9 }}
+          defaultValue={1}
+          onChange={informationSelectionChangeHandle}
+        >
+          <Option value={1}>PORT-1</Option>
+          <Option value={2}>PORT-2</Option>
+        </Select>
+      }
     >
-      <div>
-        <Space size="small">
-          <Label>operation state</Label>
-          <Value>{information.operationStatus ?? 'null'}</Value>
-        </Space>
-        <Space size="small">
-          <Label>product code</Label>
-          <Value>{information.productCode ?? 'null'}</Value>
-        </Space>
-        <Space size="small">
-          <Label>serial number</Label>
-          <Value>{information.serialNumber ?? 'null'}</Value>
-        </Space>
-        <Space size="small">
-          <Label>hardware revision</Label>
-          <Value>{information.hardwareRevision ?? 'null'}</Value>
-        </Space>
-        <Space size="small">
-          <Label>application version</Label>
-          <Value>{information.applicationVersion ?? 'null'}</Value>
-        </Space>
-        <Space size="small">
-          <Label>bootloader version</Label>
-          <Value>{information.bootloaderVersion ?? 'null'}</Value>
-        </Space>
-      </div>
+      <Desc title="operation state" value={information?.operationStatus} />
+      <Desc title="product code" value={information?.productCode} />
+      <Desc title="serial number" value={information?.serialNumber} />
+      <Desc
+        title="hardware revision"
+        value={information?.hardwareRevision.toString()}
+      />
+      <Desc
+        title="application version"
+        value={information?.applicationVersion}
+      />
+      <Desc title="bootloader version" value={information?.bootloaderVersion} />
     </Card>
   );
 };
