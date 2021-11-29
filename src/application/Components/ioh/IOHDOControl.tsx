@@ -1,12 +1,13 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 
-import { Card, Empty, Space, Switch } from 'antd';
+import { Card, Col, Empty, Radio, Row, Space, Switch } from 'antd';
 import styled from 'styled-components';
 import IpcService from '@src/main/IPCService';
 import { WRITE_REQ } from '@src/ipcChannels';
+import MeasureData from '@src/Data/MeasureData';
 import IOCommand from '@src/Data/IOCommand';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
-// shift + alt +f
+
 const Label = styled.p`
   text-align: left;
   font-size: 8pt;
@@ -16,40 +17,83 @@ const Label = styled.p`
 
 type props = {
   id: number;
+  measureData: MeasureData<boolean>
 };
 
-export default function IOHDOControl({ id }: props): ReactElement {
-  const temp = new IOCommand(6);
+type statusButtonProps = {
+  state: boolean;
+};
 
-  const [channelValue] = useState<IOCommand>(temp);
-  channelValue.id = id;
-  const setValue = () => {
-    const service = IpcService.getInstance();
+const StatusButton = styled(Radio.Button)<statusButtonProps>`
+  background-color: ${(props) => (props.state ? '#ffffff' : '#2aad65')};
+  color: ${(props) => (props.state ? '#000' : '#ffffff')};
+`;
+
+const service = IpcService.getInstance();
+
+
+export default function IOHDOControl({ id , measureData: doStatus }: props): ReactElement {
+  const [ioCommand] = useState<IOCommand>(new IOCommand(6));
+  ioCommand.id = id;
+
+  useEffect(() => {
+    ioCommand.id = id;
+    doStatus?.detail.forEach((item) => {
+      ioCommand.command(item.channel, item.value ? 1 : 0);
+    });
+  }, [doStatus, id]);
+
+  const apply = () => {
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
-      writeData: channelValue,
+      writeData: ioCommand,
       requestType: 'IOCommand',
     });
   };
 
-  const checkTestValue = (ch: number, value: boolean) => {
-    const st = channelValue.data.find((cv) => cv.channel === ch);
-    st.value = value ? 1 : 0;
-    setValue();
+  const handleCommand = (value: number, ch: number) => {
+    ioCommand.command(ch, value);
+    apply();
   };
-  return id === 0 ? (
-    <Empty description="Invalid ID" />
-  ) : (
-    <Card title={`IOH -${id} DO Control`} size="small" type="inner">
-      {channelValue.data.map((item) => (
-        <Space key={item.channel} style={{ margin: '10px' }}>
-          <Label>{`channel ${item.channel}`}</Label>
-          <Switch
-            size="small"
-            onChange={(checked: boolean) => {
-              checkTestValue(item.channel, checked);
-            }}
-          />
-        </Space>
+  
+  return (
+    <Card title="IOH DO Control" size="small" type="inner">
+      {ioCommand?.data.map((item) => (
+        <Row key={item.channel}>
+          <Col flex="100px">
+            <Label>DO {item.channel}</Label>
+          </Col>
+          <Col flex="auto">
+            <Radio.Group
+              size="small"
+              defaultValue={0}
+              value={doStatus?.detail[item.channel - 1].value}
+              onChange={(e) => handleCommand(e.target.value, item.channel)}
+            >
+              <StatusButton
+                value={0}
+                style={{
+                  fontSize: 9,
+                  width: 80,
+                  textAlign: 'center',
+                }}
+                state={doStatus?.detail[item.channel - 1].value}
+              >
+                Open
+              </StatusButton>
+              <StatusButton
+                value={1}
+                style={{
+                  fontSize: 9,
+                  width: 80,
+                  textAlign: 'center',
+                }}
+                state={!doStatus?.detail[item.channel - 1].value}
+              >
+                Close
+              </StatusButton>
+            </Radio.Group>
+          </Col>
+        </Row>
       ))}
     </Card>
   );

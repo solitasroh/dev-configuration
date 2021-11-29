@@ -12,9 +12,11 @@ const Label = styled.p`
   text-align: left;
   font-size: 8pt;
 `;
+
 type statusButtonProps = {
   state: boolean;
 };
+
 const StatusButton = styled(Radio.Button)<statusButtonProps>`
   background-color: ${(props) => (props.state ? '#ffffff' : '#2aad65')};
   color: ${(props) => (props.state ? '#000' : '#ffffff')};
@@ -30,14 +32,12 @@ export default function LMHDOControl({ doStatus }: Props): ReactElement {
   const [ioCommand] = useState<IOCommand>(new IOCommand(9));
 
   useEffect(() => {
-    console.log('do status get!');
     doStatus?.detail.forEach((item) => {
       ioCommand.command(item.channel, item.value ? 1 : 0);
     });
   }, [doStatus]);
 
   const apply = () => {
-    console.log('send do control', ioCommand);
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: ioCommand,
       requestType: 'LMCommand',

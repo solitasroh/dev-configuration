@@ -21,11 +21,11 @@ const Value = styled.p`
 `;
 type props = {
   id: number;
+  measureDataDI: MeasureData<boolean>;
+  measureDataDO: MeasureData<boolean>;
 };
 
-export default function IOHDIOStatus({ id }: props): ReactElement {
-  const [measureData, setMeasureData] = useState<MeasureData<boolean>>();
-  const [DOmeasureData, setDOMeasureData] = useState<MeasureData<boolean>>();
+export default function IOHDIOStatus({ id, measureDataDI, measureDataDO }: props): ReactElement {
 
   const setDIState = (Status: boolean): string => {
     if (Status === false) return 'De-Energized';
@@ -39,36 +39,6 @@ export default function IOHDIOStatus({ id }: props): ReactElement {
     return 'Invaild';
   };
 
-  usePolling(
-    {
-      responseChannel: 'POLL-IO-DI-Data',
-      requestType: 'IODIData',
-      props: {
-        id,
-      },
-    },
-    (evt, resp) => {
-      const data = resp as MeasureData<boolean>;
-      setMeasureData(data);
-    },
-    1000,
-  );
-
-  usePolling(
-    {
-      responseChannel: 'POLL-IO-DO-Data',
-      requestType: 'IODOData',
-      props: {
-        id,
-      },
-    },
-    (evt, resp) => {
-      const data = resp as MeasureData<boolean>;
-      setDOMeasureData(data);
-    },
-    1000,
-  );
-
   return id === 0 ? (
     <Empty />
   ) : (
@@ -78,13 +48,13 @@ export default function IOHDIOStatus({ id }: props): ReactElement {
       style={{ width: '300px' }}
       type="inner"
     >
-      {measureData?.detail.map((measure, index) => (
+      {measureDataDI?.detail.map((measure, index) => (
         <Space size="small" key={measure.channel}>
           <Label>ch {measure.channel}</Label>
           <Value>{setDIState(measure.value)}</Value>
         </Space>
       ))}
-      {DOmeasureData?.detail.map((measure) => (
+      {measureDataDO?.detail.map((measure) => (
         <Space size="small" key={measure.channel}>
           <Label>ch {measure.channel}</Label>
           <Value>{setDOState(measure.value)}</Value>

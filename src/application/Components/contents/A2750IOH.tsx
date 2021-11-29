@@ -4,6 +4,7 @@ import { Collapse, Pagination, Space } from 'antd';
 import IOHInfoData from '@src/Data/IOHInfoData';
 import { usePolling } from '@src/application/hooks/ipcHook';
 
+import MeasureData from '@src/Data/MeasureData';
 import IOHInfoContainer from '../ioh/IOHInfoContainer';
 import IOHDOControl from '../ioh/IOHDOControl';
 import IOHDIOStatus from '../ioh/IOHDIOStatus';
@@ -26,11 +27,12 @@ export default function IOHContents(): ReactElement {
   const [information, setInformation] = useState<IOHInfoData[]>([]);
   const [totalCount, setTotalCount] = useState(0);
 
+  const [measureDataDI, setMeasureDataDI] = useState<MeasureData<boolean>>(new MeasureData<boolean>(11));
+  const [measureDataDO, setMeasureDataDO] = useState<MeasureData<boolean>>(new MeasureData<boolean>(6));
+
   const onChange = (page: number, pageSize: number) => {
-    // ��û�ϴ� ID�� �޶����� �ȴ�.
     const info = information[page - 1];
     const typeTmp = getModuleType(info.moduleType);
-
     setId(info.id);
     setIndex(page);
     setType(typeTmp);
@@ -49,6 +51,36 @@ export default function IOHContents(): ReactElement {
       );
       setInformation(validIO);
       setTotalCount(validIO.length);
+    },
+    1000,
+  );
+
+  usePolling(
+    {
+      responseChannel: 'POLL-IO-DI-Data',
+      requestType: 'IODIData',
+      props: {
+        id,
+      },
+    },
+    (evt, resp) => {
+      const data = resp as MeasureData<boolean>;
+      setMeasureDataDI(data);
+    },
+    300,
+  );
+
+  usePolling(
+    {
+      responseChannel: 'POLL-IO-DO-Data',
+      requestType: 'IODOData',
+      props: {
+        id,
+      },
+    },
+    (evt, resp) => {
+      const data = resp as MeasureData<boolean>;
+      setMeasureDataDO(data);
     },
     1000,
   );
@@ -73,16 +105,16 @@ export default function IOHContents(): ReactElement {
           </Panel>
           <Panel header="IO Status" key="2">
             <Space align="start">
-              {type === 5 ? <IOHDIOStatus id={id} /> : <IOHAIStatus id={id} />}
+              {type === 5 ? <IOHDIOStatus id={id} measureDataDI={measureDataDI} measureDataDO={measureDataDO}/> : <IOHAIStatus id={id} />}
             </Space>
           </Panel>
         </Collapse>
         <Collapse defaultActiveKey={['1']} bordered={false} ghost>
           <Panel header="IO Control" key="1">
-            <Space align="start">
+            <Space align="start" direction="vertical">
               {type === 5 ? (
                 <>
-                  <IOHDOControl id={id} />
+                  <IOHDOControl id={id} measureData={measureDataDO}/>
                   <IOHDITestMode id={id} />
                 </>
               ) : (
