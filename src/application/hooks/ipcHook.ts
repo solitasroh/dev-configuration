@@ -56,3 +56,12 @@ export function usePolling<R extends IpcRequest>(
 
   useIpcOn(request.responseChannel, callback);
 }
+
+export function useOncePolling<R extends IpcRequest>(
+  request: R,
+  callback: ipcFunc,
+): void {
+  const ipcService = IpcService.getInstance();
+  ipcService.sendPolling(REQ_DATA, request);
+  useIpcOn(request.responseChannel, callback);
+}

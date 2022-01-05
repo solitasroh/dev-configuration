@@ -11,6 +11,8 @@ import LMHDOStatus from '../lmh/LMHDOStatus';
 import LMHDITestMode from '../lmh/LMHDITestMode';
 import LMHDOControl from '../lmh/LMHDOControl';
 import Title from '../Title';
+import LMHSetup from '../lmh/LMSetup';
+
 
 export default function LMHContents(): ReactElement {
   const [doStatus, setDoData] = useState<MeasureData<boolean>>();
@@ -61,6 +63,16 @@ export default function LMHContents(): ReactElement {
             <Title> I/O Control </Title>
             <LMHDITestMode />
             <LMHDOControl doStatus={doStatus} />
+          </Space>
+        </Col>
+        <Col flex="2 0 300px">
+          <Space
+            direction="vertical"
+            style={{ width: '95%', marginBottom: 30 }}
+            size="large"
+          >
+            <Title> LM Management setup </Title>
+            <LMHSetup />
           </Space>
         </Col>
       </Row>

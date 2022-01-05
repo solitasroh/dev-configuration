@@ -28,7 +28,7 @@ interface Props {
 
 export const DefaultView: FC<Props> = ({ id, status }) => (
   <List.Item>
-    <Card title={`PC-${status.id} status`} size="small" type="inner">
+    <Card title={`PC-${id} status`} size="small" type="inner">
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>Starting block</Label>
@@ -60,7 +60,7 @@ export const DefaultView: FC<Props> = ({ id, status }) => (
 );
 export const DIStatusView: FC<Props> = ({ id, status }) => (
   <List.Item>
-    <Card title={`PC-${status.id} DI status`} size="small" type="inner">
+    <Card title={`PC-${id} DI status`} size="small" type="inner">
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>DI 1</Label>
@@ -109,7 +109,7 @@ export const DIStatusView: FC<Props> = ({ id, status }) => (
 
 export const DOStatusView: FC<Props> = ({ id, status }) => (
   <List.Item>
-    <Card title={`PC-${status.id} DI status`} size="small" type="inner">
+    <Card title={`PC-${id} DI status`} size="small" type="inner">
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>DO 1</Label>
@@ -134,7 +134,7 @@ export const DOStatusView: FC<Props> = ({ id, status }) => (
 
 export const ProtectionView: FC<Props> = ({ id, status }) => (
   <List.Item>
-    <Card title={`PC-${status.id} Protection status`} size="small" type="inner">
+    <Card title={`PC-${id} Protection status`} size="small" type="inner">
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>THR</Label>

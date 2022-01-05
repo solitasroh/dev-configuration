@@ -14,20 +14,32 @@ import { usePolling } from '../../hooks/ipcHook';
 const { Panel } = Collapse;
 
 export default function PCContents(): ReactElement {
+  let init = 0;
   const [index, setIndex] = useState(1);
   const [id, setId] = useState(1);
   const [state, setState] = useState<boolean[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [statusList, setStatusList] = useState<PCStatus[]>([]);
 
+  
   useEffect(() => {
     const service = IpcService.getInstance();
     service.on('PC_STATUS_CHAGNED', (evt, rest) => {
       const buffer = rest as boolean[];
-      const { length } = buffer.filter((v) => v);
-
+      const { length } = buffer.filter((v) => v);      
       setState(buffer);
       setTotalCount(length);
+      if(init === 0)
+      {
+        let idx = buffer.findIndex((res) => res ===true);
+        if(idx !== -1)
+        {               
+          setIndex(idx);
+          idx +=1 
+          setId(idx);
+        }
+        init = 1111;
+      }
       return () => {
         setState([]);
         setTotalCount(0);
@@ -56,15 +68,19 @@ export default function PCContents(): ReactElement {
   const onChange = (page: number, pageSize: number) => {
     // ��û�ϴ� ID�� �޶����� �ȴ�.
     let validIdx = 0;
+    const idxArray: number[] = [];
+          
     state.map((op, idx) => {
       if (op) {
+        idxArray.push(idx);
         validIdx += 1;
         if (validIdx === page) {
-          setId(idx + 1);
+          const pcId = idxArray[validIdx - 1] + 1;
+          setId(pcId);       
+          setIndex(idxArray[validIdx - 1]);
         }
       }
     });
-    setIndex(page);
   };
 
   return (
@@ -80,14 +96,14 @@ export default function PCContents(): ReactElement {
       <Space align="start" direction="horizontal">
         <Collapse defaultActiveKey={['1']} bordered={false} ghost>
           <Panel header="Status" key="1">
-            {statusList[index - 1] == null ? (
+            {statusList[index] == null ? (
               <Empty />
             ) : (
               <Space align="start">
-                <DefaultView id={id} status={statusList[index - 1]} />
-                <DIStatusView id={id} status={statusList[index - 1]} />
-                <DOStatusView id={id} status={statusList[index - 1]} />
-                <ProtectionView id={id} status={statusList[index - 1]} />
+                <DefaultView id={id} status={statusList[index]} />
+                <DIStatusView id={id} status={statusList[index]} />
+                <DOStatusView id={id} status={statusList[index]} />
+                <ProtectionView id={id} status={statusList[index]} />
               </Space>
             )}
           </Panel>
