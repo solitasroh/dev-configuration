@@ -51,6 +51,11 @@ class IpcService {
 
   public on<T>(channel: string, eventhandler: IpcEventCallback<T>): void {
     this.ipcRenderer.on(channel, eventhandler);
+    
+  }
+  
+  public once<T> (channel: string, eventhandler: IpcEventCallback<T>): void {
+    this.ipcRenderer.once(channel, eventhandler); 
   }
 
   public removeListner(

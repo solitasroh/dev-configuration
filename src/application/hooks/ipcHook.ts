@@ -38,7 +38,7 @@ export function useIpcOn(respCh: string, callback: ipcFunc): void {
     };
 
     instance.on(respCh, eventHandler);
-
+    
     return () => instance.removeListner(respCh, eventHandler);
   }, [respCh]);
 }
@@ -63,5 +63,6 @@ export function useOncePolling<R extends IpcRequest>(
 ): void {
   const ipcService = IpcService.getInstance();
   ipcService.sendPolling(REQ_DATA, request);
-  useIpcOn(request.responseChannel, callback);
+  // useIpcOn(request.responseChannel, callback);
+  ipcService.once(request.responseChannel, callback);
 }
