@@ -10,6 +10,7 @@ import MotorUnitManagement from './modbus.a2700m/MotorUnitManagement';
 import { ChannelReadPCOperation } from './ipc/ChannelReadPCOperation';
 import { ChannelRequestCreateFile } from './ipc/ChannelRequestCreateFile';
 import { ChannelRequestLoadFile } from './ipc/ChannelRequestLoadFile';
+import { ChannelSendToDevice } from './ipc/ChannelSendToDevice';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -136,4 +137,5 @@ new Main().init([
   new ChannelReadPCOperation(),
   new ChannelRequestCreateFile(),
   new ChannelRequestLoadFile(),
+  new ChannelSendToDevice(),
 ]);
