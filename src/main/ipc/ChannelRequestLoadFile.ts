@@ -5,6 +5,7 @@ import { REQ_LOAD_FILE } from '../../ipcChannels';
 import { IpcChannel } from './IPCChannel';
 import { IpcRequest } from './IPCRequest';
 import WrappedElement from '../../Data/WrappedElement';
+import events from 'events';
 
 export class WrappedFileLoadProps implements IpcRequest {
   responseChannel?: string;
@@ -41,7 +42,7 @@ export class ChannelRequestLoadFile
 
       const instream = fs.createReadStream(file);
 
-      const reader = readline.createInterface(instream, process.stdout);
+      const reader = readline.createInterface({input: instream, crlfDelay: Infinity});
 
       reader.on('line', (line) => {
         const elementArr = line.split(' ');
@@ -66,6 +67,8 @@ export class ChannelRequestLoadFile
         console.log('file read end');
       });
 
+      await events.once(reader, 'close');
+      
       instream.close();
 
       event.sender.send(request.responseChannel, {
