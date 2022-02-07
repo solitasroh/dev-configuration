@@ -12,8 +12,6 @@ import * as fs from 'fs';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class ChannelSendToDeviceProps implements IpcRequest {
-  requestType: string;
-
   filePath: string;
 
   responseChannel?: string;
