@@ -46,7 +46,6 @@ export class ChannelRequestLoadFile
 
       reader.on('line', (line) => {
         const elementArr = line.split(' ');
-        console.log(elementArr);
         if (elementArr.length !== 5) return;
 
         const wrappedAddress = Number.parseInt(elementArr[1], 10);
@@ -62,12 +61,10 @@ export class ChannelRequestLoadFile
 
         wrappedElements.push(element);
         
-        console.log(wrappedElements);
       });
 
       reader.on('close', () => {
         console.log('file read end');
-        console.log(wrappedElements);
         event.sender.send(request.responseChannel, {
           result: true,
           elements: wrappedElements,

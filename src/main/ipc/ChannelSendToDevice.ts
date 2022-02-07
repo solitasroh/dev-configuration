@@ -1,5 +1,5 @@
 import { IpcMainEvent } from 'electron';
-import { WRITE_REQ } from '@src/ipcChannels';
+import { REQ_SEND_TO_DEVICE } from '@src/ipcChannels';
 
 import { IpcChannel } from './IPCChannel';
 
@@ -23,7 +23,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
   private register: A2700Register;
 
   constructor() {
-    this.name = WRITE_REQ;
+    this.name = REQ_SEND_TO_DEVICE;
     this.register = new A2700Register();
   }
 
@@ -37,9 +37,11 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
   ): Promise<void> {
     
     const { filePath } = request;
+    console.log(filePath);
     const data = fs.readFileSync(filePath);
     const service = ModbusService.GetClient();
 
+    console.log(data);
     try {
         service.writeRegister(65534, 65535);
 
@@ -50,7 +52,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
         }
     
         const success = await this.retryReadState(0, 0);
-    
+        console.log(success);
         if (success)  {
             await this.retryWriteFileContents(data, 0, 120, data.byteLength);
             event.sender.send(request.responseChannel, true);
@@ -100,7 +102,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
 
     service.writeRegisters(40202, writeBuffer);
     service.writeRegister(40329, wlen);
-
+    console.log(wlen);
     return this.retryWriteFileContents(data, endOffset, readLength, remaining);
   }
 }

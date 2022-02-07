@@ -5,9 +5,10 @@ import styled from 'styled-components';
 import WrappedElement from '@src/Data/WrappedElement';
 import { modalGlobalConfig } from 'antd/lib/modal/confirm';
 import IpcService from '@src/main/IPCService';
-import { REQ_CREATE_FILE, REQ_LOAD_FILE } from '@src/ipcChannels';
+import { REQ_CREATE_FILE, REQ_LOAD_FILE, REQ_SEND_TO_DEVICE } from '@src/ipcChannels';
 import { ChannelRequestCreateFile, WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
 import { WrappedFileLoadProps } from '@src/main/ipc/ChannelRequestLoadFile';
+import { ChannelSendToDeviceProps } from '@src/main/ipc/ChannelSendToDevice';
 
 const Label = styled.p`
   text-align: left;
@@ -40,6 +41,7 @@ export default function WrappedMapContents(): ReactElement {
   const [wrappedAdd, setWrappedAdd] = useState('');
   const [elements, setElements] = useState<Array<WrappedElement>>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [loadFilePath, setLoadFilePath] = useState('');
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -62,12 +64,20 @@ export default function WrappedMapContents(): ReactElement {
 
   const handleLoadButton = async () => {
     const service = IpcService.getInstance();
-    const {result, elements: loadElements}  = await service.send<{result: boolean, elements: WrappedElement[]}, WrappedFileLoadProps>(REQ_LOAD_FILE,{})
-    console.log(result);
-    console.log(loadElements);
+    const {filePath ,result, elements: loadElements}  = await service.send<{result: boolean, elements: WrappedElement[], filePath:string}, WrappedFileLoadProps>(REQ_LOAD_FILE,{})
+
     if (result) {
       setElements(loadElements);
+      setLoadFilePath(filePath);
+      console.log(filePath);
     }
+  }
+
+  const handleSendFileButton = async () => {
+    const service = IpcService.getInstance();
+    await service.send<boolean, ChannelSendToDeviceProps>(REQ_SEND_TO_DEVICE, {
+      filePath: loadFilePath,
+    });
   }
   const handleOk = (index : number) => {
     setIsModalVisible(false);
@@ -131,7 +141,7 @@ export default function WrappedMapContents(): ReactElement {
           <UserButton onClick ={handleLoadButton}>Load</UserButton>
         </Col>
         <Col>
-          <UserButton>File Send</UserButton>
+          <UserButton onClick ={handleSendFileButton}>File Send</UserButton>
         </Col>
         <Col>
           <UserButton
