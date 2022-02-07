@@ -5,7 +5,7 @@ enum A2700DataType {
   LDInfo = 61524,
   IOInfo = 61353,
   IOData = 2018,
-  WrappedMap = 40330,
+  WrappedElement = 40330,
   LMManagementMode = 51040,
 }
 

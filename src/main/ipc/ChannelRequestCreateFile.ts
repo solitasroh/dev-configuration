@@ -30,22 +30,23 @@ export class ChannelRequestCreateFile
     event: IpcMainEvent,
     request: WrappedFileCreateProps,
   ): Promise<void> => {
+    console.log("send handle");
     const { elements, fileType } = request;
 
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'save wrapped elements',
     });
-    let fileName = 'wrapped_register_file'
+    // let fileName = 'wrapped_register_file'
     
-    if (fileType === 0) {
-        fileName = 'wrapped_register_file'
-    } else {
-        fileName = 'wrapped_coil_file'
-    }
+    // if (fileType === 0) {
+    //     fileName = 'wrapped_register_file'
+    // } else {
+    //     fileName = 'wrapped_coil_file'
+    // }
 
     if (!canceled) {
       try {
-        const file = `${filePath}\\${fileName}`;
+        const file = `${filePath}`;
 
         const fd = await fs.openSync(file, 'w+');
 
