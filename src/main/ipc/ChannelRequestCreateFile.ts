@@ -31,19 +31,12 @@ export class ChannelRequestCreateFile
     request: WrappedFileCreateProps,
   ): Promise<void> => {
     console.log("send handle");
-    const { elements, fileType } = request;
+    const { elements } = request;
 
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'save wrapped elements',
     });
-    // let fileName = 'wrapped_register_file'
     
-    // if (fileType === 0) {
-    //     fileName = 'wrapped_register_file'
-    // } else {
-    //     fileName = 'wrapped_coil_file'
-    // }
-
     if (!canceled) {
       try {
         const file = `${filePath}`;
@@ -61,13 +54,20 @@ export class ChannelRequestCreateFile
         fs.close(fd, () => {
           console.log('wrapped register file closed');
         });
-        event.sender.send(request.responseChannel, true);
+        event.sender.send(request.responseChannel, {
+            result: true,
+            path : file
+        });
       } catch (error) {
           console.log(error);
-          event.sender.send(request.responseChannel, false);    
+          event.sender.send(request.responseChannel, {
+              result : false
+          });    
       }
     } else {
-      event.sender.send(request.responseChannel, false);
+      event.sender.send(request.responseChannel, {
+          result: false
+      });
     }
   };
 }

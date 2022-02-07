@@ -71,6 +71,7 @@ export class ChannelRequestLoadFile
         event.sender.send(request.responseChannel, {
           result: true,
           elements: wrappedElements,
+          filePath: file
         });
       });
 
