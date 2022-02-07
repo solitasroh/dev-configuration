@@ -56,7 +56,7 @@ export default class MismatchState implements A2700Data {
       case 0: // operating
       case 1: // lmh di
       case 2: // lmh do
-        this.detailType1 = `${detail2}`;
+        this.detailType1 = `${detail1}`;
         this.detailType2 = `${detail2}`;
         break;
       case 3: // lmh id missmatch

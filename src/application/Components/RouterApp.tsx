@@ -67,6 +67,9 @@ const RouterApp: FC = () => {
           <Menu.Item key="3">
             <NavLink to="/PCContents">A2750PC</NavLink>
           </Menu.Item>
+          <Menu.Item key="4">
+            <NavLink to="/WrappedMapContents">WrappedMap</NavLink>
+          </Menu.Item>
         </Menu>
       </Sider>
       <ContentWrapper className="site-layout">

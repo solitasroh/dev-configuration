@@ -5,6 +5,7 @@ import IOHContents from '../Components/contents/A2750IOH';
 import LMHContents from '../Components/contents/A2750LMH';
 import PCContents from '../Components/contents/A2750PC';
 import Home from '../Components/contents/Home';
+import WrappedMapContents from '../Components/contents/WrappedMapSetup';
 
 import RouterApp from '../Components/RouterApp';
 
@@ -31,6 +32,7 @@ const MainRouter: React.FC = () => (
         <Route path="/LMHContents" element={<LMHContents />} />
         <Route path="/IOHContents" element={<IOHContents />} />
         <Route path="/PCContents" element={<PCContents />} />
+        <Route path="/WrappedMapContents" element={<WrappedMapContents />} />
         <Route path="*" element={<NoMatch />} />
       </Route>
     </Routes>
