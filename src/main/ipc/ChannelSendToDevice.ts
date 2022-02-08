@@ -37,30 +37,33 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
   ): Promise<void> {
     
     const { filePath } = request;
-    console.log(filePath);
+    
     const data = fs.readFileSync(filePath);
+    
     const service = ModbusService.GetClient();
 
-    console.log(data);
+    const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length)
+    const result = Array.from(buffer);
+    console.log(`bLen = ${buffer.byteLength} u16Len = ${result.length}`);
     try {
         service.writeRegister(65534, 65535);
 
         const state = await this.getWrappedRegisterWriteState();
     
         if (state === 0) {
-          service.writeRegister(40200, 1);
+          service.writeRegister(40200, 2);
         }
     
         const success = await this.retryReadState(0, 0);
-        console.log(success);
         if (success)  {
-            await this.retryWriteFileContents(data, 0, 120, data.byteLength);
+            const wLen = result.length < 120 ? result.length : 120;
+            console.log(`remaining ${result.length} readLength ${wLen}`);
+            await this.retryWriteFileContents(result, 0, wLen, result.length);
             event.sender.send(request.responseChannel, true);
         } else {
             event.sender.send(request.responseChannel, false);
         }
     } catch (error) {
-        console.log(error);
         event.sender.send(request.responseChannel, false);
     }
   }
@@ -88,21 +91,35 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
     return this.retryReadState(readState, c);    
   };
   
-  retryWriteFileContents = async (data: Buffer, offset:number, wlen: number, remainingLen: number) : Promise<boolean>=> {
+  retryWriteFileContents = async (data: number[], offset:number, wlen: number, remainingLen: number) : Promise<boolean>=> {
     const service = ModbusService.GetClient();
     if (remainingLen <= 0) {
         return true;
     } 
     
-    const endOffset = offset + (wlen * 2);
+    const endOffset = offset + (wlen);
+
     const writeBuffer = data.slice(offset, endOffset);
 
-    const remaining = remainingLen - (wlen * 2);
+    const remaining = remainingLen - (wlen);
     const readLength = remaining < 120 ? remaining : wlen;
+    
+    console.log(`remaining ${remaining} readLength ${readLength}`);
 
-    service.writeRegisters(40202, writeBuffer);
-    service.writeRegister(40329, wlen);
-    console.log(wlen);
-    return this.retryWriteFileContents(data, endOffset, readLength, remaining);
+    try
+    {
+      await service.writeRegisters(40202, writeBuffer);
+      await service.writeRegister(40329, wlen);
+      
+      if (remaining <= 0) {
+        return true;
+      }
+      return await this.retryWriteFileContents(data, endOffset, readLength, remaining);
+    }
+    catch (error)
+    {
+      console.log(error);
+      throw error;
+    }
   }
 }
