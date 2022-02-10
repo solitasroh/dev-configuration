@@ -1,14 +1,18 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { Row, Col, Button, Modal, Input, List } from 'antd';
+import { Row, Col, Button, Modal, Input, List, Divider } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import WrappedElement from '@src/Data/WrappedElement';
-import { modalGlobalConfig } from 'antd/lib/modal/confirm';
 import IpcService from '@src/main/IPCService';
-import { REQ_CREATE_FILE, REQ_LOAD_FILE, REQ_SEND_TO_DEVICE } from '@src/ipcChannels';
-import { ChannelRequestCreateFile, WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
+import {
+  REQ_CREATE_FILE,
+  REQ_LOAD_FILE,
+  REQ_SEND_TO_DEVICE,
+} from '@src/ipcChannels';
+import { WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
 import { WrappedFileLoadProps } from '@src/main/ipc/ChannelRequestLoadFile';
 import { ChannelSendToDeviceProps } from '@src/main/ipc/ChannelSendToDevice';
+import WrappedMapModal from './wrappedMapModal';
 
 const Label = styled.p`
   text-align: left;
@@ -35,192 +39,325 @@ const UserButton = styled(Button)`
   margin-right: 10px;
 `;
 export default function WrappedMapContents(): ReactElement {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCoilModalVisible, setIsCoilModalVisible] = useState(false);
+  const [isRegModalVisible, setIsRegModalVisible] = useState(false);
   const [address, setAddress] = useState('');
   const [length, setLength] = useState('');
   const [wrappedAdd, setWrappedAdd] = useState('');
-  const [elements, setElements] = useState<Array<WrappedElement>>([]);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [loadFilePath, setLoadFilePath] = useState('');
-  const showModal = () => {
-    setIsModalVisible(true);
+  const [mapPage, setPage] = useState(0);
+  const [coilElements, setCoilElements] = useState<Array<WrappedElement>>([]);
+  const [coilSelectedIndex, setCoilSelectedIndex] = useState(-1);
+  const [regElements, setRegElements] = useState<Array<WrappedElement>>([]);
+  const [regSelectedIndex, setRegSelectedIndex] = useState(-1);
+  const [coilLoadFilePath, setCoilLoadFilePath] = useState('');
+  const [regLoadFilePath, setRegLoadFilePath] = useState('');
+
+  const showModal = (type: number) => {
+    if (type === 1) setIsCoilModalVisible(true);
+    else setIsRegModalVisible(true);
   };
+
   const insertElement = (item: WrappedElement) => {
-    setElements((prevList) => {
-      if (prevList === undefined){
-        console.log("list is null");
-      }
-      return [...prevList, item];
-    });
+    if (item.page === 1000) {
+      setCoilElements((prevList) => {
+        if (prevList === undefined) {
+          console.log('list is null');
+        }
+        return [...prevList, item];
+      });
+    } else {
+      setRegElements((prevList) => {
+        if (prevList === undefined) {
+          console.log('list is null');
+        }
+        return [...prevList, item];
+      });
+    }
+  };
 
-  }
-  const handleSaveButton = async () => {
+  const handleSaveButton = async (type: number) => {
     const service = IpcService.getInstance();
+    const elements = type === 1 ? coilElements : regElements;
     await service.send<boolean, WrappedFileCreateProps>(REQ_CREATE_FILE, {
-      elements, 
-      fileType: 1,
+      elements,
+      fileType: type,
     });
-  }
+  };
 
-  const handleLoadButton = async () => {
+  const handleLoadButton = async (type: number) => {
     const service = IpcService.getInstance();
-    const {filePath ,result, elements: loadElements}  = await service.send<{result: boolean, elements: WrappedElement[], filePath:string}, WrappedFileLoadProps>(REQ_LOAD_FILE,{})
+    const {
+      filePath,
+      result,
+      elements: loadElements,
+    } = await service.send<
+      { result: boolean; elements: WrappedElement[]; filePath: string },
+      WrappedFileLoadProps
+    >(REQ_LOAD_FILE, {});
 
     if (result) {
-      setElements(loadElements);
-      setLoadFilePath(filePath);
-      console.log(filePath);
+      if (type === 1) {
+        setCoilElements(loadElements);
+        setCoilLoadFilePath(filePath);
+      } else {
+        setRegElements(loadElements);
+        setRegLoadFilePath(filePath);
+      }
     }
-  }
+  };
 
-  const handleSendFileButton = async () => {
+  const handleSendFileButton = async (type: number) => {
     const service = IpcService.getInstance();
+    const path = type === 1 ? coilLoadFilePath : regLoadFilePath;
     await service.send<boolean, ChannelSendToDeviceProps>(REQ_SEND_TO_DEVICE, {
-      filePath: loadFilePath,
+      filePath: path,
+      fileType: type
     });
-  }
-  const handleOk = (index : number) => {
-    setIsModalVisible(false);
+  };
+
+  const handleOk = (
+    index: number,
+    add: string,
+    leng: string,
+    wAdd: string,
+    page: number,
+  ) => {
+    if (page === 1000) {
+      setIsCoilModalVisible(false);
+    } else {
+      setIsRegModalVisible(false);
+    }
+
+    setAddress(add);
+    setLength(leng);
+    setWrappedAdd(wAdd);
+    setPage(page);
+    console.log(`${add}, ${leng}, ${wAdd}`);
+
     if (index < 0) {
       const item = new WrappedElement();
-      item.address = parseInt(address, 10);
-      item.length = parseInt(length, 10);
-      item.page = 1000;
-      item.wrappedAddress = parseInt(wrappedAdd, 10);
+      item.address = parseInt(add, 10);
+      item.length = parseInt(leng, 10);
+      item.page = page;
+      item.wrappedAddress = parseInt(wAdd, 10);
+      console.log(`${address}, ${length}, ${wrappedAdd}`);
       insertElement(item);
-  
-      setAddress("");
-      setLength("");
-      setWrappedAdd("");
+
+      setAddress('');
+      setLength('');
+      setWrappedAdd('');
+    } else if (page === 1000) {
+      const item = coilElements[index];
+      item.address = parseInt(add, 10);
+      item.length = parseInt(leng, 10);
+      item.page = page;
+      item.wrappedAddress = parseInt(wAdd, 10);
+      setCoilElements(coilElements);
     } else {
-      const item = elements[index];
-      item.address = parseInt(address, 10);
-      item.length = parseInt(length, 10);
-      item.page = 1000;
-      item.wrappedAddress = parseInt(wrappedAdd, 10);
-      setElements(elements);
+      const item = regElements[index];
+      item.address = parseInt(add, 10);
+      item.length = parseInt(leng, 10);
+      item.page = page;
+      item.wrappedAddress = parseInt(wAdd, 10);
+      setRegElements(regElements);
     }
-   
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);    
-    setAddress("");
-    setLength("");
-    setWrappedAdd("");
-  };
-  
-  const itemClickHandle = (index: number) => {
-    if (index !== selectedIndex) {
-      setSelectedIndex(index);
+  const handleCancel = (type: number) => {
+    if (type === 1) {
+      setIsCoilModalVisible(false);
     } else {
-      setSelectedIndex(-1);
+      setIsRegModalVisible(false);
     }
-  }
+    setAddress('');
+    setLength('');
+    setWrappedAdd('');
+  };
 
-  const itemDoubleClickHandle=(index: number)=>{
-    setSelectedIndex(index);
-    const item = elements[index];
+  const itemClickHandle = (index: number, type: number) => {
+    if (type === 1) {
+      if (index !== coilSelectedIndex) {
+        setCoilSelectedIndex(index);
+      } else {
+        setCoilSelectedIndex(-1);
+      }
+    } else if (index !== regSelectedIndex) {
+      setRegSelectedIndex(index);
+    } else {
+      setRegSelectedIndex(-1);
+    }
+  };
+
+  const itemDoubleClickHandle = (index: number, type: number) => {
+    if (type === 1) setCoilSelectedIndex(index);
+    else setRegSelectedIndex(index);
+
+    const item = type === 1 ? coilElements[index] : regElements[index];
     setAddress(item.address.toString());
     setLength(item.length.toString());
     setWrappedAdd(item.wrappedAddress.toString());
-    showModal();
+    showModal(type);
+
+    setAddress('');
+    setLength('');
+    setWrappedAdd('');
+
     console.log(`selected item index ${index}`);
+  };
+
+  const removeElement = (type: number) => {
+    if (type === 1)
+      setCoilElements(
+        coilElements.filter(
+          (item) => item.address !== coilElements[coilSelectedIndex].address,
+        ),
+      );
+    else
+      setRegElements(
+        regElements.filter(
+          (item) => item.address !== regElements[regSelectedIndex].address,
+        ),
+      );
+  };
+
+  const closeRequest = () => {
+    setIsCoilModalVisible(false);
+    setIsRegModalVisible(false);
   }
 
-  const removeElement=()=>{
-    setElements(elements.filter(item => item.address !== elements[selectedIndex].address));
-  }
   return (
-    <>
-      <Row justify="start">
-        <Col>
-          <UserButton onClick={handleSaveButton}>Save</UserButton>
-        </Col>
-        <Col>
-          <UserButton onClick ={handleLoadButton}>Load</UserButton>
-        </Col>
-        <Col>
-          <UserButton onClick ={handleSendFileButton}>File Send</UserButton>
-        </Col>
-        <Col>
-          <UserButton
-            type="text"
-            icon={<PlusCircleOutlined />}
-            onClick={showModal}
+    <Row>
+      <Col>
+        <Row justify="start">
+          <Col>
+            <UserButton onClick={(e) => handleSaveButton(1)}>
+              Coil file Save
+            </UserButton>
+          </Col>
+          <Col>
+            <UserButton onClick={(e) => handleLoadButton(1)}>
+              Coil file Load
+            </UserButton>
+          </Col>
+          <Col>
+            <UserButton onClick={(e) => handleSendFileButton(1)}>
+              Coil File Send
+            </UserButton>
+          </Col>
+          <Col>
+            <UserButton
+              type="text"
+              icon={<PlusCircleOutlined />}
+              onClick={(e) => {
+                setCoilSelectedIndex(-1);
+                showModal(1);
+              }}
+            />
+            <WrappedMapModal
+              isModalVisible={isCoilModalVisible}
+              onOk={handleOk}
+              onCancel={() => handleCancel(1)}
+              selectedIndex={coilSelectedIndex}
+              page={1000}
+              close={closeRequest}
+              item={coilElements[coilSelectedIndex] ?? new WrappedElement()}
+            />
+          </Col>
+          <Col span={1}>
+            <UserButton
+              type="text"
+              icon={<MinusCircleOutlined />}
+              onClick={(e) => removeElement(1)}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <List
+            size="small"
+            bordered
+            dataSource={coilElements}
+            renderItem={(item, index) => (
+              <List.Item>
+                <FileItemContainer
+                  selected={index === coilSelectedIndex}
+                  onDoubleClick={() => itemDoubleClickHandle(index, 1)}
+                  onClick={() => itemClickHandle(index, 1)}
+                >
+                  <Label>Address : {item.address}</Label>
+                  <Label>({item.wrappedAddress})</Label>
+                  <Label>[{item.length}]</Label>
+                </FileItemContainer>
+              </List.Item>
+            )}
           />
-          <Modal
-            title="Creat Element"
-            visible={isModalVisible}
-            onOk={() => handleOk(selectedIndex)}
-            onCancel={handleCancel}
-            destroyOnClose
-          >
-            <Row>
-              <Col flex={1.5}>
-                <Label>Address</Label>
-              </Col>
-              <Col flex={3.5}>
-                <Input
-                  size="small"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col flex={1.5}>
-                <Label>Length</Label>
-              </Col>
-              <Col flex={3.5}>
-                <Input
-                  size="small"
-                  value = {length}
-                  onChange={(e) => setLength(e.target.value)}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col flex={1.5}>
-                <Label>Page</Label>
-              </Col>
-              <Col flex={3.5}>
-                <Input size="small" value={1000} disabled />
-              </Col>
-            </Row>
-            <Row>
-              <Col flex={1.5}>
-                <Label>Wrapped Address</Label>
-              </Col>
-              <Col flex={3.5}>
-                <Input
-                  size="small"
-                  value ={wrappedAdd}
-                  onChange={(e) => setWrappedAdd(e.target.value)}
-                />
-              </Col>
-            </Row>
-          </Modal>
-        </Col>
-        <Col span={1}>
-          <UserButton type="text" icon={<MinusCircleOutlined />} onClick={removeElement}/>
-        </Col>
-      </Row>
-      <Row>
-      <List
-      size="small"
-      bordered
-      dataSource={elements}
-      renderItem={(item,index) =>         
-        <List.Item> 
-          <FileItemContainer selected={index === selectedIndex} onDoubleClick={() => itemDoubleClickHandle(index)} onClick={() => itemClickHandle(index)}>
-            <Label>Address : {item.address}</Label>
-            <Label>({item.wrappedAddress})</Label>        
-            <Label>[{item.length}]</Label>
-          </FileItemContainer>
-        </List.Item>}
-    />
-      </Row>
-    </>
+        </Row>
+      </Col>
+
+      <Col>
+        <Row justify="start">
+          <Col>
+            <UserButton onClick={(e) => handleSaveButton(2)}>
+              Reg file Save
+            </UserButton>
+          </Col>
+          <Col>
+            <UserButton onClick={(e) => handleLoadButton(2)}>
+              Reg file Load
+            </UserButton>
+          </Col>
+          <Col>
+            <UserButton onClick={(e) => handleSendFileButton(2)}>
+              Reg File Send
+            </UserButton>
+          </Col>
+          <Col>
+            <UserButton
+              type="text"
+              icon={<PlusCircleOutlined />}
+              onClick={(e) => {
+                setRegSelectedIndex(-1);
+                showModal(2);
+              }}
+            />
+            <WrappedMapModal
+              isModalVisible={isRegModalVisible}
+              onOk={handleOk}
+              onCancel={() => handleCancel(2)}
+              selectedIndex={regSelectedIndex}
+              page={10000}
+              close={closeRequest}
+              item={regElements[regSelectedIndex] ?? new WrappedElement()}
+            />
+          </Col>
+          <Col span={1}>
+            <UserButton
+              type="text"
+              icon={<MinusCircleOutlined />}
+              onClick={(e) => removeElement(2)}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <List
+            size="small"
+            bordered
+            dataSource={regElements}
+            renderItem={(item, index) => (
+              <List.Item>
+                <FileItemContainer
+                  selected={index === regSelectedIndex}
+                  onDoubleClick={() => itemDoubleClickHandle(index, 2)}
+                  onClick={() => itemClickHandle(index, 2)}
+                >
+                  <Label>Address : {item.address}</Label>
+                  <Label>({item.wrappedAddress})</Label>
+                  <Label>[{item.length}]</Label>
+                </FileItemContainer>
+              </List.Item>
+            )}
+          />
+        </Row>
+      </Col>
+    </Row>
   );
 }

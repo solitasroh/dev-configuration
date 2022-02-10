@@ -13,7 +13,9 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class ChannelSendToDeviceProps implements IpcRequest {
   filePath: string;
-
+  
+  fileType: number;
+  
   responseChannel?: string;
 }
 
@@ -36,11 +38,13 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
     request: ChannelSendToDeviceProps,
   ): Promise<void> {
     
-    const { filePath } = request;
+    const { filePath, fileType } = request;
     
     const data = fs.readFileSync(filePath);
     
     const service = ModbusService.GetClient();
+    
+    const type = fileType === 1 ? 2 : 1;
 
     const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length)
     const result = Array.from(buffer);
@@ -51,7 +55,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
         const state = await this.getWrappedRegisterWriteState();
     
         if (state === 0) {
-          service.writeRegister(40200, 2);
+          service.writeRegister(40200, type);
         }
     
         const success = await this.retryReadState(0, 0);

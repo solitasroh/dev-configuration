@@ -31,7 +31,7 @@ export class ChannelRequestCreateFile
     request: WrappedFileCreateProps,
   ): Promise<void> => {
     console.log("send handle");
-    const { elements } = request;
+    const { elements, fileType } = request;
 
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'save wrapped elements',
