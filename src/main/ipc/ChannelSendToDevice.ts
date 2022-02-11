@@ -44,7 +44,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
     
     const service = ModbusService.GetClient();
     
-    const type = fileType === 1 ? 2 : 1;
+    const type = fileType === 1 ? 1 : 0;
 
     const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length)
     const result = Array.from(buffer);

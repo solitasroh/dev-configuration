@@ -70,6 +70,9 @@ const RouterApp: FC = () => {
           <Menu.Item key="4">
             <NavLink to="/WrappedMapContents">WrappedElement</NavLink>
           </Menu.Item>
+          <Menu.Item key="5">
+            <NavLink to="/LogicSetupContents">LogicSetup</NavLink>
+          </Menu.Item>
         </Menu>
       </Sider>
       <ContentWrapper className="site-layout">
