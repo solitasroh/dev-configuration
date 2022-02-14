@@ -11,6 +11,8 @@ class WrappedElement implements A2700Data {
   page: number;
 
   address: number;
+  
+  key: string;
 
 }
 

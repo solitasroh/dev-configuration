@@ -1,0 +1,12 @@
+.App {
+    padding: 20px;
+  }
+  
+  .ant-table .blue-color td {
+    background: rgb(248, 194, 203);
+  }
+  
+  .ant-table td.red-color {
+    background: red;
+  }
+  
