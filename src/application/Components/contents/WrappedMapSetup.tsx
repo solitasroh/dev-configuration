@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { Row, Col, Button, Modal, Input, List, Divider } from 'antd';
+import { Row, Col, Button, Modal, Input, List, Divider, Table } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import WrappedElement from '@src/Data/WrappedElement';
@@ -38,6 +38,30 @@ const FileItemContainer = styled.div<{ selected: boolean }>`
 const UserButton = styled(Button)`
   margin-right: 10px;
 `;
+interface columnDef {
+  title: string;
+  dataIndex: string;
+  key: string;
+}
+
+const columns: columnDef[] = [
+  {
+    title: 'user address',
+    dataIndex: 'wrappedAddress',
+    key: 'wrappedAddress',
+  },
+  {
+    title: 'data length',
+    dataIndex: 'length',
+    key: 'length',
+  },
+  {
+    title: 'data address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+];
+
 export default function WrappedMapContents(): ReactElement {
   const [isCoilModalVisible, setIsCoilModalVisible] = useState(false);
   const [isRegModalVisible, setIsRegModalVisible] = useState(false);
@@ -52,6 +76,10 @@ export default function WrappedMapContents(): ReactElement {
   const [coilLoadFilePath, setCoilLoadFilePath] = useState('');
   const [regLoadFilePath, setRegLoadFilePath] = useState('');
 
+  useEffect(() => {
+    console.log(WrappedElement.prototype);
+    console.log(WrappedElement);
+  }, [])
   const showModal = (type: number) => {
     if (type === 1) setIsCoilModalVisible(true);
     else setIsRegModalVisible(true);
@@ -111,7 +139,7 @@ export default function WrappedMapContents(): ReactElement {
     const path = type === 1 ? coilLoadFilePath : regLoadFilePath;
     await service.send<boolean, ChannelSendToDeviceProps>(REQ_SEND_TO_DEVICE, {
       filePath: path,
-      fileType: type
+      fileType: type,
     });
   };
 
@@ -223,7 +251,7 @@ export default function WrappedMapContents(): ReactElement {
   const closeRequest = () => {
     setIsCoilModalVisible(false);
     setIsRegModalVisible(false);
-  }
+  };
 
   return (
     <Row>
@@ -356,6 +384,18 @@ export default function WrappedMapContents(): ReactElement {
               </List.Item>
             )}
           />
+        </Row>
+      </Col>
+
+      <Col>
+        <Row justify="start">
+          <Table dataSource={coilElements} columns={columns} size="small" scroll={{ y: 500 }} onRow={
+            (record, rowIndex) => ({
+                onDoubleClick: (event) => {
+                  itemDoubleClickHandle(rowIndex, 1)
+                }
+              })
+          }/>
         </Row>
       </Col>
     </Row>

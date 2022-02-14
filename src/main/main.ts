@@ -106,7 +106,7 @@ class Main {
     this.mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    this.mainWindow.webContents.openDevTools({ mode: 'detach' });
     
     this.ipcService = IpcService.getInstance();
 
