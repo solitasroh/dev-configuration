@@ -30,8 +30,7 @@ export class ChannelRequestCreateFile
     event: IpcMainEvent,
     request: WrappedFileCreateProps,
   ): Promise<void> => {
-    console.log("send handle");
-    const { elements, fileType } = request;
+    const { elements } = request;
 
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'save wrapped elements',
@@ -40,20 +39,22 @@ export class ChannelRequestCreateFile
     if (!canceled) {
       try {
         const file = `${filePath}`;
+        
+        this.fileSave(file, elements);
+        
+        // const fd = await fs.openSync(file, 'w+');
 
-        const fd = await fs.openSync(file, 'w+');
+        // elements.map((e) => {
+        //   const elementText = `#ELEMENT ${e.wrappedAddress} ${e.length} ${e.page} ${e.address} ${e.desc}\r\n`;
+        //   fs.writeFileSync(fd, elementText, { encoding: 'utf8' });
+        //   return undefined;
+        // });
 
-        elements.map((e) => {
-          const elementText = `#ELEMENT ${e.wrappedAddress} ${e.length} ${e.page} ${e.address}\r\n`;
-          fs.writeFileSync(fd, elementText, { encoding: 'utf8' });
-          return undefined;
-        });
+        // await fs.writeFileSync(fd, '#END\r\n');
 
-        await fs.writeFileSync(fd, '#END\r\n');
-
-        fs.close(fd, () => {
-          console.log('wrapped register file closed');
-        });
+        // fs.close(fd, () => {
+        //   console.log('wrapped register file closed');
+        // });
         event.sender.send(request.responseChannel, {
             result: true,
             path : file
@@ -70,4 +71,15 @@ export class ChannelRequestCreateFile
       });
     }
   };
+
+  fileSave = (filePath:string, elements: WrappedElement[]) => {
+    const data = JSON.stringify(elements);
+    fs.writeFile(filePath, data, 'utf8', (err) => {
+      if (err) { 
+        console.log("error writing file:", err);
+      } else {
+        console.log("file is written successfully!");
+      }
+    });
+} 
 }

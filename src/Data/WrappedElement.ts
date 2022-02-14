@@ -14,6 +14,7 @@ class WrappedElement implements A2700Data {
   
   key: string;
 
+  desc: string;
 }
 
 export default WrappedElement;

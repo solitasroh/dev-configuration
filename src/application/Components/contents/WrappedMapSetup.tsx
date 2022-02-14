@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Row, Col, Button, Modal, Input, List, Divider, Table } from 'antd';
+import React, { ReactElement, useState } from 'react';
+import { Row, Col, Button, Table, Space } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import WrappedElement from '@src/Data/WrappedElement';
@@ -13,6 +13,8 @@ import { WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
 import { WrappedFileLoadProps } from '@src/main/ipc/ChannelRequestLoadFile';
 import { ChannelSendToDeviceProps } from '@src/main/ipc/ChannelSendToDevice';
 import WrappedMapModal from './WrappedMapModal';
+import './index.css';
+import Title from '../Title';
 
 const UserButton = styled(Button)`
   margin-right: 10px;
@@ -47,7 +49,6 @@ export default function WrappedMapContents(): ReactElement {
   const [address, setAddress] = useState('');
   const [length, setLength] = useState('');
   const [wrappedAdd, setWrappedAdd] = useState('');
-  const [mapPage, setPage] = useState(0);
   const [coilElements, setCoilElements] = useState<Array<WrappedElement>>([]);
   const [coilSelectedIndex, setCoilSelectedIndex] = useState(-1);
   const [regElements, setRegElements] = useState<Array<WrappedElement>>([]);
@@ -55,10 +56,6 @@ export default function WrappedMapContents(): ReactElement {
   const [coilLoadFilePath, setCoilLoadFilePath] = useState('');
   const [regLoadFilePath, setRegLoadFilePath] = useState('');
 
-  useEffect(() => {
-    console.log(WrappedElement.prototype);
-    console.log(WrappedElement);
-  }, []);
   const showModal = (type: number) => {
     if (type === 1) setIsCoilModalVisible(true);
     else setIsRegModalVisible(true);
@@ -115,10 +112,9 @@ export default function WrappedMapContents(): ReactElement {
 
   const handleSendFileButton = async (type: number) => {
     const service = IpcService.getInstance();
-    const path = type === 1 ? coilLoadFilePath : regLoadFilePath;
     await service.send<boolean, ChannelSendToDeviceProps>(REQ_SEND_TO_DEVICE, {
-      filePath: path,
       fileType: type,
+      elements: type === 1 ? coilElements : regElements 
     });
   };
 
@@ -138,8 +134,6 @@ export default function WrappedMapContents(): ReactElement {
     setAddress(add);
     setLength(leng);
     setWrappedAdd(wAdd);
-    setPage(page);
-    console.log(`${add}, ${leng}, ${wAdd}`);
 
     if (index < 0) {
       const item = new WrappedElement();
@@ -236,23 +230,22 @@ export default function WrappedMapContents(): ReactElement {
   return (
     <Row>
       <Col>
-        <Row justify="start">
-          <Col>
+        <Space
+          direction="vertical"
+          style={{ width: '95%', marginBottom: 30 }}
+          size="middle"
+        >
+          <Title> User Define Address Map (Coil) </Title>
+          <Row>
             <UserButton onClick={(e) => handleSaveButton(1)}>
-              Coil file Save
+              Save File
             </UserButton>
-          </Col>
-          <Col>
             <UserButton onClick={(e) => handleLoadButton(1)}>
-              Coil file Load
+              Load File
             </UserButton>
-          </Col>
-          <Col>
             <UserButton onClick={(e) => handleSendFileButton(1)}>
-              Coil File Send
+              Send File
             </UserButton>
-          </Col>
-          <Col>
             <UserButton
               type="text"
               icon={<PlusCircleOutlined />}
@@ -261,66 +254,66 @@ export default function WrappedMapContents(): ReactElement {
                 showModal(1);
               }}
             />
-            <WrappedMapModal
-              isModalVisible={isCoilModalVisible}
-              onOk={handleOk}
-              onCancel={() => handleCancel(1)}
-              selectedIndex={coilSelectedIndex}
-              page={1000}
-              close={closeRequest}
-              item={coilElements[coilSelectedIndex] ?? new WrappedElement()}
-            />
-          </Col>
-          <Col span={1}>
             <UserButton
               type="text"
               icon={<MinusCircleOutlined />}
               onClick={(e) => removeElement(1)}
             />
-          </Col>
-        </Row>
-        <Row justify="start">
-          <Table
-            rowClassName={(record,index) => {
-              if (coilSelectedIndex === index ) {
-                return "blue-color";
-              }
-              return '';
-            }}
-            dataSource={coilElements}
-            columns={columns}
-            size="small"
-            scroll={{ y: 500 }}
-            onRow={(record, rowIndex) => ({
-              onDoubleClick: (event) => {
-                itemDoubleClickHandle(rowIndex, 1);
-              },
-              onClick: () => {
-                itemClickHandle(rowIndex, 1);
-              },
-              
-            })}
-          />
-        </Row>
+          </Row>
+          <Row justify="start">
+            <Table
+              rowClassName={(record, index) => {
+                if (coilSelectedIndex === index) {
+                  return 'blue-color';
+                }
+                return '';
+              }}
+              dataSource={coilElements}
+              columns={columns}
+              size="small"
+              scroll={{ y: 500 }}
+              onRow={(record, rowIndex) => ({
+                onDoubleClick: (event) => {
+                  itemDoubleClickHandle(rowIndex, 1);
+                },
+                onClick: () => {
+                  itemClickHandle(rowIndex, 1);
+                },
+              })}
+            />
+          </Row>
+          <Row justify="start">
+            <Col>
+              <WrappedMapModal
+                isModalVisible={isCoilModalVisible}
+                onOk={handleOk}
+                onCancel={() => handleCancel(1)}
+                selectedIndex={coilSelectedIndex}
+                page={1000}
+                close={closeRequest}
+                item={coilElements[coilSelectedIndex] ?? new WrappedElement()}
+              />
+            </Col>
+          </Row>
+        </Space>
       </Col>
       <Col>
-        <Row justify="start">
-          <Col>
+        <Space
+          direction="vertical"
+          style={{ width: '95%', marginBottom: 30 }}
+          size="middle"
+        >
+          <Title> User Define Address Map (Register) </Title>
+          <Row>
             <UserButton onClick={(e) => handleSaveButton(2)}>
-              Reg file Save
+              Save File
             </UserButton>
-          </Col>
-          <Col>
             <UserButton onClick={(e) => handleLoadButton(2)}>
-              Reg file Load
+              Load File
             </UserButton>
-          </Col>
-          <Col>
             <UserButton onClick={(e) => handleSendFileButton(2)}>
-              Reg File Send
+              Send File
             </UserButton>
-          </Col>
-          <Col>
             <UserButton
               type="text"
               icon={<PlusCircleOutlined />}
@@ -329,6 +322,36 @@ export default function WrappedMapContents(): ReactElement {
                 showModal(2);
               }}
             />
+
+            <UserButton
+              type="text"
+              icon={<MinusCircleOutlined />}
+              onClick={(e) => removeElement(2)}
+            />
+          </Row>
+          <Row justify="start">
+            <Table
+              rowClassName={(record, index) => {
+                if (regSelectedIndex === index) {
+                  return 'blue-color';
+                }
+                return '';
+              }}
+              dataSource={regElements}
+              columns={columns}
+              size="small"
+              scroll={{ y: 500 }}
+              onRow={(record, rowIndex) => ({
+                onDoubleClick: (event) => {
+                  itemDoubleClickHandle(rowIndex, 2);
+                },
+                onClick: () => {
+                  itemClickHandle(rowIndex, 2);
+                },
+              })}
+            />
+          </Row>
+          <Row>
             <WrappedMapModal
               isModalVisible={isRegModalVisible}
               onOk={handleOk}
@@ -338,37 +361,8 @@ export default function WrappedMapContents(): ReactElement {
               close={closeRequest}
               item={regElements[regSelectedIndex] ?? new WrappedElement()}
             />
-          </Col>
-          <Col span={1}>
-            <UserButton
-              type="text"
-              icon={<MinusCircleOutlined />}
-              onClick={(e) => removeElement(2)}
-            />
-          </Col>
-        </Row>
-        <Row justify="start">
-          <Table
-            rowClassName={(record,index) => {
-            if (regSelectedIndex === index ) {
-              return "blue-color";
-            }
-            return '';
-          }}
-            dataSource={regElements}
-            columns={columns}
-            size="small"
-            scroll={{ y: 500 }}
-            onRow={(record, rowIndex) => ({
-              onDoubleClick: (event) => {
-                itemDoubleClickHandle(rowIndex, 2);
-              },
-              onClick: () => {
-                itemClickHandle(rowIndex, 2);
-              },
-            })}
-          />
-        </Row>
+          </Row>
+        </Space>
       </Col>
     </Row>
   );
