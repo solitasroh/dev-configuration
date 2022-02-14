@@ -324,7 +324,7 @@ export default function WrappedMapContents(): ReactElement {
               onOk={handleOk}
               onCancel={() => handleCancel(2)}
               selectedIndex={regSelectedIndex}
-              page={10000}
+              page={0}
               close={closeRequest}
               item={regElements[regSelectedIndex] ?? new WrappedElement()}
             />

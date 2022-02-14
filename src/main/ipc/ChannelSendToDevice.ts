@@ -44,7 +44,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
     
     const service = ModbusService.GetClient();
     
-    const type = fileType === 1 ? 1 : 0;
+    const type = fileType === 1 ? 2 : 1;
 
     const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length)
     const result = Array.from(buffer);
@@ -53,7 +53,6 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
         service.writeRegister(65534, 65535);
 
         const state = await this.getWrappedRegisterWriteState();
-    
         if (state === 0) {
           service.writeRegister(40200, type);
         }
@@ -67,6 +66,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
             
             event.sender.send(request.responseChannel, true);
         } else {
+          console.log('read state failed');
             event.sender.send(request.responseChannel, false);
         }
     } catch (error) {
@@ -86,6 +86,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
     } 
 
     const readState = await this.getWrappedRegisterWriteState();
+    console.log(`read state = ${readState}`);
     const c = count+1;
     
     if (c === 10) {

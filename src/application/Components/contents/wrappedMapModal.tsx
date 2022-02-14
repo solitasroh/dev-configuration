@@ -71,7 +71,7 @@ const wrappedMapModal: FC<Props> = ({
 
   return (
     <Modal
-      title="Creat Element"
+      title="사용자 지정영역 맵핑"
       visible={isModalVisible}
       // onOk={(e) => {
       //   handleSubmit(onSubmit);
@@ -88,7 +88,7 @@ const wrappedMapModal: FC<Props> = ({
       <form id="myForm" onSubmit={handleSubmit(onSubmit)}>
         <Row>
           <Col flex={1.5}>
-            <Label>Address</Label>
+            <Label>데이터 주소</Label>
           </Col>
           <Col flex={3.5}>
             <input
@@ -100,7 +100,7 @@ const wrappedMapModal: FC<Props> = ({
         </Row>
         <Row>
           <Col flex={1.5}>
-            <Label>Length</Label>
+            <Label>데이터 길이</Label>
           </Col>
           <Col flex={3.5}>
             <input
@@ -112,7 +112,7 @@ const wrappedMapModal: FC<Props> = ({
         </Row>
         <Row>
           <Col flex={1.5}>
-            <Label>Page</Label>
+            <Label>페이지</Label>
           </Col>
           <Col flex={3.5}>
             <input type="text" defaultValue={item.page} disabled {...register('page')} />
@@ -120,7 +120,7 @@ const wrappedMapModal: FC<Props> = ({
         </Row>
         <Row>
           <Col flex={1.5}>
-            <Label>Wrapped Address</Label>
+            <Label>지정 영역 주소</Label>
           </Col>
           <Col flex={3.5}>
             <input
