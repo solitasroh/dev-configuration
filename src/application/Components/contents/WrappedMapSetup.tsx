@@ -13,28 +13,8 @@ import { WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
 import { WrappedFileLoadProps } from '@src/main/ipc/ChannelRequestLoadFile';
 import { ChannelSendToDeviceProps } from '@src/main/ipc/ChannelSendToDevice';
 import WrappedMapModal from './wrappedMapModal';
+import "./index.css";
 
-const Label = styled.p`
-  text-align: left;
-  font-size: 9pt;
-  min-width: 50px;
-  width: 100px;
-`;
-const FileItemContainer = styled.div<{ selected: boolean }>`
-  display: flex;
-  background-color: ${(props) => (props.selected ? '#b8d4ebc0' : '#f4f4f4')};
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  min-width: 350px;
-  height: 55px;
-  :hover {
-    background-color: #bababac0;
-  }
-  :active {
-    background-color: #686868;
-  }
-`;
 const UserButton = styled(Button)`
   margin-right: 10px;
 `;
@@ -79,7 +59,7 @@ export default function WrappedMapContents(): ReactElement {
   useEffect(() => {
     console.log(WrappedElement.prototype);
     console.log(WrappedElement);
-  }, [])
+  }, []);
   const showModal = (type: number) => {
     if (type === 1) setIsCoilModalVisible(true);
     else setIsRegModalVisible(true);
@@ -203,6 +183,7 @@ export default function WrappedMapContents(): ReactElement {
   };
 
   const itemClickHandle = (index: number, type: number) => {
+    console.log(index, type);
     if (type === 1) {
       if (index !== coilSelectedIndex) {
         setCoilSelectedIndex(index);
@@ -299,28 +280,30 @@ export default function WrappedMapContents(): ReactElement {
             />
           </Col>
         </Row>
-        <Row>
-          <List
-            size="small"
-            bordered
+        <Row justify="start">
+          <Table
+            rowClassName={(record,index) => {
+              if (coilSelectedIndex === index ) {
+                return "blue-color";
+              }
+              return '';
+            }}
             dataSource={coilElements}
-            renderItem={(item, index) => (
-              <List.Item>
-                <FileItemContainer
-                  selected={index === coilSelectedIndex}
-                  onDoubleClick={() => itemDoubleClickHandle(index, 1)}
-                  onClick={() => itemClickHandle(index, 1)}
-                >
-                  <Label>Address : {item.address}</Label>
-                  <Label>({item.wrappedAddress})</Label>
-                  <Label>[{item.length}]</Label>
-                </FileItemContainer>
-              </List.Item>
-            )}
+            columns={columns}
+            size="small"
+            scroll={{ y: 500 }}
+            onRow={(record, rowIndex) => ({
+              onDoubleClick: (event) => {
+                itemDoubleClickHandle(rowIndex, 1);
+              },
+              onClick: () => {
+                itemClickHandle(rowIndex, 1);
+              },
+              
+            })}
           />
         </Row>
       </Col>
-
       <Col>
         <Row justify="start">
           <Col>
@@ -365,37 +348,27 @@ export default function WrappedMapContents(): ReactElement {
             />
           </Col>
         </Row>
-        <Row>
-          <List
-            size="small"
-            bordered
-            dataSource={regElements}
-            renderItem={(item, index) => (
-              <List.Item>
-                <FileItemContainer
-                  selected={index === regSelectedIndex}
-                  onDoubleClick={() => itemDoubleClickHandle(index, 2)}
-                  onClick={() => itemClickHandle(index, 2)}
-                >
-                  <Label>Address : {item.address}</Label>
-                  <Label>({item.wrappedAddress})</Label>
-                  <Label>[{item.length}]</Label>
-                </FileItemContainer>
-              </List.Item>
-            )}
-          />
-        </Row>
-      </Col>
-
-      <Col>
         <Row justify="start">
-          <Table dataSource={coilElements} columns={columns} size="small" scroll={{ y: 500 }} onRow={
-            (record, rowIndex) => ({
-                onDoubleClick: (event) => {
-                  itemDoubleClickHandle(rowIndex, 1)
-                }
-              })
-          }/>
+          <Table
+            rowClassName={(record,index) => {
+            if (regSelectedIndex === index ) {
+              return "blue-color";
+            }
+            return '';
+          }}
+            dataSource={regElements}
+            columns={columns}
+            size="small"
+            scroll={{ y: 500 }}
+            onRow={(record, rowIndex) => ({
+              onDoubleClick: (event) => {
+                itemDoubleClickHandle(rowIndex, 2);
+              },
+              onClick: () => {
+                itemClickHandle(rowIndex, 2);
+              },
+            })}
+          />
         </Row>
       </Col>
     </Row>
