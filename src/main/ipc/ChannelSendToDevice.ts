@@ -62,7 +62,9 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
         if (success)  {
             const wLen = result.length < 120 ? result.length : 120;
             console.log(`remaining ${result.length} readLength ${wLen}`);
+
             await this.retryWriteFileContents(result, 0, wLen, result.length);
+            
             event.sender.send(request.responseChannel, true);
         } else {
             event.sender.send(request.responseChannel, false);
@@ -98,6 +100,7 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
   retryWriteFileContents = async (data: number[], offset:number, wlen: number, remainingLen: number) : Promise<boolean>=> {
     const service = ModbusService.GetClient();
     if (remainingLen <= 0) {
+       
         return true;
     } 
     
@@ -113,9 +116,10 @@ export class ChannelSendToDevice implements IpcChannel<ChannelSendToDeviceProps>
     try
     {
       await service.writeRegisters(40202, writeBuffer);
-      await service.writeRegister(40329, wlen);
+      await service.writeRegister(40329, wlen*2);
       
       if (remaining <= 0) {
+        await service.writeRegister(40329, 0);
         return true;
       }
       return await this.retryWriteFileContents(data, endOffset, readLength, remaining);

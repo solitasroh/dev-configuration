@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import { Space } from 'antd';
 
-export default function diPolaritySetup(): ReactElement {
+export default function DIPolaritySetup(): ReactElement {
     function selectChanged(value: any) {
         console.log(`selected ${value}`);
       }
