@@ -12,7 +12,7 @@ import {
 import { WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
 import { WrappedFileLoadProps } from '@src/main/ipc/ChannelRequestLoadFile';
 import { ChannelSendToDeviceProps } from '@src/main/ipc/ChannelSendToDevice';
-import WrappedMapModal from './wrappedMapModal';
+import WrappedMapModal from './WrappedMapModal';
 
 const Label = styled.p`
   text-align: left;
