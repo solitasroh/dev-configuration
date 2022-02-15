@@ -8,6 +8,7 @@ import { IpcChannel } from './IPCChannel';
 import A2700Register from '../modbus.a2700m/A2700M.Register';
 import ModbusService from '../ModbusService';
 import { IpcRequest } from './IPCRequest';
+import { async } from 'rxjs';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -53,32 +54,46 @@ export class ChannelSendToDevice
     console.log(`bLen = ${buffer.byteLength} u16Len = ${result.length}`);
     try {
       service.writeRegister(65534, 65535);
+      
+      const authority = await this.getAuthority();
 
-      const state = await this.getWrappedRegisterWriteState();
-      if (state === 0) {
-        service.writeRegister(40200, type);
+      if (authority) {
+        const state = await this.getWrappedRegisterWriteState();
+        if (state === 0) {
+          service.writeRegister(40201, 1);
+          service.writeRegister(40202, type);
+        }
+  
+        const success = await this.retryReadState(0, 0);
+        if (success) {
+          const wLen = result.length < 120 ? result.length : 120;
+          console.log(`remaining ${result.length} readLength ${wLen}`);
+  
+          await this.retryWriteFileContents(result, 0, wLen, result.length);
+  
+          event.sender.send(request.responseChannel, true);
+        } else {
+          console.log('read state failed');
+          event.sender.send(request.responseChannel, false);
+        }
       }
-
-      const success = await this.retryReadState(0, 0);
-      if (success) {
-        const wLen = result.length < 120 ? result.length : 120;
-        console.log(`remaining ${result.length} readLength ${wLen}`);
-
-        await this.retryWriteFileContents(result, 0, wLen, result.length);
-
-        event.sender.send(request.responseChannel, true);
-      } else {
-        console.log('read state failed');
-        event.sender.send(request.responseChannel, false);
-      }
+     
     } catch (error) {
       event.sender.send(request.responseChannel, false);
     }
   }
 
+  getAuthority = async () : Promise<boolean> => {
+    const service = ModbusService.GetClient();
+    await service.writeRegister(40199, 0x8000);
+
+    const result = await service.readHoldingRegisters(40200, 1);
+    return result.data[0] === 1;
+  }
+
   getWrappedRegisterWriteState = async (): Promise<number> => {
     const service = ModbusService.GetClient();
-    const readRegisters = await service.readHoldingRegisters(40201, 1);
+    const readRegisters = await service.readHoldingRegisters(40203, 1);
     return readRegisters.data[0];
   };
 
@@ -121,7 +136,7 @@ export class ChannelSendToDevice
     console.log(`remaining ${remaining} readLength ${readLength}`);
 
     try {
-      await service.writeRegisters(40202, writeBuffer);
+      await service.writeRegisters(40204, writeBuffer);
       await service.writeRegister(40329, wlen * 2);
 
       if (remaining <= 0) {
