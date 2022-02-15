@@ -15,6 +15,16 @@ class WrappedElement implements A2700Data {
   key: string;
 
   desc: string;
+
+  dataAddrOffset: number;
+
+  userAddrOffset : number;
+
+  numberOfDevice: number;
+
+  setKey(key: string) {
+    this.key = key;
+  }
 }
 
 export default WrappedElement;

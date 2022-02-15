@@ -40,10 +40,15 @@ export class ChannelRequestLoadFile
 //      const wrappedElements: WrappedElement[] = [];
       const file = `${filePaths[0]}`;
       const result = await this.loadFile(file);
-      
+      let count = 0;
+      const result2 =result.map(e => {
+        e.key = count.toString();
+        count+=1;
+        return e;
+      })
       event.sender.send(request.responseChannel, {
         result: true,
-        elements: result,
+        elements: result2,
         filePath: file
       });
       

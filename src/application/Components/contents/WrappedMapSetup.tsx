@@ -53,6 +53,8 @@ export default function WrappedMapContents(): ReactElement {
   const [coilSelectedIndex, setCoilSelectedIndex] = useState(-1);
   const [regElements, setRegElements] = useState<Array<WrappedElement>>([]);
   const [regSelectedIndex, setRegSelectedIndex] = useState(-1);
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const [coilLoadFilePath, setCoilLoadFilePath] = useState('');
   const [regLoadFilePath, setRegLoadFilePath] = useState('');
 
@@ -63,6 +65,17 @@ export default function WrappedMapContents(): ReactElement {
 
   const insertElement = (item: WrappedElement) => {
     if (item.page === 1000) {
+      console.log('coils length = ', coilElements.length);
+      if (coilElements.length > 0) {
+        const maxkey = coilElements.reduce((max, obj) =>
+          parseInt(max.key, 10) > parseInt(obj.key, 10) ? max : obj,
+        );
+        console.log(parseInt(maxkey.key, 10));
+        item.setKey(`${parseInt(maxkey.key, 10) + 1}`);
+      } else {
+        item.setKey('0');
+      }
+
       setCoilElements((prevList) => {
         if (prevList === undefined) {
           console.log('list is null');
@@ -70,11 +83,38 @@ export default function WrappedMapContents(): ReactElement {
         return [...prevList, item];
       });
     } else {
+      if (regElements.length > 0) {
+        const maxkey = regElements.reduce((max, obj) =>
+          parseInt(max.key, 10) > parseInt(obj.key, 10) ? max : obj,
+        );
+        item.setKey(`${maxkey.key + 1}`);
+      } else {
+        item.setKey('0');
+      }
+
       setRegElements((prevList) => {
         if (prevList === undefined) {
           console.log('list is null');
         }
         return [...prevList, item];
+      });
+    }
+  };
+
+  const insertElements = (type: number, elements: WrappedElement[]) => {
+    if (type === 2) {
+      setCoilElements((prevList) => {
+        if (prevList === undefined) {
+          console.log('list is null');
+        }
+        return [...prevList, ...elements];
+      });
+    } else {
+      setRegElements((prevList) => {
+        if (prevList === undefined) {
+          console.log('list is null');
+        }
+        return [...prevList, ...elements];
       });
     }
   };
@@ -114,15 +154,37 @@ export default function WrappedMapContents(): ReactElement {
     const service = IpcService.getInstance();
     await service.send<boolean, ChannelSendToDeviceProps>(REQ_SEND_TO_DEVICE, {
       fileType: type,
-      elements: type === 1 ? coilElements : regElements 
+      elements: type === 1 ? coilElements : regElements,
     });
   };
+  const getMaxKey = (page: number): number => {
+    try {
+      if (page === 1000) {
+        const maxkey = coilElements.reduce((max, obj) =>
+          parseInt(max.key, 10) > parseInt(obj.key, 10) ? max : obj,
+        ).key;
+        const key = parseInt(maxkey, 10);
+        return key;
+      }
 
+      const maxkey = regElements.reduce((max, obj) =>
+        parseInt(max.key, 10) > parseInt(obj.key, 10) ? max : obj,
+      ).key;
+      const key = parseInt(maxkey, 10);
+      return key;
+    } catch (err) {
+      return 0;
+    }
+  };
   const handleOk = (
     index: number,
     add: string,
     leng: string,
     wAdd: string,
+    dataAddrOffset: string,
+    userAddrOffset: string,
+    numD: string,
+    enable: boolean,
     page: number,
   ) => {
     if (page === 1000) {
@@ -130,19 +192,41 @@ export default function WrappedMapContents(): ReactElement {
     } else {
       setIsRegModalVisible(false);
     }
-
+    console.log('handle ok add address', add);
     setAddress(add);
     setLength(leng);
     setWrappedAdd(wAdd);
 
     if (index < 0) {
-      const item = new WrappedElement();
-      item.address = parseInt(add, 10);
-      item.length = parseInt(leng, 10);
-      item.page = page;
-      item.wrappedAddress = parseInt(wAdd, 10);
-      console.log(`${address}, ${length}, ${wrappedAdd}`);
-      insertElement(item);
+      console.log(index);
+
+      if (enable === true) {
+        const array = [];
+        let key = getMaxKey(page);
+
+        for (let i = 0; i < parseInt(numD, 10); i += 1) {
+          const item = new WrappedElement();
+          item.address = parseInt(add, 10) + i * parseInt(dataAddrOffset, 10);
+          item.length = parseInt(leng, 10);
+          item.page = page;
+          item.wrappedAddress =
+            parseInt(wAdd, 10) + i * parseInt(userAddrOffset, 10);
+
+          key += 1;
+          item.key = key.toString();
+
+          array.push(item);
+        }
+        insertElements(2, array);
+      } else {
+        const item = new WrappedElement();
+        item.address = parseInt(add, 10);
+        item.length = parseInt(leng, 10);
+        item.page = page;
+        item.wrappedAddress = parseInt(wAdd, 10);
+        console.log(`${address}, ${length}, ${wrappedAdd}`);
+        insertElement(item);
+      }
 
       setAddress('');
       setLength('');
@@ -162,6 +246,9 @@ export default function WrappedMapContents(): ReactElement {
       item.wrappedAddress = parseInt(wAdd, 10);
       setRegElements(regElements);
     }
+
+    setCoilSelectedIndex(-1);
+    setRegSelectedIndex(-1);
   };
 
   const handleCancel = (type: number) => {
@@ -173,20 +260,27 @@ export default function WrappedMapContents(): ReactElement {
     setAddress('');
     setLength('');
     setWrappedAdd('');
+    setCoilSelectedIndex(-1);
+    setRegSelectedIndex(-1);
   };
 
-  const itemClickHandle = (index: number, type: number) => {
-    console.log(index, type);
+  const itemClickHandle = (item: WrappedElement, type: number) => {
     if (type === 1) {
-      if (index !== coilSelectedIndex) {
-        setCoilSelectedIndex(index);
-      } else {
+      if (selectedItem === item) {
+        setSelectedItem(null);
         setCoilSelectedIndex(-1);
+      } else {
+        setSelectedItem(item);
+        setCoilSelectedIndex(coilElements.indexOf(item));
       }
-    } else if (index !== regSelectedIndex) {
-      setRegSelectedIndex(index);
-    } else {
-      setRegSelectedIndex(-1);
+    } else if (type === 2) {
+      if (selectedItem === item) {
+        setSelectedItem(null);
+        setRegSelectedIndex(-1);
+      } else {
+        setSelectedItem(item);
+        setRegSelectedIndex(regElements.indexOf(item));
+      }
     }
   };
 
@@ -208,18 +302,20 @@ export default function WrappedMapContents(): ReactElement {
   };
 
   const removeElement = (type: number) => {
-    if (type === 1)
-      setCoilElements(
-        coilElements.filter(
-          (item) => item.address !== coilElements[coilSelectedIndex].address,
-        ),
-      );
-    else
+    if (type === 1) {
+      if (selectedItem !== null) {
+        setCoilElements(coilElements.filter((item) => item !== selectedItem));
+      }
+    } else if (selectedItem !== null) {
       setRegElements(
         regElements.filter(
           (item) => item.address !== regElements[regSelectedIndex].address,
         ),
       );
+    }
+
+    setCoilSelectedIndex(-1);
+    setRegSelectedIndex(-1);
   };
 
   const closeRequest = () => {
@@ -250,7 +346,6 @@ export default function WrappedMapContents(): ReactElement {
               type="text"
               icon={<PlusCircleOutlined />}
               onClick={(e) => {
-                setCoilSelectedIndex(-1);
                 showModal(1);
               }}
             />
@@ -277,7 +372,7 @@ export default function WrappedMapContents(): ReactElement {
                   itemDoubleClickHandle(rowIndex, 1);
                 },
                 onClick: () => {
-                  itemClickHandle(rowIndex, 1);
+                  itemClickHandle(record, 1);
                 },
               })}
             />
@@ -318,7 +413,6 @@ export default function WrappedMapContents(): ReactElement {
               type="text"
               icon={<PlusCircleOutlined />}
               onClick={(e) => {
-                setRegSelectedIndex(-1);
                 showModal(2);
               }}
             />
@@ -346,7 +440,7 @@ export default function WrappedMapContents(): ReactElement {
                   itemDoubleClickHandle(rowIndex, 2);
                 },
                 onClick: () => {
-                  itemClickHandle(rowIndex, 2);
+                  itemClickHandle(record, 2);
                 },
               })}
             />
