@@ -101,6 +101,7 @@ export class ChannelSendToDevice
           console.log('read state failed');
           event.sender.send(request.responseChannel, false);
         }
+        await this.returnAuthority();
       }
     } catch (error) {
       event.sender.send(request.responseChannel, false);
@@ -115,6 +116,18 @@ export class ChannelSendToDevice
     return result.data[0] === 1;
   };
 
+  
+  returnAuthority = async (): Promise<boolean> => {
+    const client = ModbusService.GetClient();
+
+    if (client.isOpen) {
+        await client.writeRegister(40199, 0xA5A5);
+        return true;
+    }
+
+    return false;
+  }
+  
   getWrappedRegisterWriteState = async (): Promise<number> => {
     const service = ModbusService.GetClient();
     const readRegisters = await service.readHoldingRegisters(40206, 1);

@@ -11,6 +11,7 @@ import { ChannelReadPCOperation } from './ipc/ChannelReadPCOperation';
 import { ChannelRequestCreateFile } from './ipc/ChannelRequestCreateFile';
 import { ChannelRequestLoadFile } from './ipc/ChannelRequestLoadFile';
 import { ChannelSendToDevice } from './ipc/ChannelSendToDevice';
+import { ChannelReadToDevice } from './ipc/ChannelReadToDevice';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -138,4 +139,5 @@ new Main().init([
   new ChannelRequestCreateFile(),
   new ChannelRequestLoadFile(),
   new ChannelSendToDevice(),
+  new ChannelReadToDevice(),
 ]);

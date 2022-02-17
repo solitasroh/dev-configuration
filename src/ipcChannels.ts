@@ -6,4 +6,5 @@ export const SEND_DATA = 'send-data';
 export const REQ_PC_STATUS = 'request-pc-status-list';
 export const REQ_CREATE_FILE = 'request-create-file';
 export const REQ_SEND_TO_DEVICE = 'request-send-to-device';
+export const REQ_READ_TO_DEVICE = 'request-read-to-device';
 export const REQ_LOAD_FILE = 'request-load-file';

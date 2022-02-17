@@ -7,6 +7,7 @@ import IpcService from '@src/main/IPCService';
 import {
   REQ_CREATE_FILE,
   REQ_LOAD_FILE,
+  REQ_READ_TO_DEVICE,
   REQ_SEND_TO_DEVICE,
 } from '@src/ipcChannels';
 import { WrappedFileCreateProps } from '@src/main/ipc/ChannelRequestCreateFile';
@@ -15,6 +16,7 @@ import { ChannelSendToDeviceProps } from '@src/main/ipc/ChannelSendToDevice';
 import WrappedMapModal from './WrappedMapModal';
 import './index.css';
 import Title from '../Title';
+import { ChannelReadToDeviceProps } from '@src/main/ipc/ChannelReadToDevice';
 
 const UserButton = styled(Button)`
   margin-right: 10px;
@@ -160,21 +162,18 @@ export default function WrappedMapContents(): ReactElement {
 
   const handleReadButton = async (type: number) => {
     const service = IpcService.getInstance();
-    // const {
-    //   result,
-    //   elements: readElements,
-    // } = await service.send<
-    //   { result: boolean; elements: WrappedElement[]; filePath: string },
-    //   WrappedFileReadProps
-    // >(REQ_READ_FILE, {});
+    const { result, elements: readElements } = await service.send<
+      { result: boolean; elements: WrappedElement[]; filePath: string },
+      ChannelReadToDeviceProps
+    >(REQ_READ_TO_DEVICE, { fileType: type });
 
-    // if (result) {
-    //   if (type === 1) {
-    //     setCoilElements(readElements);
-    //   } else {
-    //     setRegElements(readElements);
-    //   }
-    // }
+    if (result) {
+      if (type === 2) {
+        setCoilElements(readElements);
+      } else {
+        setRegElements(readElements);
+      }
+    }
   };
 
   const getMaxKey = (page: number): number => {
@@ -365,7 +364,7 @@ export default function WrappedMapContents(): ReactElement {
             <UserButton onClick={(e) => handleSendFileButton(1)}>
               Send File
             </UserButton>
-            <UserButton onClick={(e) => handleReadButton(1)}>
+            <UserButton onClick={(e) => handleReadButton(2)}>
               Read File
             </UserButton>
             <UserButton
@@ -435,7 +434,7 @@ export default function WrappedMapContents(): ReactElement {
             <UserButton onClick={(e) => handleSendFileButton(2)}>
               Send File
             </UserButton>
-            <UserButton onClick={(e) => handleReadButton(2)}>
+            <UserButton onClick={(e) => handleReadButton(1)}>
               Read File
             </UserButton>
             <UserButton
