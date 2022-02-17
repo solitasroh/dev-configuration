@@ -44,7 +44,7 @@ export class ChannelSendToDevice
     const elementToStr = elements.map(e => `#ELEMENT ${e.wrappedAddress} ${e.length} ${e.page} ${e.address}\r\n`)
     elementToStr.push('#END\r\n');
     const data = Buffer.from(elementToStr.join(''), 'utf-8');
-
+    const crc = calculateCrc(data, data.byteLength);
     const service = ModbusService.GetClient();
 
     const type = fileType === 1 ? 2 : 1;
@@ -60,8 +60,11 @@ export class ChannelSendToDevice
       if (authority) {
         const state = await this.getWrappedRegisterWriteState();
         if (state === 0) {
-          service.writeRegister(40201, 1);
+          
           service.writeRegister(40202, type);
+          // crc, filesize,
+
+          service.writeRegister(40201, 1); //command
         }
   
         const success = await this.retryReadState(0, 0);
@@ -98,7 +101,7 @@ export class ChannelSendToDevice
   };
 
   retryReadState = async (state: number, count: number): Promise<boolean> => {
-    if (state === 1) {
+    if (state === 2) {
       return true;
     }
 

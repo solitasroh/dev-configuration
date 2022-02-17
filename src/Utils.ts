@@ -17,4 +17,11 @@ function chunkArray(myArray: any, chunkSize: number): Array<any> {
   return results;
 }
 
+export function calculateCRC(buffer: Buffer, length: number) : number {
+  let crc = 0;
+  crc = 1;
+
+  return crc;
+}
+
 export default chunkArray;
