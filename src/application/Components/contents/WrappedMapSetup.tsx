@@ -157,6 +157,26 @@ export default function WrappedMapContents(): ReactElement {
       elements: type === 1 ? coilElements : regElements,
     });
   };
+
+  const handleReadButton = async (type: number) => {
+    const service = IpcService.getInstance();
+    // const {
+    //   result,
+    //   elements: readElements,
+    // } = await service.send<
+    //   { result: boolean; elements: WrappedElement[]; filePath: string },
+    //   WrappedFileReadProps
+    // >(REQ_READ_FILE, {});
+
+    // if (result) {
+    //   if (type === 1) {
+    //     setCoilElements(readElements);
+    //   } else {
+    //     setRegElements(readElements);
+    //   }
+    // }
+  };
+
   const getMaxKey = (page: number): number => {
     try {
       if (page === 1000) {
@@ -187,10 +207,13 @@ export default function WrappedMapContents(): ReactElement {
     enable: boolean,
     page: number,
   ) => {
+    let type = 0;
     if (page === 1000) {
       setIsCoilModalVisible(false);
+      type = 2;
     } else {
       setIsRegModalVisible(false);
+      type = 1;
     }
     console.log('handle ok add address', add);
     setAddress(add);
@@ -217,7 +240,7 @@ export default function WrappedMapContents(): ReactElement {
 
           array.push(item);
         }
-        insertElements(2, array);
+        insertElements(type, array);
       } else {
         const item = new WrappedElement();
         item.address = parseInt(add, 10);
@@ -342,6 +365,9 @@ export default function WrappedMapContents(): ReactElement {
             <UserButton onClick={(e) => handleSendFileButton(1)}>
               Send File
             </UserButton>
+            <UserButton onClick={(e) => handleReadButton(1)}>
+              Read File
+            </UserButton>
             <UserButton
               type="text"
               icon={<PlusCircleOutlined />}
@@ -408,6 +434,9 @@ export default function WrappedMapContents(): ReactElement {
             </UserButton>
             <UserButton onClick={(e) => handleSendFileButton(2)}>
               Send File
+            </UserButton>
+            <UserButton onClick={(e) => handleReadButton(2)}>
+              Read File
             </UserButton>
             <UserButton
               type="text"

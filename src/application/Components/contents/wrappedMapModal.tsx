@@ -35,10 +35,9 @@ const wrappedMapModal: FC<Props> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [myForm] = Form.useForm();
   useEffect(() => {
-    console.log("modal use effect", item);
-    
-  }, [])
-  
+    console.log('modal use effect', item);
+  }, []);
+
   myForm.setFieldsValue(item);
 
   const onFinish = (values: any) => {
@@ -58,7 +57,6 @@ const wrappedMapModal: FC<Props> = ({
     myForm.setFieldsValue(new WrappedElement());
     myForm.resetFields();
     close();
-    
   };
 
   return (
@@ -85,14 +83,18 @@ const wrappedMapModal: FC<Props> = ({
         size="small"
       >
         <Form.Item name="A2750PC" valuePropName="checked">
-          <Checkbox onChange={e=>setIsVisible(!isVisible)} disabled = {selectedIndex > -1}>A2750PC</Checkbox>
+          <Checkbox
+            onChange={(e) => setIsVisible(!isVisible)}
+            disabled={selectedIndex > -1}
+          >
+            A2750PC
+          </Checkbox>
         </Form.Item>
         <Form.Item
           label="User Address"
           name="wrappedAddress"
-          
           rules={[
-            { required: true, message: 'please input user address' } ,
+            { required: true, message: 'please input user address' },
             {
               type: 'number',
               max: page === 1000 ? 6000 : 1024,
@@ -110,7 +112,6 @@ const wrappedMapModal: FC<Props> = ({
         <Form.Item
           label="User Address Offset"
           name="userAddrOffset"
-
           rules={[
             { required: false, message: 'please input user address offset' },
             {
@@ -123,14 +124,14 @@ const wrappedMapModal: FC<Props> = ({
           <InputNumber
             defaultValue={item.userAddrOffset}
             style={{ width: '100%' }}
-            disabled = {!isVisible}
+            disabled={!isVisible}
           />
         </Form.Item>
         <Form.Item
           label="Data Length"
           name="length"
           rules={[
-            { required: true, message: 'please input data length' } ,
+            { required: true, message: 'please input data length' },
             {
               type: 'number',
               max: page === 1000 ? 6000 : 1024,
@@ -150,7 +151,7 @@ const wrappedMapModal: FC<Props> = ({
           label="Data Address"
           name="address"
           rules={[
-            { required: true, message: 'please input data address' } ,
+            { required: true, message: 'please input data address' },
             {
               type: 'number',
               max: page === 1000 ? 65535 : 65535,
@@ -166,22 +167,11 @@ const wrappedMapModal: FC<Props> = ({
             style={{ width: '100%' }}
           />
         </Form.Item>
-        <Form.Item
-          label="Data Address Offset"
-          name="dataAddrOffset"
-          rules={[
-            { required: false, message: 'please input data address offset' },
-            {
-              type: 'number',
-              max: 111,
-              message: `The data address offset is not a number, max = ${111}`,
-            },
-          ]}
-        >
+        <Form.Item label="Data Address Offset" name="dataAddrOffset">
           <InputNumber
             defaultValue={item.dataAddrOffset}
             style={{ width: '100%' }}
-            disabled = {!isVisible}
+            disabled={!isVisible}
           />
         </Form.Item>
         <Form.Item
@@ -198,8 +188,8 @@ const wrappedMapModal: FC<Props> = ({
         >
           <InputNumber
             defaultValue={item.numberOfDevice}
-            style={{ width: '100%' }}            
-            disabled = {!isVisible}
+            style={{ width: '100%' }}
+            disabled={!isVisible}
           />
         </Form.Item>
       </Form>

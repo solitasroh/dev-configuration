@@ -3,13 +3,13 @@ import { REQ_SEND_TO_DEVICE } from '@src/ipcChannels';
 
 import WrappedElement from '@src/Data/WrappedElement';
 import * as fs from 'fs';
+import { async } from 'rxjs';
+import { calculateCRC } from '@src/Utils';
 import { IpcChannel } from './IPCChannel';
 
 import A2700Register from '../modbus.a2700m/A2700M.Register';
 import ModbusService from '../ModbusService';
 import { IpcRequest } from './IPCRequest';
-import { async } from 'rxjs';
-import { calculateCRC } from '@src/Utils';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -37,6 +37,14 @@ export class ChannelSendToDevice
     return this.name;
   }
 
+  /* eslint-disable no-bitwise */
+  getSize = (size: number): number => {
+    let result = size;
+    result &= ~0x3;
+    result += 4;
+    return result;
+  }
+
   async handle(
     event: IpcMainEvent,
     request: ChannelSendToDeviceProps,
@@ -47,26 +55,34 @@ export class ChannelSendToDevice
         `#ELEMENT ${e.wrappedAddress} ${e.length} ${e.page} ${e.address}\r\n`,
     );
     elementToStr.push('#END\r\n');
-    const data = Buffer.from(elementToStr.join(''), 'utf-8');
+    let data = Buffer.from(elementToStr.join(''), 'utf-8');
 
     console.log(`len = ${data.length} bLen = ${data.byteLength}`);
     console.log(data);
-
+    
     const service = ModbusService.GetClient();
-
+    
     const type = fileType === 1 ? 2 : 1;
     console.log(data.byteOffset, data.length>>1);
-    const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length>>1);
+    const padding = data.length & 0x1;
+    const size = data.length + padding;
+    if (padding !== 0) {
+      
+      const b = Buffer.alloc(1);
+      data = Buffer.concat([data, b]);
+    }
+    // const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length>>1);
+    const buffer = new Uint16Array(data.buffer, data.byteOffset, size>>1);
 
     const result = Array.from(buffer);
     
-    const crc = calculateCRC(data, data.length);
+    const crc = calculateCRC(data, size);
     
     try {
       service.writeRegister(65534, 65535);
 
       const authority = await this.getAuthority();
-      const length = [ data.length >> 16, data.length & 0xFFFF];
+      const length = [ size >> 16, size & 0xFFFF];
       if (authority) {
         await service.writeRegister(40202, type);
         await service.writeRegister(40203, crc);
