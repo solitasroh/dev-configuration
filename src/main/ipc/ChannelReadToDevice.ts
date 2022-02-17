@@ -1,22 +1,37 @@
 import WrappedElement from '@src/Data/WrappedElement';
 import { REQ_READ_TO_DEVICE } from '@src/ipcChannels';
 import { IpcMainEvent } from 'electron';
-import { getFileInfo, util } from 'prettier';
-import { async } from 'rxjs';
 import ModbusService from '../ModbusService';
 import { IpcChannel } from './IPCChannel';
 import { IpcRequest } from './IPCRequest';
 
-const addrAuthority = 40199;
-const addrAuthorityCheck = 40200;
-const addrAccessOperationCmd = 40201;
-const addrFileInformation = 40202;
+const FileAccessAddress = {
+  AddrAuthority: 40199,
+  addrAuthorityCheck: 40200,
+  addrAccessOperationCmd: 40201,
+  addrFileInformation: 40202,
+  addrOperationState: 40206,
+  addrOperationError: 40207,
+  addrFileContents: 40208,
+} as const;
 
-const addrOperationState = 40206;
-const addrOperationError = 40207;
-const addrFileContents = 40208;
+const FileAccessStatus = {
+  Idle: 0,
+  Wrinting: 1,
+  Fetching: 2,
+  Fetched: 3,
+  Completed: 4,
+} as const;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const FileAccessError = {
+  NoError: 0,
+  WriteError: 1,
+  ReadError: 2,
+  TimeoutError: 3,
+  CrcError: 4,
+};
 
 interface FileInformation {
   fileSize: number;
@@ -32,6 +47,19 @@ export class ChannelReadToDeviceProps implements IpcRequest {
   responseChannel?: string;
 }
 
+export class ChannelReadToDeviceResult {
+  result: boolean;
+
+  error: string;
+
+  elements: WrappedElement[];
+
+  constructor(result: boolean, error?: string, elements?: WrappedElement[]) {
+    this.result = result;
+    this.error = error;
+    this.elements = elements;
+  }
+}
 export class ChannelReadToDevice
   implements IpcChannel<ChannelReadToDeviceProps>
 {
@@ -39,7 +67,7 @@ export class ChannelReadToDevice
 
   private buffer: number[];
 
-  private elements: WrappedElement[]
+  private elements: WrappedElement[];
 
   constructor() {
     this.name = REQ_READ_TO_DEVICE;
@@ -53,48 +81,37 @@ export class ChannelReadToDevice
     event: IpcMainEvent,
     request: ChannelReadToDeviceProps,
   ): Promise<void> {
-    const { fileType } = request;
     const service = ModbusService.GetClient();
     service.writeRegister(65534, 65535);
     const authority = await this.getAuthority();
-    console.log('authority is ', authority);
 
     if (authority) {
-      if (await this.setFileType(fileType)) {
+      if (await this.setFileType(request.fileType)) {
         if (await this.setReadCommand()) {
-          console.log('file type set : success');
           const info = await this.getFileInformation();
-          console.log('command set : success  file size = ', info.fileSize);
+
           this.buffer = [];
           this.elements = [];
-          console.log(this.buffer.length);
-          if (await this.readFile(info.fileSize, 0)) {
-            console.log("result success");
-            
-            const res = String.fromCharCode(...this.buffer).toString();
-            
-            console.log(res);
-            const d = res.split('\r\n');
-            console.log(d);
-            let key = 0;
-            const elements = d.map(str => {
-                const s = str.split(' ');
-                const e = new WrappedElement();
-                
-                e.wrappedAddress = parseInt(s[1], 10);
-                e.length = parseInt(s[2], 10);
-                e.page = parseInt(s[3], 10);
-                e.address = parseInt(s[4], 10);
-                e.key = key.toString();
-                key+=1;
-                return e;
-            })
-            this.elements  = elements;
+          const result = await this.readFile(info.fileSize, 0);
+          if (result.result) {
+            const lines = String.fromCharCode(...this.buffer).toString();
+            lines.split('\r\n').forEach((str, index, arr) => {
+              const line = str.split(' ');
+              if (line[0] === '#ELEMENT') {
+                const element = new WrappedElement();
+                element.wrappedAddress = parseInt(line[1], 10);
+                element.length = parseInt(line[2], 10);
+                element.page = parseInt(line[3], 10);
+                element.address = parseInt(line[4], 10);
+                element.key = index.toString();
+                this.elements.push(element);
+              }
+            });
 
             event.sender.send(request.responseChannel, {
-                result: true,
-                elements: this.elements,
-              });
+              result: true,
+              elements: this.elements,
+            });
           }
         }
       }
@@ -102,9 +119,12 @@ export class ChannelReadToDevice
     }
   }
 
-  readFile = async (readSize: number, offset: number): Promise<boolean> => {
+  readFile = async (
+    readSize: number,
+    offset: number,
+  ): Promise<ChannelReadToDeviceResult> => {
     const client = ModbusService.GetClient();
-    
+
     if (client.isOpen) {
       let req = 120;
       if (readSize < 240) {
@@ -112,61 +132,59 @@ export class ChannelReadToDevice
       }
       if (req !== 0) {
         const readResult = await client.readHoldingRegisters(
-            addrFileContents,
-            req,
-          );
-          
-          for(let i = 0; i < readResult.buffer.length; i+=2) {
-            const l = readResult.buffer.readUInt8(i);
-            const h = readResult.buffer.readUInt8(i+1);
-            this.buffer.push(h);
-            this.buffer.push(l);
-          }
-      } 
-    
-      const offs = offset + (req<<1);
-      const remaining = readSize - (req<<1);
+          FileAccessAddress.addrFileContents,
+          req,
+        );
+
+        for (let i = 0; i < readResult.buffer.length; i += 2) {
+          const l = readResult.buffer.readUInt8(i);
+          const h = readResult.buffer.readUInt8(i + 1);
+          this.buffer.push(h);
+          this.buffer.push(l);
+        }
+      }
+
+      const offs = offset + (req << 1);
+      const remaining = readSize - (req << 1);
 
       const status = await this.getOperationStatus();
       const error = await this.getErrorStatus();
       await sleep(100);
-      if (status === 4 || readSize <= 0) {
-        if (error === 0) {
-          console.log('read success');
-          return true;
+      if (status === FileAccessStatus.Completed || readSize <= 0) {
+        if (error === FileAccessError.NoError) {
+          return new ChannelReadToDeviceResult(true, null, this.elements);
         }
-        if (error === 2) {
-          console.log('read error ');
-          return false;
+        if (error === FileAccessError.ReadError) {
+          return new ChannelReadToDeviceResult(false, 'read failed');
         }
-        if (error === 3) {
-          console.log('timeout error');
-          return false;
+        if (error === FileAccessError.TimeoutError) {
+          return new ChannelReadToDeviceResult(false, 'read failed: timeout');
         }
       }
-      
-      console.log(`read size = ${req} remaining = ${remaining}`);
       const result = await this.readFile(remaining, offs);
-      console.log("read result = ", result);
       return result;
     }
 
-    return false;
+    return new ChannelReadToDeviceResult(false, 'No Connection');
   };
 
   getAuthority = async (): Promise<boolean> => {
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-      let result = await client.readHoldingRegisters(addrAuthority, 1);
+      let result = await client.readHoldingRegisters(
+        FileAccessAddress.AddrAuthority,
+        1,
+      );
 
       const authorityAvaliable = result.data[0] === 0;
-      console.log('authority avaliable = ', result.data[0]);
       if (authorityAvaliable) {
-        await client.writeRegister(addrAuthority, 0x8000);
+        await client.writeRegister(FileAccessAddress.AddrAuthority, 0x8000);
 
-        result = await client.readHoldingRegisters(addrAuthorityCheck, 1);
-        console.log('authority check = ', result.data[0]);
+        result = await client.readHoldingRegisters(
+          FileAccessAddress.addrAuthorityCheck,
+          1,
+        );
         return result.data[0] === 1;
       }
     }
@@ -178,18 +196,21 @@ export class ChannelReadToDevice
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-        await client.writeRegister(addrAuthority, 0xA5A5);
-        return true;
+      await client.writeRegister(FileAccessAddress.AddrAuthority, 0xa5a5);
+      return true;
     }
 
     return false;
-  }
+  };
 
   getOperationStatus = async (): Promise<number> => {
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-      const result = await client.readHoldingRegisters(addrOperationState, 1);
+      const result = await client.readHoldingRegisters(
+        FileAccessAddress.addrOperationState,
+        1,
+      );
 
       return result.data[0];
     }
@@ -200,7 +221,10 @@ export class ChannelReadToDevice
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-      const result = await client.readHoldingRegisters(addrOperationError, 1);
+      const result = await client.readHoldingRegisters(
+        FileAccessAddress.addrOperationError,
+        1,
+      );
 
       return result.data[0];
     }
@@ -211,7 +235,10 @@ export class ChannelReadToDevice
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-      const result = await client.readHoldingRegisters(addrFileInformation, 4);
+      const result = await client.readHoldingRegisters(
+        FileAccessAddress.addrFileInformation,
+        4,
+      );
       const fileInfo: FileInformation = {
         fileCrc: 0,
         fileSize: 0,
@@ -220,20 +247,9 @@ export class ChannelReadToDevice
 
       const [fileType, fileCrc, fileSizeL, fileSizeH] = result.data;
 
-      console.log(
-        result.data[0],
-        result.data[1],
-        result.data[2],
-        result.data[3],
-      );
-
       fileInfo.fileType = fileType;
       fileInfo.fileCrc = fileCrc;
       fileInfo.fileSize = fileSizeH | (fileSizeL << 16);
-
-      console.log(
-        `type = ${fileInfo.fileType}, crc = ${fileInfo.fileCrc}, size = ${fileInfo.fileSize}`,
-      );
 
       return fileInfo;
     }
@@ -246,12 +262,14 @@ export class ChannelReadToDevice
     const readCommand = 2;
 
     if (client.isOpen) {
-      await client.writeRegister(addrAccessOperationCmd, readCommand);
+      await client.writeRegister(
+        FileAccessAddress.addrAccessOperationCmd,
+        readCommand,
+      );
       await sleep(100);
 
       const status = await this.getOperationStatus();
-      console.log(`set command and read status = ${status}`);
-      return status === 2;
+      return status === FileAccessStatus.Fetching;
     }
 
     return false;
@@ -261,10 +279,12 @@ export class ChannelReadToDevice
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-        console.log("set file type = ", fileType);
-      await client.writeRegister(addrFileInformation, fileType);
-      await sleep(100);
+      await client.writeRegister(
+        FileAccessAddress.addrFileInformation,
+        fileType,
+      );
 
+      await sleep(100);
       return true;
     }
 
