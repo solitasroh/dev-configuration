@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { Button, Modal, Input, Typography, Space } from 'antd';
 
 import IPCService from '@src/main/IPCService';
-import { CONNECTION, GET_ENV } from '@src/ipcChannels';
+import { CONNECTION, DISCONNECT, GET_ENV } from '@src/ipcChannels';
 import { ConnectionProps } from '@src/main/ipc/ChannelConnectServer';
 import { GetEnvProps } from '@src/main/ipc/ChannelGetEnv';
 
@@ -76,6 +76,14 @@ const ConnectWrapper: FC = () => {
     res.then((result) => {
       console.log(result.ipAddress);
       setIPAddress(result.ipAddress);
+    });
+
+    service.on(CONNECTION, (event, args) => {
+      setConnectionState(STATE_CONNECTED);
+    });
+
+    service.on(DISCONNECT, (event, args) => {
+      setConnectionState(STATE_DISCONNECTED);
     });
   }, []);
 

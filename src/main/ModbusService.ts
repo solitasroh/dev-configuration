@@ -16,6 +16,19 @@ class ModbusService {
     return this.instance;
   }
 
+  async checkConnection(): Promise<boolean> {
+    if (this.client.isOpen) {
+      try {
+        await this.client.readHoldingRegisters(1, 1);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   private client: ModbusRTU;
 
   public async connect(ip: string, port = 502): Promise<boolean> {
