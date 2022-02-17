@@ -25,6 +25,24 @@ interface columnDef {
   key: string;
 }
 
+const columnsReg: columnDef[] = [
+  {
+    title: 'user address (+ 45001)',
+    dataIndex: 'wrappedAddress',
+    key: 'wrappedAddress',
+  },
+  {
+    title: 'data length',
+    dataIndex: 'length',
+    key: 'length',
+  },
+  {
+    title: 'data address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+];
+
 const columns: columnDef[] = [
   {
     title: 'user address',
@@ -307,11 +325,17 @@ export default function WrappedMapContents(): ReactElement {
     }
   };
 
-  const itemDoubleClickHandle = (index: number, type: number) => {
-    if (type === 1) setCoilSelectedIndex(index);
-    else setRegSelectedIndex(index);
-
-    const item = type === 1 ? coilElements[index] : regElements[index];
+  const itemDoubleClickHandle = (item: WrappedElement, type: number) => {
+    if (type === 1) 
+    {
+      setSelectedItem(item);
+        setCoilSelectedIndex(coilElements.indexOf(item));
+    }
+    else {
+      setSelectedItem(item);
+        setRegSelectedIndex(regElements.indexOf(item));
+    }
+    
     setAddress(item.address.toString());
     setLength(item.length.toString());
     setWrappedAdd(item.wrappedAddress.toString());
@@ -321,7 +345,6 @@ export default function WrappedMapContents(): ReactElement {
     setLength('');
     setWrappedAdd('');
 
-    console.log(`selected item index ${index}`);
   };
 
   const removeElement = (type: number) => {
@@ -395,7 +418,7 @@ export default function WrappedMapContents(): ReactElement {
               scroll={{ y: 500 }}
               onRow={(record, rowIndex) => ({
                 onDoubleClick: (event) => {
-                  itemDoubleClickHandle(rowIndex, 1);
+                  itemDoubleClickHandle(record, 1);
                 },
                 onClick: () => {
                   itemClickHandle(record, 1);
@@ -461,12 +484,12 @@ export default function WrappedMapContents(): ReactElement {
                 return '';
               }}
               dataSource={regElements}
-              columns={columns}
+              columns={columnsReg}
               size="small"
               scroll={{ y: 500 }}
               onRow={(record, rowIndex) => ({
                 onDoubleClick: (event) => {
-                  itemDoubleClickHandle(rowIndex, 2);
+                  itemDoubleClickHandle(record, 2);
                 },
                 onClick: () => {
                   itemClickHandle(record, 2);
