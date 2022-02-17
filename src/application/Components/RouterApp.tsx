@@ -68,10 +68,10 @@ const RouterApp: FC = () => {
             <NavLink to="/PCContents">A2750PC</NavLink>
           </Menu.Item>
           <Menu.Item key="4">
-            <NavLink to="/WrappedMapContents">WrappedElement</NavLink>
+            <NavLink to="/WrappedMapContents">User Map</NavLink>
           </Menu.Item>
           <Menu.Item key="5">
-            <NavLink to="/LogicSetupContents">LogicSetup</NavLink>
+            <NavLink to="/LogicSetupContents">Logic Setup</NavLink>
           </Menu.Item>
         </Menu>
       </Sider>
