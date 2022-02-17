@@ -3,8 +3,9 @@ import styled, { keyframes } from 'styled-components';
 import { Button, Modal, Input, Typography, Space } from 'antd';
 
 import IPCService from '@src/main/IPCService';
-import { CONNECTION } from '@src/ipcChannels';
+import { CONNECTION, GET_ENV } from '@src/ipcChannels';
 import { ConnectionProps } from '@src/main/ipc/ChannelConnectServer';
+import { GetEnvProps } from '@src/main/ipc/ChannelGetEnv';
 
 const { Text } = Typography;
 
@@ -66,6 +67,16 @@ const ConnectWrapper: FC = () => {
           setConnectionState(STATE_DISCONNECTED);
         }
       });
+  }, []);
+
+  useEffect(() => {
+    const service = IPCService.getInstance();
+    console.log('started..');
+    const res = service.send<{ ipAddress: string }, GetEnvProps>(GET_ENV, {});
+    res.then((result) => {
+      console.log(result.ipAddress);
+      setIPAddress(result.ipAddress);
+    });
   }, []);
 
   const onConnect = async () => {

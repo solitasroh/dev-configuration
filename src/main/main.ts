@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
+import ElectronStore from 'electron-store';
 import { ChannelConnectServer } from './ipc/ChannelConnectServer';
 import { ChannelReadData } from './ipc/ChannelReadData';
 import { IpcChannel } from './ipc/IPCChannel';
@@ -12,6 +13,7 @@ import { ChannelRequestCreateFile } from './ipc/ChannelRequestCreateFile';
 import { ChannelRequestLoadFile } from './ipc/ChannelRequestLoadFile';
 import { ChannelSendToDevice } from './ipc/ChannelSendToDevice';
 import { ChannelReadToDevice } from './ipc/ChannelReadToDevice';
+import { ChannelGetEnv } from './ipc/ChannelGetEnv';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -26,7 +28,7 @@ class Main {
 
   private modbusService: ModbusService;
 
-  private motorUnitManagement : MotorUnitManagement;
+  private motorUnitManagement: MotorUnitManagement;
 
   private ipcService: IpcService;
 
@@ -73,8 +75,6 @@ class Main {
         }
       }
     });
-
-    
   }
 
   private onWindowClosed = (): void => {
@@ -108,7 +108,7 @@ class Main {
 
     // Open the DevTools.
     this.mainWindow.webContents.openDevTools({ mode: 'detach' });
-    
+
     this.ipcService = IpcService.getInstance();
 
     // this.mainWindow.on('close', (e) => {
@@ -140,4 +140,5 @@ new Main().init([
   new ChannelRequestLoadFile(),
   new ChannelSendToDevice(),
   new ChannelReadToDevice(),
+  new ChannelGetEnv(),
 ]);

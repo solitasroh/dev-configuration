@@ -106,6 +106,7 @@
     "@types/uuid": "8.3.1",
     "antd": "4.16.13",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.0.1",
     "eslint-import-resolver-alias": "1.1.2",
     "modbus-serial": "^8.0.4",
     "ping": "^0.4.1",

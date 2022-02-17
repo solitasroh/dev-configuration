@@ -1,5 +1,6 @@
 import WrappedElement from '@src/Data/WrappedElement';
 import { REQ_READ_TO_DEVICE } from '@src/ipcChannels';
+import { sleep } from '@src/Utils';
 import { IpcMainEvent } from 'electron';
 import ModbusService from '../ModbusService';
 import { IpcChannel } from './IPCChannel';
@@ -22,8 +23,6 @@ const FileAccessStatus = {
   Fetched: 3,
   Completed: 4,
 } as const;
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const FileAccessError = {
   NoError: 0,
