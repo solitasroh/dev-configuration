@@ -22,10 +22,14 @@ class ModbusService {
         await this.client.readHoldingRegisters(1, 1);
         return true;
       } catch (error) {
-        return false;
+        
+        // retry connection
+        const reconnected = await this.connect(this.ip);
+        return reconnected;
       }
     } else {
-      return false;
+      const reconnected = await this.connect(this.ip);
+      return reconnected;
     }
   }
 
