@@ -1,6 +1,6 @@
-import { GET_ENV, REQ_SEND_TO_DEVICE } from '@src/ipcChannels';
+import { GET_ENV } from '@src/ipcChannels';
 import { IpcMainEvent } from 'electron';
-import ElectronStore from 'electron-store';
+import ModbusService from '@src/main/ModbusService';
 import { IpcChannel } from './IPCChannel';
 import { IpcRequest } from './IPCRequest';
 
@@ -11,15 +11,8 @@ export class GetEnvProps implements IpcRequest {
 export class ChannelGetEnv implements IpcChannel<GetEnvProps> {
   private name: string;
 
-  private ipAddress: string;
-
   constructor() {
     this.name = GET_ENV;
-    const store = new ElectronStore();
-    const ipAddr = store.get('ipAddress') as string;
-    if (ipAddr !== undefined) {
-      this.ipAddress = ipAddr;
-    }
   }
 
   getChannelName(): string {
@@ -29,7 +22,7 @@ export class ChannelGetEnv implements IpcChannel<GetEnvProps> {
   handle(event: IpcMainEvent, request: GetEnvProps): void {
     console.log('get env handle');
     event.sender.send(request.responseChannel, {
-      ipAddress: this.ipAddress,
+      ipAddress: ModbusService.getIpAddress(),
     });
   }
 }

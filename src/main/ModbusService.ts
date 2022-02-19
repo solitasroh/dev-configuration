@@ -1,16 +1,39 @@
-import { sleep } from '@src/Utils';
 import ModbusRTU from 'modbus-serial';
 
 import { catchError, from, map, Observable } from 'rxjs';
+import ElectronStore from 'electron-store';
+
+export const ConnectionStatus = {
+  NoConnect: 0,
+  Connecting: 1,
+  Connected: 2,
+  Disconnecting: 3,
+  Disconnected: 4,
+};
+
+export interface ModbusInitProps {
+  onConnected: () => void;
+  onClosed: () => void;
+}
 
 class ModbusService {
   private static instance: ModbusService;
+
+  store: ElectronStore;
 
   protected ip: string;
 
   protected port: number;
 
   private connectionChecker: number;
+
+  public connectionState: number;
+
+  private prevConnectionState: number;
+
+  static getIpAddress(): string {
+    return this.instance.ip;
+  }
 
   static getInstance(): ModbusService {
     if (this.instance == null) {
@@ -20,88 +43,123 @@ class ModbusService {
     return this.instance;
   }
 
-  public isConnected(): boolean {
-    return this.client !== null ? this.client.isOpen : false;
+  static modbusInit(): void {
+    if (this.instance === null) {
+      this.getInstance();
+    }
+
+    this.instance.store = new ElectronStore();
+    const ipAddress = this.instance.store.get('ipAddress') as string;
+    this.instance.client = new ModbusRTU();
+    this.instance.client.setTimeout(1000);
+
+    // reconnect to the device with the saved ip address.
+    if (ipAddress !== undefined) {
+      console.log(
+        `$Modbus> reconnect to the device with the saved ip address. : ${ipAddress}`,
+      );
+      this.instance.ip = ipAddress;
+
+      this.instance.connect(ipAddress, 502).then((connected) => {
+        // nothing to do
+        this.instance.checkConnection();
+      });
+    }
   }
 
-  check() {
-    setInterval(() => {
-      if (this.client.isOpen) {
+  static modbusRelease(): void {
+    this.instance.disconnect();
+
+    this.instance.store = new ElectronStore();
+    this.instance.store.set('ipAddress', this.instance.ip);
+  }
+
+  public isConnected(): boolean {
+    return this.connectionState === ConnectionStatus.Connected;
+  }
+
+  checkConnection(): void {
+    setInterval(async () => {
+      if (this.connectionState === ConnectionStatus.Connected) {
         this.client
           .readHoldingRegisters(1, 1)
           .then()
-          .catch((e) => {
-            this.connectionChecker += 1;
+          .catch(async (e) => {
+            this.connectionState = ConnectionStatus.Disconnected;
           });
+      } else if (this.connectionState === ConnectionStatus.Disconnected) {
+        await this.connect(this.ip, this.port);
       }
     }, 1000);
   }
 
-  async checkConnection(): Promise<boolean> {
-    if (this.client.isOpen) {
-      try {
-        await this.client.readHoldingRegisters(1, 1);
-        return true;
-      } catch (error) {
-        // retry connection
-        this.connectionChecker += 1;
-        if (this.connectionChecker === 10) {
-          const reconnected = await this.connect(this.ip);
-          console.log('connection failed(exception), retry = ', reconnected);
-          this.connectionChecker = 0;
-          return true;
-        }
-        return false;
-      }
-    } else {
-      try {
-        this.client.setTimeout(100);
-        const reconnected = await this.connect(this.ip);
-        console.log(
-          `[${this.ip}]connection failed(closed), retry = ${reconnected}`,
-        );
-        return reconnected;
-      } catch (error) {
-        return false;
-      }
-    }
-  }
-
   private client: ModbusRTU;
+
+  public async setConnectionInformation(
+    ip: string,
+    port = 502,
+  ): Promise<boolean> {
+    if (ip !== this.ip) {
+      this.connectionState = ConnectionStatus.Disconnected;
+      this.ip = ip;
+      this.port = port;
+      return false;
+    }
+    return true;
+  }
 
   public async connect(ip: string, port = 502): Promise<boolean> {
     this.ip = ip;
     this.port = port;
 
+    if (this.client === null || this.client === undefined) {
+      this.client = new ModbusRTU();
+    }
+
     try {
-      if (this.client === null) {
-        this.client = new ModbusRTU();
+      if (this.connectionState === ConnectionStatus.Connecting) {
+        console.log('request is failed cause the status is connecting');
+        return false;
       }
-      this.client.close(() => {
-        console.log('close');
-      });
-      this.client
-        .connectTCP(ip, { port })
-        .then(() => {
-          console.log(`connected to ${ip}:${port}`);
-        })
-        .catch((err) => {
-          console.log(`Connection failed ${ip}:${port}`);
-        });
+      await this.disconnect();
+
+      this.connectionState = ConnectionStatus.Connecting;
+
+      await this.client.connectTCP(ip, { port });
+
+      this.connectionState = ConnectionStatus.Connected;
+
+      console.log('modbus> connect to device :', ip);
       return true;
-    } catch (err) {
+    } catch (error) {
+      console.log('modbus> connection failed :', ip);
+      this.connectionState = ConnectionStatus.Disconnected;
       return false;
     }
   }
 
-  public disconnect(): void {
-    try {
+  public disconnect(): Promise<void> {
+    this.connectionState = ConnectionStatus.Disconnecting;
+    return new Promise((resolve, reject) => {
       if (this.client !== null) {
-        this.client.close(() => console.log('close'));
+        if (!this.client.isOpen) {
+          console.log('modbus> closed connection : client is not opened');
+          this.connectionState = ConnectionStatus.Disconnected;
+          resolve();
+          return;
+        }
+
+        this.client.close(() => {
+          console.log('modbus> closed connection');
+          this.connectionState = ConnectionStatus.Disconnected;
+          resolve();
+        });
+      } else {
+        console.log('modbus> closed connection : client is null');
+        this.connectionState = ConnectionStatus.Disconnected;
+        resolve();
       }
-    } catch (error) {
-      console.log(`disconnect error : ${error}`);
-    }
+    });
   }
 
   static GetClient(): ModbusRTU {

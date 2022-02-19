@@ -1,11 +1,15 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
-import ElectronStore from 'electron-store';
+import WindowInformation, {
+  loadWindowConfig,
+  saveWindowConfig,
+} from '@src/main/WindowConfig';
+import { CONNECTION, DISCONNECT } from '@src/ipcChannels';
 import { ChannelConnectServer } from './ipc/ChannelConnectServer';
 import { ChannelReadData } from './ipc/ChannelReadData';
 import { IpcChannel } from './ipc/IPCChannel';
 import { IpcRequest } from './ipc/IPCRequest';
 import IpcService from './IPCService';
-import ModbusService from './ModbusService';
+import ModbusService, { ConnectionStatus } from './ModbusService';
 import ChannelWriteData from './ipc/ChannelWriteData';
 import MotorUnitManagement from './modbus.a2700m/MotorUnitManagement';
 import { ChannelReadPCOperation } from './ipc/ChannelReadPCOperation';
@@ -14,7 +18,6 @@ import { ChannelRequestLoadFile } from './ipc/ChannelRequestLoadFile';
 import { ChannelSendToDevice } from './ipc/ChannelSendToDevice';
 import { ChannelReadToDevice } from './ipc/ChannelReadToDevice';
 import { ChannelGetEnv } from './ipc/ChannelGetEnv';
-import { CONNECTION, DISCONNECT } from '@src/ipcChannels';
 import ChannelDisconnectServer from './ipc/ChannelDisconnectServer';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -26,6 +29,8 @@ if (require('electron-squirrel-startup')) {
 }
 
 class Main {
+  private windowInformation: WindowInformation;
+
   private mainWindow: BrowserWindow;
 
   private modbusService: ModbusService;
@@ -37,9 +42,10 @@ class Main {
   init(ipcChannels: IpcChannel<IpcRequest>[]) {
     this.modbusService = ModbusService.getInstance();
     this.motorUnitManagement = MotorUnitManagement.getInstance();
+    this.ipcService = IpcService.getInstance();
 
-    app.on('ready', (): void => {
-      this.createWindow();
+    app.on('ready', async (): Promise<void> => {
+      await this.createWindow();
     });
 
     app.on('window-all-closed', this.onWindowClosed);
@@ -49,7 +55,17 @@ class Main {
       // initTray();
     });
 
+    ModbusService.modbusInit();
+
     this.registerIpcChannels(ipcChannels);
+  }
+
+  private modbusConnected() {
+    if (this.mainWindow !== null) this.mainWindow.webContents.send(CONNECTION);
+  }
+
+  private modbusDisconnected() {
+    if (this.mainWindow !== null) this.mainWindow.webContents.send(DISCONNECT);
   }
 
   private initTray() {
@@ -67,6 +83,7 @@ class Main {
         },
       },
     ]);
+
     tray.setToolTip('File-Watcher');
     tray.setTitle('File-Watcher');
     tray.setContextMenu(contextMenu);
@@ -83,52 +100,113 @@ class Main {
     app.quit();
   };
 
-  private onActivate() {
+  private async onActivate() {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      this.createWindow();
+      await this.createWindow();
     }
   }
 
-  private createWindow() {
+  private modbusStatusOld: number;
+
+  private async createWindow() {
     // const iconImage = nativeImage.createFromPath('../src/assets/icons/win/icon.ico');
 
     this.mainWindow = new BrowserWindow({
       height: 600,
-      width: 360,
+      width: 1000,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
         nativeWindowOpen: true,
       },
+      show: false,
       // icon: iconImage,
     });
-    // and load the index.html of the app.
-    this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+    await this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     this.mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
     this.mainWindow.webContents.openDevTools({ mode: 'detach' });
 
-    this.ipcService = IpcService.getInstance();
+    this.mainWindow.on('close', (e) => {
+      // e.preventDefault();
+      // this.mainWindow.hide();
+      ModbusService.modbusRelease();
+      saveWindowConfig(this.windowInformation);
+    });
 
-    // this.mainWindow.on('close', (e) => {
-    //   e.preventDefault();
-    //   this.mainWindow.hide();
-    // });
-    // setInterval(async () => {
-    //   const result = await this.modbusService.checkConnection();
-    //   if (result) {
-    //     this.mainWindow.webContents.send(CONNECTION);
-    //   } else {
-    //     this.mainWindow.webContents.send(DISCONNECT);
-    //   }
-    //   console.log('check connection...');
-    // }, 1000);
+    this.mainWindow.on('ready-to-show', () => {
+      this.windowInformation = loadWindowConfig();
+
+      this.mainWindow.setContentBounds({
+        x: this.windowInformation.x,
+        y: this.windowInformation.y,
+        width: this.windowInformation.width,
+        height: this.windowInformation.height,
+      });
+
+      this.mainWindow.show();
+
+      if (this.windowInformation.isMaximized) {
+        this.mainWindow.maximize();
+      }
+    });
+
+    this.mainWindow.on('maximize', () => {
+      this.windowInformation.isMaximized = true;
+    });
+
+    this.mainWindow.on('unmaximize', () => {
+      this.windowInformation.isMaximized = false;
+    });
+
+    this.mainWindow.on('moved', () => {
+      const position = this.mainWindow.getPosition();
+      const [x, y] = position;
+      this.windowInformation.x = x;
+      this.windowInformation.y = y;
+    });
+
+    this.mainWindow.on('resized', () => {
+      const { width, height } = this.mainWindow.getContentBounds();
+      this.windowInformation.width = width;
+      this.windowInformation.height = height;
+    });
 
     this.motorUnitManagement.start(this.mainWindow.webContents);
-    this.mainWindow.maximize();
+    let forcedCount = 0;
+    setInterval(() => {
+      const { connectionState } = ModbusService.getInstance();
+      if (this.modbusStatusOld !== connectionState) {
+        if (
+          this.modbusStatusOld === ConnectionStatus.Connected &&
+          connectionState === ConnectionStatus.Disconnected
+        ) {
+          this.mainWindow.webContents.send(DISCONNECT);
+        } else if (
+          this.modbusStatusOld === ConnectionStatus.Disconnected &&
+          connectionState === ConnectionStatus.Connected
+        ) {
+          this.mainWindow.webContents.send(CONNECTION);
+        }
+      }
+
+      if (forcedCount === 10) {
+        forcedCount = 0;
+        if (connectionState === ConnectionStatus.Connected) {
+          this.mainWindow.webContents.send(CONNECTION);
+        }
+
+        if (connectionState === ConnectionStatus.Disconnected) {
+          this.mainWindow.webContents.send(DISCONNECT);
+        }
+      }
+      forcedCount += 1;
+      this.modbusStatusOld = connectionState;
+    }, 500);
   }
 
   private registerIpcChannels = (
