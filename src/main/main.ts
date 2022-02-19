@@ -15,6 +15,7 @@ import { ChannelSendToDevice } from './ipc/ChannelSendToDevice';
 import { ChannelReadToDevice } from './ipc/ChannelReadToDevice';
 import { ChannelGetEnv } from './ipc/ChannelGetEnv';
 import { CONNECTION, DISCONNECT } from '@src/ipcChannels';
+import ChannelDisconnectServer from './ipc/ChannelDisconnectServer';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
@@ -116,14 +117,15 @@ class Main {
     //   e.preventDefault();
     //   this.mainWindow.hide();
     // });
-    setInterval(async () => {
-      const result = await this.modbusService.checkConnection();
-      if (result) {
-        this.mainWindow.webContents.send(CONNECTION);
-      } else {
-        this.mainWindow.webContents.send(DISCONNECT);
-      }
-    }, 1000);
+    // setInterval(async () => {
+    //   const result = await this.modbusService.checkConnection();
+    //   if (result) {
+    //     this.mainWindow.webContents.send(CONNECTION);
+    //   } else {
+    //     this.mainWindow.webContents.send(DISCONNECT);
+    //   }
+    //   console.log('check connection...');
+    // }, 1000);
 
     this.motorUnitManagement.start(this.mainWindow.webContents);
     this.mainWindow.maximize();
@@ -144,6 +146,7 @@ new Main().init([
   new ChannelReadData(),
   new ChannelWriteData(),
   new ChannelConnectServer(),
+  new ChannelDisconnectServer(),
   new ChannelReadPCOperation(),
   new ChannelRequestCreateFile(),
   new ChannelRequestLoadFile(),

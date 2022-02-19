@@ -2,7 +2,8 @@ import React, { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
-import ConnectWrapper from './ConnectWrapper';
+import { FolderOutlined, HomeOutlined } from '@ant-design/icons';
+import ConnectWrapper from './Login/ConnectWrapper';
 import MissmatchInfo from './lmh/MissmatchInfo';
 
 const { Header, Content, Sider, Footer } = Layout;
@@ -47,7 +48,7 @@ const RouterApp: FC = () => {
         onCollapse={onCollapse}
         style={{}}
       >
-        <ConnectWrapper />
+        <ConnectWrapper collapsed={collapsed} />
         <Menu
           theme="dark"
           mode="inline"
@@ -55,22 +56,22 @@ const RouterApp: FC = () => {
           selectedKeys={[selectedKey]}
           onClick={mainMenuHandleClick}
         >
-          <Menu.Item key="0">
+          <Menu.Item key="0" icon={<HomeOutlined />}>
             <NavLink to="/">Home</NavLink>
           </Menu.Item>
-          <Menu.Item key="1">
+          <Menu.Item key="1" icon={<FolderOutlined />}>
             <NavLink to="/LMHContents">A2750LMH</NavLink>
           </Menu.Item>
-          <Menu.Item key="2">
+          <Menu.Item key="2" icon={<FolderOutlined />}>
             <NavLink to="/IOHContents">A2750IOH</NavLink>
           </Menu.Item>
-          <Menu.Item key="3">
+          <Menu.Item key="3" icon={<FolderOutlined />}>
             <NavLink to="/PCContents">A2750PC</NavLink>
           </Menu.Item>
-          <Menu.Item key="4">
+          <Menu.Item key="4" icon={<FolderOutlined />}>
             <NavLink to="/WrappedMapContents">User Map</NavLink>
           </Menu.Item>
-          <Menu.Item key="5">
+          <Menu.Item key="5" icon={<FolderOutlined />}>
             <NavLink to="/LogicSetupContents">Logic Setup</NavLink>
           </Menu.Item>
         </Menu>

@@ -10,11 +10,7 @@ export class ConnectionProps implements IpcRequest {
 
   port?: number;
 
-  connect?: boolean;
-
   responseChannel?: string;
-
-  requestConnectState?: boolean;
 }
 
 export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
@@ -43,38 +39,16 @@ export class ChannelConnectServer implements IpcChannel<ConnectionProps> {
     event: IpcMainEvent,
     request: ConnectionProps,
   ): Promise<void> => {
-    const { ip, port, connect, requestConnectState } = request;
+    const { ip, port } = request;
 
-    const client = ModbusService.GetClient();
-
-    if (requestConnectState) {
-      event.sender.send(request.responseChannel, client.isOpen);
-      return;
-    }
-
-    if (connect) {
-      try {
-        if (client.isOpen) {
-          client.close(() => {
-            console.log('server already connected');
-          });
-        }
-        client.setTimeout(10000);
-        await client.connectTCP(ip, { port });
-      } catch (error) {
-        event.sender.send(request.responseChannel, false);
-      }
-
-      this.store.set('ipAddress', ip);
-
-      event.sender.send(request.responseChannel, true);
-    } else {
-      console.log('enter closing');
-
-      await client.close(() => {
-        console.log('closed');
-      });
-      event.sender.send(request.responseChannel, true);
-    }
+    const instance = ModbusService.getInstance();
+    // if (instance.isConnected()) {
+    //   console.log('conn req> disconnected');
+    //   instance.disconnect();
+    // }
+    // console.log('connect request');
+    const connected = await instance.connect(ip, port);
+    // console.log('connect result is', connected);
+    event.sender.send(request.responseChannel, connected);
   };
 }

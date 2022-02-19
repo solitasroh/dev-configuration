@@ -1,3 +1,4 @@
+import { sleep } from '@src/Utils';
 import ModbusRTU from 'modbus-serial';
 
 import { catchError, from, map, Observable } from 'rxjs';
@@ -9,11 +10,31 @@ class ModbusService {
 
   protected port: number;
 
+  private connectionChecker: number;
+
   static getInstance(): ModbusService {
     if (this.instance == null) {
       this.instance = new ModbusService();
+      this.instance.connectionChecker = 0;
     }
     return this.instance;
+  }
+
+  public isConnected(): boolean {
+    return this.client !== null ? this.client.isOpen : false;
+  }
+
+  check() {
+    setInterval(() => {
+      if (this.client.isOpen) {
+        this.client
+          .readHoldingRegisters(1, 1)
+          .then()
+          .catch((e) => {
+            this.connectionChecker += 1;
+          });
+      }
+    }, 1000);
   }
 
   async checkConnection(): Promise<boolean> {
@@ -22,14 +43,27 @@ class ModbusService {
         await this.client.readHoldingRegisters(1, 1);
         return true;
       } catch (error) {
-        
         // retry connection
-        const reconnected = await this.connect(this.ip);
-        return reconnected;
+        this.connectionChecker += 1;
+        if (this.connectionChecker === 10) {
+          const reconnected = await this.connect(this.ip);
+          console.log('connection failed(exception), retry = ', reconnected);
+          this.connectionChecker = 0;
+          return true;
+        }
+        return false;
       }
     } else {
-      const reconnected = await this.connect(this.ip);
-      return reconnected;
+      try {
+        this.client.setTimeout(100);
+        const reconnected = await this.connect(this.ip);
+        console.log(
+          `[${this.ip}]connection failed(closed), retry = ${reconnected}`,
+        );
+        return reconnected;
+      } catch (error) {
+        return false;
+      }
     }
   }
 
@@ -40,11 +74,33 @@ class ModbusService {
     this.port = port;
 
     try {
-      this.client = new ModbusRTU();
-      await this.client.connectTCP(ip, { port });
+      if (this.client === null) {
+        this.client = new ModbusRTU();
+      }
+      this.client.close(() => {
+        console.log('close');
+      });
+      this.client
+        .connectTCP(ip, { port })
+        .then(() => {
+          console.log(`connected to ${ip}:${port}`);
+        })
+        .catch((err) => {
+          console.log(`Connection failed ${ip}:${port}`);
+        });
       return true;
     } catch (err) {
       return false;
+    }
+  }
+
+  public disconnect(): void {
+    try {
+      if (this.client !== null) {
+        this.client.close(() => console.log('close'));
+      }
+    } catch (error) {
+      console.log(`disconnect error : ${error}`);
     }
   }
 
@@ -52,7 +108,6 @@ class ModbusService {
     if (this.instance.client == null) {
       this.instance.client = new ModbusRTU();
     }
-
     return this.instance.client;
   }
 
