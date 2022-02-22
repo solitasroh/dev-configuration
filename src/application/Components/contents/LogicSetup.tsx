@@ -16,6 +16,9 @@ export default function LogicSetupContents(): ReactElement {
         <TabPane tab="IO" key="2">
           <UserButton> ALL </UserButton>
           <UserButton> Each </UserButton>
+        </TabPane>        
+        <TabPane tab="LMH Geneal DIO" key="3">
+          <UserButton> ALL </UserButton>
         </TabPane>
       </Tabs>
     </>

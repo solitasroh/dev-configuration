@@ -17,6 +17,7 @@ import RegisterIOCommand from './ioh/RegisterIOCommand';
 import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
 import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
+import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -38,6 +39,8 @@ const userMap = {
   IOCommand: RegisterIOCommand,
   LMManagementSetup: RegisterLMManageSetup,
   LMUserIOSetup: RegisterLMHLogicalUserIO,
+  LMLogicSetup: RegisterLMLogicSetup,
+
 };
 
 export type UserMap = typeof userMap;
