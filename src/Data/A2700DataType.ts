@@ -8,6 +8,7 @@ enum A2700DataType {
   WrappedElement = 40330,
   LMManagementMode = 51040,
   LMHLogicSetup = 61881,
+  LMHUserIOSetup= 61940
 }
 
 export default A2700DataType;
