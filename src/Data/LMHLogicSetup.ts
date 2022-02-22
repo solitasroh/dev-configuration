@@ -1,8 +1,9 @@
 import A2700Data from './A2700Data';
 import A2700DataType from './A2700DataType';
+
 export interface LogicIOProps {
   name?: string;
-  key: string;
+  key?: string;
   diPolarity: number;
   diMapping: number;
   doMapping: number;
