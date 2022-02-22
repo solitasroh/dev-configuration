@@ -8,7 +8,7 @@ import UserDefineIOData, { DefinedIO } from '@src/Data/UserDefineIOData';
 export default class RegisterLMHLogicalUserIO extends RegisterBase {
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
     // userio1-10
-    const result = new UserDefineIOData(22);
+    const result = new UserDefineIOData();
     const ob1 = ModbusService.read<number[]>(61940, 12 * 10);
     const ob2 = ModbusService.read<number[]>(62060, 12 * 10);
     const ob3 = ModbusService.read<number[]>(62188, 12 * 7);

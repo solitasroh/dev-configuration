@@ -16,8 +16,9 @@ import RegisterDOMeasure from './ioh/RegisterDOMeasure';
 import RegisterIOCommand from './ioh/RegisterIOCommand';
 import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
-import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
+import RegisterLMHLogicalUserIO from '@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO';
 import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
+import RegisterLMDIOSetup from '@src/main/modbus.a2700m/lmh/RegisterLMDIOSetup';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -26,10 +27,10 @@ const userMap = {
   A2750PCStatus: RegisterPCStatus,
   A2750LMSetup: RegisterLMSetup,
   AIMeasure: RegisterAIMeausre,
-  LMDIData:RegisterLMDIMeasure, 
-  LMDOData:RegisterLMDOMeasure, 
-  IODIData:RegisterDIMeasure, 
-  IODOData:RegisterDOMeasure,
+  LMDIData: RegisterLMDIMeasure,
+  LMDOData: RegisterLMDOMeasure,
+  IODIData: RegisterDIMeasure,
+  IODOData: RegisterDOMeasure,
   LMTestSet: RegisterLMTestMode,
   IODiTest: RegisterIOTestMode,
   IOAiTest: RegisterAITestMode,
@@ -39,8 +40,7 @@ const userMap = {
   IOCommand: RegisterIOCommand,
   LMManagementSetup: RegisterLMManageSetup,
   LMUserIOSetup: RegisterLMHLogicalUserIO,
-  LMLogicSetup: RegisterLMLogicSetup,
-
+  LMLogicSetup: RegisterLMDIOSetup,
 };
 
 export type UserMap = typeof userMap;
