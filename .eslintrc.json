@@ -15,7 +15,8 @@
     "prettier"
   ],
   "globals": {
-    "Electron": true
+    "Electron": true,
+    "JSX": true
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
