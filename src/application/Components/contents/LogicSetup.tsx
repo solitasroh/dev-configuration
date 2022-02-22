@@ -1,7 +1,8 @@
 import { Button, Tabs } from 'antd';
 import React, { ReactElement } from 'react';
 import styled from 'styled-components';
-import LMHDIOSetup from '@src/application/Components/lmh/LMHDIOSetup';
+import LMHDISetup from '@src/application/Components/lmh/LMHDISetup';
+import LMHDOSetup from "@src/application/Components/lmh/LMHDOSetup";
 
 const { TabPane } = Tabs;
 const UserButton = styled(Button)`
@@ -12,7 +13,8 @@ export default function LogicSetupContents(): ReactElement {
     <>
       <Tabs type="card">
         <TabPane tab="LMH" key="1">
-          <LMHDIOSetup />
+          <LMHDISetup />
+          <LMHDOSetup />
         </TabPane>
         <TabPane tab="IO" key="2">
           <UserButton> ALL </UserButton>

@@ -2,42 +2,31 @@ import React, { ReactElement, useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import LMHLogicSetup, { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import { useOncePolling } from '@src/application/hooks/ipcHook';
-import { Button, Card, Col, InputNumber, Row, Select } from 'antd';
+import { Button, Card, Col, InputNumber, Row } from 'antd';
 import IpcService from '@src/main/IPCService';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import { WRITE_REQ } from '@src/ipcChannels';
 
 type FormValues = {
   ioSetup: {
-    diPolarity: number;
-    diMapping: number;
-    doMapping: number;
+    polarity: number;
+    mapping: number;
   }[];
 };
 
 const defaultValues: LogicIOProps[] = [
-  { diPolarity: 0, diMapping: 1, doMapping: 1 },
-  { diPolarity: 0, diMapping: 2, doMapping: 2 },
-  { diPolarity: 0, diMapping: 3, doMapping: 3 },
-  { diPolarity: 0, diMapping: 4, doMapping: 4 },
-  { diPolarity: 0, diMapping: 5, doMapping: 5 },
-  { diPolarity: 0, diMapping: 6, doMapping: 6 },
-  { diPolarity: 0, diMapping: 7, doMapping: 7 },
-  { diPolarity: 0, diMapping: 8, doMapping: 8 },
-  { diPolarity: 0, diMapping: 9, doMapping: 9 },
-  { diPolarity: 0, diMapping: 10, doMapping: 0 },
-  { diPolarity: 0, diMapping: 11, doMapping: 0 },
-  { diPolarity: 0, diMapping: 12, doMapping: 0 },
-  { diPolarity: 0, diMapping: 13, doMapping: 0 },
-  { diPolarity: 0, diMapping: 14, doMapping: 0 },
-  { diPolarity: 0, diMapping: 15, doMapping: 0 },
-  { diPolarity: 0, diMapping: 16, doMapping: 0 },
-  { diPolarity: 0, diMapping: 17, doMapping: 0 },
-  { diPolarity: 0, diMapping: 18, doMapping: 0 },
-  { diPolarity: 0, diMapping: 19, doMapping: 0 },
+  { polarity: 0, mapping: 1 },
+  { polarity: 0, mapping: 2 },
+  { polarity: 0, mapping: 3 },
+  { polarity: 0, mapping: 4 },
+  { polarity: 0, mapping: 5 },
+  { polarity: 0, mapping: 6 },
+  { polarity: 0, mapping: 7 },
+  { polarity: 0, mapping: 8 },
+  { polarity: 0, mapping: 9 },
 ];
 
-function LMHDIOSetup(): ReactElement {
+function LMHDOSetup(): ReactElement {
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       ioSetup: defaultValues,
@@ -52,8 +41,8 @@ function LMHDIOSetup(): ReactElement {
   useEffect(() => {
     useOncePolling(
       {
-        requestType: 'LMLogicSetup',
-        responseChannel: 'POLL-LM-LOGIC-SETUP',
+        requestType: 'LMLogicDOSetup',
+        responseChannel: 'POLL-LM-LOGIC-DO-SETUP',
       },
       (evt, resp) => {
         const data = resp as LMHLogicSetup;
@@ -63,12 +52,11 @@ function LMHDIOSetup(): ReactElement {
   }, []);
 
   const onSubmit = (data: FormValues) => {
-    const setup = new LMHLogicSetup(18);
+    const setup = new LMHLogicSetup(9);
     setup.detail = data.ioSetup.map((v, index) => {
       const result: LogicIOProps = {
-        diPolarity: v.diPolarity,
-        diMapping: v.diMapping,
-        doMapping: v.doMapping,
+        polarity: v.polarity,
+        mapping: v.mapping,
       };
       return result;
     });
@@ -76,21 +64,16 @@ function LMHDIOSetup(): ReactElement {
     const service = IpcService.getInstance();
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: setup,
-      requestType: 'LMLogicSetup',
+      requestType: 'LMLogicDOSetup',
     });
   };
 
-  const options = [
-    { label: 'None', value: 0 },
-    { label: 'Normal', value: 1 },
-    { label: 'Reverse', value: 2 },
-  ];
   const inputStyle = { minWidth: 120, backgroundColor: '#daeaff' };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: 600 }}>
       <Card
-        title="Logic DI Setup"
+        title="Logic DO Setup"
         size="small"
         type="inner"
         extra={<Button htmlType="submit">Accept</Button>}
@@ -102,28 +85,12 @@ function LMHDIOSetup(): ReactElement {
                 <Col style={{ fontWeight: 600, width: 110 }}>{`channel ${
                   index + 1
                 }`}</Col>
-                <Col style={{ marginRight: 15, width: 110 }}>polarity</Col>
-                <Col>
-                  <Controller
-                    name={`ioSetup.${index}.diPolarity` as const}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Select
-                        onChange={onChange}
-                        value={value}
-                        options={options}
-                        size="small"
-                        style={inputStyle}
-                      />
-                    )}
-                    control={control}
-                  />
-                </Col>
                 <Col style={{ marginRight: 15, width: 110, marginLeft: 30 }}>
                   mapping
                 </Col>
                 <Col>
                   <Controller
-                    name={`ioSetup.${index}.diMapping` as const}
+                    name={`ioSetup.${index}.mapping` as const}
                     render={({ field: { onChange, onBlur, value, ref } }) => (
                       <InputNumber
                         onChange={onChange}
@@ -144,4 +111,4 @@ function LMHDIOSetup(): ReactElement {
   );
 }
 
-export default LMHDIOSetup;
+export default LMHDOSetup;

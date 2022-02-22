@@ -57,8 +57,8 @@ export default function DIPolaritySetup(): ReactElement {
     const setup = new LMHLogicSetup(18);
     values.detail.map(
       (v: { diPolarity: number; diMapping: number }, index: number) => {
-        setup.detail[index].diPolarity = parseInt(v.diPolarity.toString(), 10);
-        setup.detail[index].diMapping = parseInt(v.diMapping.toString(), 10);
+        setup.detail[index].polarity = parseInt(v.diPolarity.toString(), 10);
+        setup.detail[index].mapping = parseInt(v.diMapping.toString(), 10);
       },
     );
 
@@ -89,14 +89,14 @@ export default function DIPolaritySetup(): ReactElement {
               console.log(field);
               return (
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                  {/*<Form.Item*/}
-                  {/*  {...field}*/}
-                  {/*  style={{ marginRight: '10px' }}*/}
-                  {/*  name={[field.name, 'diPolarity']}*/}
-                  {/*  label={`DI ${index + 1} polarity`}*/}
-                  {/*>*/}
-                  {/*  <Select style={{ width: 120 }} options={options} />*/}
-                  {/*</Form.Item>*/}
+                  {/* <Form.Item */}
+                  {/*  {...field} */}
+                  {/*  style={{ marginRight: '10px' }} */}
+                  {/*  name={[field.name, 'diPolarity']} */}
+                  {/*  label={`DI ${index + 1} polarity`} */}
+                  {/* > */}
+                  {/*  <Select style={{ width: 120 }} options={options} /> */}
+                  {/* </Form.Item> */}
                   <Form.Item
                     {...field}
                     style={{ marginRight: '10px' }}
