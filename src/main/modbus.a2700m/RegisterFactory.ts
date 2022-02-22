@@ -16,6 +16,7 @@ import RegisterDOMeasure from './ioh/RegisterDOMeasure';
 import RegisterIOCommand from './ioh/RegisterIOCommand';
 import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
+import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -35,7 +36,9 @@ const userMap = {
   PCCommand: RegisterPCCommand,
   LMCommand: RegisterLMCommand,
   IOCommand: RegisterIOCommand,
-  LMManagementSetup: RegisterLMManageSetup
+  LMManagementSetup: RegisterLMManageSetup,
+  LMLogicSetup: RegisterLMLogicSetup,
+
 };
 
 export type UserMap = typeof userMap;
