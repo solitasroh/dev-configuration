@@ -17,6 +17,19 @@ function chunkArray(myArray: any, chunkSize: number): Array<any> {
 
   return results;
 }
+
+export function chunkArray2<T>(myArray: Array<T>, chunkSize: number): Array<T[]> {
+  if (!(myArray instanceof Array)) {
+    return null;
+  }
+
+  const results: Array<T[]> = [];
+  while (myArray.length) {
+    results.push(myArray.splice(0, chunkSize));
+  }
+
+  return results;
+}
 const crcTable = [256];
 
 export const sleep = (ms: number) =>
