@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import IOHContents from '../Components/contents/A2750IOH';
 import LMHContents from '../Components/contents/A2750LMH';
 import PCContents from '../Components/contents/A2750PC';
+import CoilMapAlarmContent from '../Components/contents/CoilMapAlarm';
 import Home from '../Components/contents/Home';
 import LogicSetupContents from '../Components/contents/LogicSetup';
 import WrappedMapContents from '../Components/contents/WrappedMapSetup';
@@ -35,6 +36,7 @@ const MainRouter: React.FC = () => (
         <Route path="/PCContents" element={<PCContents />} />
         <Route path="/WrappedMapContents" element={<WrappedMapContents />} />
         <Route path="/LogicSetupContents" element={<LogicSetupContents />} />
+        <Route path="/CoilMapAlarmContent" element={<CoilMapAlarmContent />} />
         <Route path="*" element={<NoMatch />} />
       </Route>
     </Routes>

@@ -11,11 +11,7 @@ const Label = styled.p`
 export default function DIPolaritySetup(): ReactElement {
   const [list, setList] = useState<LMHLogicSetup>(new LMHLogicSetup(18));
   const [myForm] = Form.useForm();
-  const setPolarityState = (Status: number): string => {
-    if (Status === 1) return 'Normal';
-    if (Status === 2) return 'Reverse';
-    return 'None';
-  };
+ 
   const options = [
     { label: 'None', value: 0 },
     { label: 'Normal', value: 1 },

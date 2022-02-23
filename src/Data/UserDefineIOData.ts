@@ -2,6 +2,8 @@ import A2700Data from '@src/Data/A2700Data';
 import A2700DataType from '@src/Data/A2700DataType';
 
 export interface DefinedIO {
+  key?: number;
+
   type: number;
 
   mapping: number;
@@ -24,4 +26,7 @@ export default class UserDefineIOData implements A2700Data {
   //     this.definedIO.push(data);
   //   }
   // }
+  constructor() {
+    this.definedIO = []
+  }
 }

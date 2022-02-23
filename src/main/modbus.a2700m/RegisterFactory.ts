@@ -1,3 +1,4 @@
+import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
 import RegisterLMSetup from './lmh/RegisterLMSetup';
 import RegisterLMInformation from './lmh/RegisterLMInformation';
 import RegisterLDInformation from './lmh/RegisterLDInformation';
@@ -16,8 +17,8 @@ import RegisterDOMeasure from './ioh/RegisterDOMeasure';
 import RegisterIOCommand from './ioh/RegisterIOCommand';
 import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
-import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
 import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
+import RegisterCoilMapAlarm from './lmh/RegisterCoilMapAlarm';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -40,6 +41,7 @@ const userMap = {
   LMManagementSetup: RegisterLMManageSetup,
   LMUserIOSetup: RegisterLMHLogicalUserIO,
   LMLogicSetup: RegisterLMLogicSetup,
+  CoilMapAlarm: RegisterCoilMapAlarm,
 
 };
 

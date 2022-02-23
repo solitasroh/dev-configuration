@@ -74,6 +74,9 @@ const RouterApp: FC = () => {
           <Menu.Item key="5" icon={<FolderOutlined />}>
             <NavLink to="/LogicSetupContents">Logic Setup</NavLink>
           </Menu.Item>
+          <Menu.Item key="6" icon={<FolderOutlined />}>
+            <NavLink to="/CoilMapAlarmContent">Coil Map Alarm</NavLink>
+          </Menu.Item>
         </Menu>
       </Sider>
       <ContentWrapper className="site-layout">
