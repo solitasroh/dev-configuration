@@ -5,6 +5,7 @@ import A2700Data from '@src/Data/A2700Data';
 import ModbusService from '@src/main/ModbusService';
 import UserDefineIOData, { DefinedIO } from '@src/Data/UserDefineIOData';
 import chunkArray, { chunkArray2 } from '@src/Utils';
+import modbusService from '@src/main/ModbusService';
 
 class RegisterLMHUserDefineIOSetup extends RegisterBase {
   private accessAddress = 62020;
@@ -73,6 +74,8 @@ class RegisterLMHUserDefineIOSetup extends RegisterBase {
       offset += writeBuffer.length;
       return observable;
     });
+
+    observables.push(modbusService.write(this.accessAddress, [1]));
 
     observables.forEach((ob) => {
       ob.subscribe();
