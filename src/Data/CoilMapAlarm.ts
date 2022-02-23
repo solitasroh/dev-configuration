@@ -13,6 +13,10 @@ class CoilAlarm implements A2700Data {
   ethernetDisconnect: boolean;
 
   lmhMismatch: boolean; 
+
+  remote : boolean;
+
+  abnormal : boolean;
 }
 
 export default CoilAlarm;

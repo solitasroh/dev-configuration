@@ -1,5 +1,4 @@
 import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
-import RegisterLMHLogicalUserIO from '@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO';
 import RegisterLMDISetup from "@src/main/modbus.a2700m/lmh/RegisterLMDISetup";
 import RegisterLMDOSetup  from "@src/main/modbus.a2700m/lmh/RegisterLMDOSetup";
 import RegisterLMSetup from './lmh/RegisterLMSetup';
