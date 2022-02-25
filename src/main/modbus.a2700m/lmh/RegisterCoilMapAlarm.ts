@@ -7,15 +7,17 @@ import RegisterBase from '../RegisterBase';
 import RegisterProps from '../RegisterProps';
 
 export default class RegisterCoilMapAlarm extends RegisterBase {
-  private alarmAddress = 1994;
+  private alarmAddress = 1995;
 
   private pcStateAddress = 6;
 
-  getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]>{
-    
-
-    const alarm =  ModbusService.read<boolean[]>(this.alarmAddress, 5, { isCoil: true });
-    const pcState =  ModbusService.read<boolean[]>(this.pcStateAddress, 2, { isCoil: true });
+  getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
+    const alarm = ModbusService.read<boolean[]>(this.alarmAddress, 5, {
+      isCoil: true,
+    });
+    const pcState = ModbusService.read<boolean[]>(this.pcStateAddress, 2, {
+      isCoil: true,
+    });
 
     return forkJoin([alarm, pcState]).pipe(
       map((data) => {
@@ -29,10 +31,7 @@ export default class RegisterCoilMapAlarm extends RegisterBase {
           lmhMismatch,
         ] = ala;
 
-        const[
-          remote,
-          abnormal,
-        ]= pc;
+        const [remote, abnormal] = pc;
 
         alarmData.ringState = ringState;
         alarmData.displayDisconnect = displayDisconnect;
@@ -40,12 +39,12 @@ export default class RegisterCoilMapAlarm extends RegisterBase {
         alarmData.ethernetDisconnect = ethernetDisconnect;
         alarmData.lmhMismatch = lmhMismatch;
         alarmData.remote = remote;
-        alarmData.abnormal = abnormal;
-        
+        alarmData.abnormal = !abnormal;
+
         return alarmData;
       }),
     );
-  };
+  }
 
   setter = (_data: A2700Data): void => {
     // do nothing

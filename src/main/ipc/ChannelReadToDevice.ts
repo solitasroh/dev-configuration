@@ -83,12 +83,12 @@ export class ChannelReadToDevice
     const service = ModbusService.GetClient();
     service.writeRegister(65534, 65535);
     const authority = await this.getAuthority();
-
+    console.log(authority);
     if (authority) {
       if (await this.setFileType(request.fileType)) {
         if (await this.setReadCommand()) {
           const info = await this.getFileInformation();
-
+          console.log(info);
           this.buffer = [];
           this.elements = [];
           const result = await this.readFile(info.fileSize, 0);
@@ -119,20 +119,24 @@ export class ChannelReadToDevice
   }
 
   readFile = async (
-    readSize: number,
+    readByteSize: number,
     offset: number,
   ): Promise<ChannelReadToDeviceResult> => {
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-      let req = 120;
-      if (readSize < 240) {
-        req = readSize >> 1;
+      let requestSizeW = 120;
+      if (readByteSize < 240) {
+        requestSizeW = readByteSize >> 1;
+        if (readByteSize < 2) {
+          requestSizeW = 2;
+        }
       }
-      if (req !== 0) {
+
+      if (requestSizeW !== 0) {
         const readResult = await client.readHoldingRegisters(
           FileAccessAddress.addrFileContents,
-          req,
+          requestSizeW,
         );
 
         for (let i = 0; i < readResult.buffer.length; i += 2) {
@@ -143,24 +147,38 @@ export class ChannelReadToDevice
         }
       }
 
-      const offs = offset + (req << 1);
-      const remaining = readSize - (req << 1);
-
+      const offs = offset + (requestSizeW << 1);
+      let remainingBytes = readByteSize - (requestSizeW << 1);
+      if (remainingBytes < 0) {
+        remainingBytes = 0;
+      }
       const status = await this.getOperationStatus();
       const error = await this.getErrorStatus();
+
+      console.log(
+        `read data ${offs} remaining = ${remainingBytes} status = ${status}`,
+      );
       await sleep(100);
-      if (status === FileAccessStatus.Completed || readSize <= 0) {
+      if (status === FileAccessStatus.Completed || readByteSize <= 0) {
         if (error === FileAccessError.NoError) {
+          console.log('no error');
           return new ChannelReadToDeviceResult(true, null, this.elements);
         }
         if (error === FileAccessError.ReadError) {
+          console.log('read error');
           return new ChannelReadToDeviceResult(false, 'read failed');
         }
         if (error === FileAccessError.TimeoutError) {
+          console.log('timeout error');
           return new ChannelReadToDeviceResult(false, 'read failed: timeout');
+        } else {
+          return new ChannelReadToDeviceResult(
+            false,
+            `read failed: invalid error ${error}`,
+          );
         }
       }
-      const result = await this.readFile(remaining, offs);
+      const result = await this.readFile(remainingBytes, offs);
       return result;
     }
 

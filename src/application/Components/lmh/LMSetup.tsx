@@ -9,7 +9,7 @@ import { useOncePolling } from '@src/application/hooks/ipcHook';
 
 export default function LMHSetup(): ReactElement {
   const [optionsState, setoptionsState] = useState(0);
-  
+
   useOncePolling(
     {
       requestType: 'LMManagementSetup',
@@ -18,7 +18,6 @@ export default function LMHSetup(): ReactElement {
     (evt, resp) => {
       const data = resp as LMManagementSetup;
       setoptionsState(data.managementMode);
-      console.log("use Once Polling %d", data.managementMode)
     },
   );
 
@@ -27,16 +26,19 @@ export default function LMHSetup(): ReactElement {
     data.managementMode = optionsState;
 
     const service = IpcService.getInstance();
-    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
-      writeData: data,
-      requestType: 'LMManagementSetup',
-    });
-    
+    service
+      .send<void, ChannelWriteDataProps>(WRITE_REQ, {
+        writeData: data,
+        requestType: 'LMManagementSetup',
+      })
+      .then((r) => {
+        console.log('write complete');
+      });
   };
   const selectChanged = (event: any) => {
     const { value } = event.target;
     setoptionsState(value);
-  }
+  };
 
   return (
     <Space>

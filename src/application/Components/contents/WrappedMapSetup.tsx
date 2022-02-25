@@ -180,6 +180,7 @@ export default function WrappedMapContents(): ReactElement {
 
   const handleReadButton = async (type: number) => {
     const service = IpcService.getInstance();
+    console.log('send request data');
     const { result, elements: readElements } = await service.send<
       { result: boolean; elements: WrappedElement[]; filePath: string },
       ChannelReadToDeviceProps
@@ -325,16 +326,14 @@ export default function WrappedMapContents(): ReactElement {
   };
 
   const itemDoubleClickHandle = (item: WrappedElement, type: number) => {
-    if (type === 1) 
-    {
+    if (type === 1) {
       setSelectedItem(item);
-        setCoilSelectedIndex(coilElements.indexOf(item));
-    }
-    else {
+      setCoilSelectedIndex(coilElements.indexOf(item));
+    } else {
       setSelectedItem(item);
-        setRegSelectedIndex(regElements.indexOf(item));
+      setRegSelectedIndex(regElements.indexOf(item));
     }
-    
+
     setAddress(item.address.toString());
     setLength(item.length.toString());
     setWrappedAdd(item.wrappedAddress.toString());
@@ -343,7 +342,6 @@ export default function WrappedMapContents(): ReactElement {
     setAddress('');
     setLength('');
     setWrappedAdd('');
-
   };
 
   const removeElement = (type: number) => {
