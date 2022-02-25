@@ -3,7 +3,7 @@ import A2700DataType from './A2700DataType';
 
 export interface LogicIOProps {
   name?: string;
-  polarity: number;
+  polarity?: number;
   mapping: number;
 }
 

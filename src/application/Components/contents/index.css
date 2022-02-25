@@ -9,4 +9,9 @@
   .ant-table td.red-color {
     background: red;
   }
+
+  .ant-select-selection
+  {
+    height: 20px;
+  }
   
