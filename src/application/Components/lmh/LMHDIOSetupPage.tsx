@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { Button, Card, Divider, Select, Space, Typography } from 'antd';
+import { Button, Card, Select, Space } from 'antd';
 import { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import '../contents/index.css';
 import styled from 'styled-components';
@@ -17,12 +17,14 @@ const SetupBox = styled.div`
 `;
 
 const SetupLabel = styled.div`
-  display: flex;
+  display: inline-block;
+  white-space: nowrap;
   margin-right: 6px;
   font-size: 8pt;
   font-family: Roboto, serif;
   font-weight: 500;
   color: ${labelColor};
+  text-wrap: none;
 `;
 
 const SetupValue = styled.div`
@@ -106,12 +108,6 @@ const defaultDOFields: LogicIOProps[] = [
   { mapping: 9 },
 ];
 
-const inputStyle = {
-  width: '70%',
-  backgroundColor: '#f5f5f5',
-  display: 'flex',
-};
-
 const LMHDIOSetupPage: FC = () => {
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
@@ -159,7 +155,7 @@ const LMHDIOSetupPage: FC = () => {
                     .padStart(2, '0')}`}</SetupLabel>
                   <Controller
                     name={`diPolaritySetup.${index}.polarity` as const}
-                    render={({ field: { onChange, onBlur, value } }) => (
+                    render={({ field: { onChange, value } }) => (
                       <SetupField
                         onChange={onChange}
                         value={value}
@@ -181,7 +177,7 @@ const LMHDIOSetupPage: FC = () => {
                   <SetupValue>
                     <Controller
                       name={`diMappingSetup.${index}.mapping` as const}
-                      render={({ field: { onChange, onBlur, value } }) => (
+                      render={({ field: { onChange, value } }) => (
                         <SetupField onChange={onChange} value={value} />
                       )}
                       control={control}
@@ -200,7 +196,7 @@ const LMHDIOSetupPage: FC = () => {
                   <SetupValue>
                     <Controller
                       name={`doSetup.${index}.mapping` as const}
-                      render={({ field: { onChange, onBlur, value } }) => (
+                      render={({ field: { onChange, value } }) => (
                         <SetupField onChange={onChange} value={value} />
                       )}
                       control={control}
