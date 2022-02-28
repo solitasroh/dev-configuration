@@ -1,9 +1,12 @@
 import React, { FC } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Button, Card, Select, Space } from 'antd';
-import { LogicIOProps } from '@src/Data/LMHLogicSetup';
+import LMHLogicSetup, { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import '../contents/index.css';
 import styled from 'styled-components';
+import IpcService from '@src/main/IPCService';
+import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
+import { WRITE_REQ } from '@src/ipcChannels';
 
 const labelColor = '#7e7e7e';
 
@@ -138,9 +141,30 @@ const LMHDIOSetupPage: FC = () => {
     { label: 'Reverse', value: 2 },
   ];
 
+  const onSubmit = (data: FormValues) => {
+    const setup = new LMHLogicSetup(18);
+    const diPolarity = data.diPolaritySetup.map((v) => v.polarity);
+    const diMapping = data.diMappingSetup.map((v) => v.mapping);
+    const doMapping = data.doSetup.map((v) => v.mapping);
+
+    for (let i = 0; i < 18; i += 1) {
+      setup.diSetups[i].polarity = diPolarity[i];
+      setup.diSetups[i].mapping = diMapping[i];
+    }
+    for (let i = 0; i < 18; i += 1) {
+      setup.doSetups[i].mapping = doMapping[i];
+    }
+
+    const service = IpcService.getInstance();
+    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
+      writeData: setup,
+      requestType: 'LMLogicIOSetup',
+    });
+  };
+
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Card
           size="small"
           title={`A2750LMH `}

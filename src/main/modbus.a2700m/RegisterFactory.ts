@@ -1,6 +1,5 @@
 import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
-import RegisterLMDISetup from "@src/main/modbus.a2700m/lmh/RegisterLMDISetup";
-import RegisterLMDOSetup  from "@src/main/modbus.a2700m/lmh/RegisterLMDOSetup";
+import RegisterLMLogicIOSetup from "@src/main/modbus.a2700m/lmh/RegisterLMLogicIOSetup";
 import RegisterLMSetup from './lmh/RegisterLMSetup';
 import RegisterLMInformation from './lmh/RegisterLMInformation';
 import RegisterLDInformation from './lmh/RegisterLDInformation';
@@ -45,8 +44,7 @@ const userMap = {
   LMUserIOSetup: RegisterLMHLogicalUserIO,
   LMLogicSetup: RegisterLMLogicSetup,
   CoilMapAlarm: RegisterCoilMapAlarm,
-  LMLogicDISetup: RegisterLMDISetup,
-  LMLogicDOSetup: RegisterLMDOSetup,
+  LMLogicIOSetup: RegisterLMLogicIOSetup,
   LMUserDefine : RegisterLMHUserDefineIOSetup,
 };
 
