@@ -64,7 +64,8 @@ class Main {
     app.whenReady().then(() => {
       // initTray();
     });
-
+    app.disableHardwareAcceleration();
+    app.commandLine.appendSwitch("in-process-gpu")
     ModbusService.modbusInit();
 
     this.registerIpcChannels(ipcChannels);

@@ -4,7 +4,7 @@ import A2700DataType from './A2700DataType';
 export interface LogicIOProps {
   name?: string;
   polarity?: number;
-  mapping: number;
+  mapping?: number;
 }
 
 export default class LMHLogicSetup implements A2700Data {

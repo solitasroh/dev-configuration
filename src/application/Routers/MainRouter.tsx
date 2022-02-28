@@ -18,6 +18,7 @@ const Container = styled.div`
   width: 100vw;
   background-color: #ffffff;
   justify-content: flex-start;
+  overflow-x: auto;
 `;
 
 const NoMatch: React.FC = () => (

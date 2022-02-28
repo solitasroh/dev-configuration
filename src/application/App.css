@@ -24,3 +24,13 @@
 .connection-btn {
     height: 32px;
 }
+
+.smoothed {
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+    font-family: Noto Sans KR;
+    src: url('../assets/fonts/NotoSansKR-Regular.otf') format("opentype");
+}
