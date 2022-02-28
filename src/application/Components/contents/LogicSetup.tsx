@@ -1,12 +1,32 @@
 import {Tabs } from 'antd';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import DIOSetupPage from '@src/application/Components/ioh/DIOSetupPage';
 import LMHDIOSetupPage from '@src/application/Components/lmh/LMHDIOSetupPage';
+import IOHInfoData from '@src/Data/IOHInfoData';
+import { usePolling } from '@src/application/hooks/ipcHook';
 import LMHUserDefine from '../lmh/LMHUserDefine';
 import ModuleTypeSetup from '../lmh/ModuleTypeSetup';
+import AI2SetupPage from '../ioh/AI2SetupPage';
 
 const { TabPane } = Tabs;
 export default function LogicSetupContents(): ReactElement {
+  
+  const [moduleType, setModuleType] = useState<IOHInfoData[]>([]);
+  usePolling(
+    {
+      responseChannel: 'POLL-IO-information',
+      requestType: 'A2750IOInformation',
+      props: { id: 0 },
+    },
+    (evt, rest) => {
+      const infoList = rest as IOHInfoData[];
+      const validIO = infoList.filter(
+        (data) => data.operationStatus === 'OPERATING',
+      );
+      setModuleType(validIO);
+    },
+    1000,
+  );
   return (
     <>
       <Tabs type="card">
@@ -16,8 +36,7 @@ export default function LogicSetupContents(): ReactElement {
         <TabPane tab="Logic IO" key="2">
           <div style={{ display: 'flex', overflowX: 'auto' }}>
             <LMHDIOSetupPage />
-            <DIOSetupPage moduleId={1} />
-            <DIOSetupPage moduleId={2} />
+            {moduleType.map((data) => data.moduleType === 'DIO' ? <DIOSetupPage moduleId={data.id}/> : <AI2SetupPage moduleId={data.id}/>)}
           </div>
         </TabPane>
         <TabPane tab="LMH Geneal DIO" key="3">
