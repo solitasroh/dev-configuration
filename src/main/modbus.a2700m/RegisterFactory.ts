@@ -21,6 +21,7 @@ import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
 import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
 import RegisterCoilMapAlarm from './lmh/RegisterCoilMapAlarm';
+import RegisterLMHUserDefineIOSetup from "./lmh/RegisterLMHUserDefineIOSetup";
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -44,9 +45,9 @@ const userMap = {
   LMUserIOSetup: RegisterLMHLogicalUserIO,
   LMLogicSetup: RegisterLMLogicSetup,
   CoilMapAlarm: RegisterCoilMapAlarm,
-
   LMLogicDISetup: RegisterLMDISetup,
   LMLogicDOSetup: RegisterLMDOSetup,
+  LMUserDefine : RegisterLMHUserDefineIOSetup,
 };
 
 export type UserMap = typeof userMap;
