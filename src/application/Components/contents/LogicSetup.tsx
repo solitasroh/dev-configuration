@@ -22,7 +22,7 @@ export default function LogicSetupContents(): ReactElement {
         <TabPane tab="Logic IO" key="1">
           {/*<UserButton> ALL </UserButton>*/}
           {/*<UserButton> Each </UserButton>*/}
-          <div style={{ display: 'flex'}}>
+          <div style={{ display: 'flex', overflowX: 'auto' }}>
             <LMHDIOSetupPage />
             <DIOSetupPage moduleId={1} />
             <DIOSetupPage moduleId={2} />
