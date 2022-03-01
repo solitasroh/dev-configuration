@@ -3,8 +3,8 @@ import A2700DataType from './A2700DataType';
 
 export interface LogicIOProps {
   name?: string;
-  polarity: number;
-  mapping: number;
+  polarity?: number;
+  mapping?: number;
 }
 
 export default class LMHLogicSetup implements A2700Data {
@@ -14,6 +14,10 @@ export default class LMHLogicSetup implements A2700Data {
 
   detail: LogicIOProps[];
 
+  diSetups: LogicIOProps[];
+
+  doSetups: LogicIOProps[];
+
   constructor(channelCounts: number) {
     this.detail = [];
     for (let index = 0; index < channelCounts; index += 1) {
@@ -21,6 +25,13 @@ export default class LMHLogicSetup implements A2700Data {
         polarity: 0,
         mapping: 0,
       });
+    }
+
+    for (let index = 0; index < channelCounts; index+=1) {
+      this.diSetups.push({
+        polarity: 0,
+        mapping : 0,
+      })
     }
   }
 }

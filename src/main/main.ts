@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
 import WindowInformation, {
+  debugWindowConfig,
   loadWindowConfig,
   saveWindowConfig,
 } from '@src/main/WindowConfig';
@@ -40,6 +41,15 @@ class Main {
   private ipcService: IpcService;
 
   init(ipcChannels: IpcChannel<IpcRequest>[]) {
+    this.windowInformation = {
+      x: 10,
+      y: 10,
+      width: 1000,
+      height: 500,
+      validity: true,
+      isMaximized: false,
+    };
+
     this.modbusService = ModbusService.getInstance();
     this.motorUnitManagement = MotorUnitManagement.getInstance();
     this.ipcService = IpcService.getInstance();
@@ -54,7 +64,8 @@ class Main {
     app.whenReady().then(() => {
       // initTray();
     });
-
+    app.disableHardwareAcceleration();
+    app.commandLine.appendSwitch("in-process-gpu")
     ModbusService.modbusInit();
 
     this.registerIpcChannels(ipcChannels);
@@ -110,8 +121,15 @@ class Main {
 
   private modbusStatusOld: number;
 
+  private static getIconsPath(): string {
+    if (process.platform === 'darwin') {
+      return '../src/assets/icons/mac/icon.icns';
+    }
+    return '../src/assets/icons/win/icon.ico';
+  }
+
   private async createWindow() {
-    // const iconImage = nativeImage.createFromPath('../src/assets/icons/win/icon.ico');
+    const iconImage = nativeImage.createFromPath(Main.getIconsPath());
 
     this.mainWindow = new BrowserWindow({
       height: 600,
@@ -122,7 +140,7 @@ class Main {
         nativeWindowOpen: true,
       },
       show: false,
-      // icon: iconImage,
+      icon: iconImage,
     });
 
     await this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -135,21 +153,28 @@ class Main {
       // e.preventDefault();
       // this.mainWindow.hide();
       ModbusService.modbusRelease();
+      if (this.windowInformation.x === undefined) {
+        const [x, y] = this.mainWindow.getPosition();
+        const rect = this.mainWindow.getContentBounds();
+        this.windowInformation.x = x;
+        this.windowInformation.y = y;
+        this.windowInformation.width = rect.width;
+        this.windowInformation.height = rect.height;
+      }
       saveWindowConfig(this.windowInformation);
     });
 
     this.mainWindow.on('ready-to-show', () => {
+      console.log(`ready to show window`);
       this.windowInformation = loadWindowConfig();
-
+      debugWindowConfig('load', this.windowInformation);
       this.mainWindow.setContentBounds({
         x: this.windowInformation.x,
         y: this.windowInformation.y,
         width: this.windowInformation.width,
         height: this.windowInformation.height,
       });
-
       this.mainWindow.show();
-
       if (this.windowInformation.isMaximized) {
         this.mainWindow.maximize();
       }

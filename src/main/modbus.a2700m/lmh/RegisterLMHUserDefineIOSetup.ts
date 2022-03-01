@@ -5,10 +5,10 @@ import A2700Data from '@src/Data/A2700Data';
 import ModbusService from '@src/main/ModbusService';
 import UserDefineIOData, { DefinedIO } from '@src/Data/UserDefineIOData';
 import chunkArray, { chunkArray2 } from '@src/Utils';
-import modbusService from '@src/main/ModbusService';
 
-class RegisterLMHUserDefineIOSetup extends RegisterBase {
+export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
   private accessAddress = 62020;
+
   private dataAddress = 62021;
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
@@ -75,7 +75,7 @@ class RegisterLMHUserDefineIOSetup extends RegisterBase {
       return observable;
     });
 
-    observables.push(modbusService.write(this.accessAddress, [1]));
+    observables.push(ModbusService.write(this.accessAddress, [1]));
 
     observables.forEach((ob) => {
       ob.subscribe();
@@ -83,23 +83,24 @@ class RegisterLMHUserDefineIOSetup extends RegisterBase {
   }
 
   private parse(buffer: number[]) {
+    console.log(this.accessAddress);
     const chucked = chunkArray(buffer, 12);
     return chucked.map((data) => {
       const name = String.fromCharCode(data.slice(2, 12));
       const definedIO: DefinedIO = {
         type: data[0],
         mapping: data[1],
-        name: name,
+        name,
       };
       return definedIO;
     });
   }
 
   private static getCharCode(s: string) {
-    let charCodeArr = [];
+    const charCodeArr = [];
 
-    for (let i = 0; i < s.length; i++) {
-      let code = s.charCodeAt(i);
+    for (let i = 0; i < s.length; i += 1) {
+      const code = s.charCodeAt(i);
       charCodeArr.push(code);
     }
     return charCodeArr;

@@ -3,6 +3,7 @@ import { HashRouter } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import MainRouter from './Routers/MainRouter';
+import 'typeface-roboto/index.css'
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -25,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   };
   body {
     background-color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,'Noto Sans KR', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
   }
   ol, ul, li {
     list-style: none;

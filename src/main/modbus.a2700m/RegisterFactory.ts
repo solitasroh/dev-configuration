@@ -1,6 +1,5 @@
 import RegisterLMHLogicalUserIO from "@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO";
-import RegisterLMDISetup from "@src/main/modbus.a2700m/lmh/RegisterLMDISetup";
-import RegisterLMDOSetup  from "@src/main/modbus.a2700m/lmh/RegisterLMDOSetup";
+import RegisterLMLogicIOSetup from "@src/main/modbus.a2700m/lmh/RegisterLMLogicIOSetup";
 import RegisterLMSetup from './lmh/RegisterLMSetup';
 import RegisterLMInformation from './lmh/RegisterLMInformation';
 import RegisterLDInformation from './lmh/RegisterLDInformation';
@@ -21,6 +20,7 @@ import RegisterLMCommand from './lmh/RegisterLMDOCommand';
 import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
 import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
 import RegisterCoilMapAlarm from './lmh/RegisterCoilMapAlarm';
+import RegisterLMHUserDefineIOSetup from "./lmh/RegisterLMHUserDefineIOSetup";
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -44,9 +44,8 @@ const userMap = {
   LMUserIOSetup: RegisterLMHLogicalUserIO,
   LMLogicSetup: RegisterLMLogicSetup,
   CoilMapAlarm: RegisterCoilMapAlarm,
-
-  LMLogicDISetup: RegisterLMDISetup,
-  LMLogicDOSetup: RegisterLMDOSetup,
+  LMLogicIOSetup: RegisterLMLogicIOSetup,
+  LMUserDefine : RegisterLMHUserDefineIOSetup,
 };
 
 export type UserMap = typeof userMap;

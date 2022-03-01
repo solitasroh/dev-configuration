@@ -1,5 +1,9 @@
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { useOncePolling } from '@src/application/hooks/ipcHook';
 import UserDefineIOData, { DefinedIO } from '@src/Data/UserDefineIOData';
+import { WRITE_REQ } from '@src/ipcChannels';
+import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
+import IpcService from '@src/main/IPCService';
 import { Button, Form, Input, InputNumber, Modal, Row, Select, Table } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import styled from 'styled-components';
@@ -34,6 +38,32 @@ export default function LMHUserDefine(): ReactElement {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [itemList, setItemList] = useState<DefinedIO[]>([]);
   const [myForm] = Form.useForm();
+
+  useOncePolling(
+    {
+      requestType: 'LMUserDefine',
+      responseChannel: 'POLL-LM-USER-DEFINE',
+    },
+    (evt, resp) => {
+      // const data = resp as UserDefineIOData;
+      // if (data !== undefined  && data !== null) {
+      //   setItemList(data.definedIO);
+      //   console.log("use Once Polling %d", itemList)
+      // }
+
+    },
+  );
+
+  const onApply = () => {
+    const data = new UserDefineIOData();
+    data.definedIO = itemList;
+
+    const service = IpcService.getInstance();
+    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
+      writeData: data,
+      requestType: 'LMUserDefine',
+    });    
+  };
 
   const options = [
     { label: 'Disable', value: 0 },
@@ -78,6 +108,9 @@ export default function LMHUserDefine(): ReactElement {
         }}
       />
       <UserButton type="text" icon={<MinusCircleOutlined />} />
+      <UserButton onClick={onApply}>
+        Send to Device/
+      </UserButton>
       <Row justify="start">
         <Table
           dataSource={itemList}
