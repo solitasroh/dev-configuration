@@ -139,7 +139,7 @@ class Main {
         contextIsolation: false,
         nativeWindowOpen: true,
       },
-      // show: false,
+      show: false,
       icon: iconImage,
     });
 

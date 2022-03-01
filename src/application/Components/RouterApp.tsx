@@ -24,7 +24,7 @@ const Contents = styled(Content)`
 
 const RouterApp: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectKey] = useState('1');
+  const [selectedKey, setSelectKey] = useState('0');
   const navigate = useNavigate();
   useEffect(() => {
     if (selectedKey === '1') {
