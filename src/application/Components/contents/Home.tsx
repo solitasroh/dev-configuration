@@ -1,5 +1,6 @@
 import { Tabs } from 'antd';
 import React, { ReactElement, useState } from 'react';
+import Select from 'react-select';
 import { Controller, useForm } from 'react-hook-form';
 import Input from '../Shared/Input/Input';
 import UserInput from '../UserInput';
@@ -10,13 +11,17 @@ const elements = [
   { key: '1', value: '1', name: 'lolo' },
   { key: '2', value: '2', name: '2lolo' },
 ];
-
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
+];
 type FormValues = {
   setupValue: string;
 };
 
 export default function Home(): ReactElement {
-  const [ref, setRef] = useState("0");
+  const [ref, setRef] = useState('0');
   const [value, setValue] = useState(0);
   const { control, handleSubmit } = useForm<FormValues>();
   const submit = (values: FormValues) => {
@@ -41,6 +46,7 @@ export default function Home(): ReactElement {
               )}
               control={control}
             />
+            <Select options={options} />
             <input type="submit" value="Apply" />
           </form>
         </TabPane>
