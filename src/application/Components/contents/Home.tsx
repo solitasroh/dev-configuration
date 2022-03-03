@@ -1,23 +1,19 @@
 import { Tabs } from 'antd';
 import React, { ReactElement, useState } from 'react';
-import Select from 'react-select';
 import { Controller, useForm } from 'react-hook-form';
+import UserSelect from '@src/application/Components/Shared/Select';
 import Input from '../Shared/Input/Input';
 import UserInput from '../UserInput';
-import UserSelect from '../UserSelect';
 
 const { TabPane } = Tabs;
-const elements = [
-  { key: '1', value: '1', name: 'lolo' },
-  { key: '2', value: '2', name: '2lolo' },
-];
+
 const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
+  { label: 'label1', value: '1' },
+  { label: 'label2', value: '2' },
 ];
 type FormValues = {
   setupValue: string;
+  selectValue: string;
 };
 
 export default function Home(): ReactElement {
@@ -32,7 +28,7 @@ export default function Home(): ReactElement {
     <div>
       <Tabs type="card">
         <TabPane tab="TEST" key="1">
-          <form onSubmit={handleSubmit(submit)}>
+          <form onSubmit={handleSubmit(submit)} style={{ height: '500px' }}>
             <Controller
               name="setupValue"
               render={({ field: { onChange, value: v } }) => (
@@ -41,12 +37,25 @@ export default function Home(): ReactElement {
                   value={v}
                   refValue={ref}
                   onChange={onChange}
-                  width="80px"
+                  width="130px"
                 />
               )}
               control={control}
             />
-            <Select options={options} />
+            <Controller
+              name="selectValue"
+              render={({ field: { onChange, value: v } }) => (
+                <UserSelect
+                  width="130px"
+                  options={options}
+                  onChange={onChange}
+                  value={v}
+                  label="test"
+                />
+              )}
+              control={control}
+            />
+
             <input type="submit" value="Apply" />
           </form>
         </TabPane>
@@ -58,9 +67,6 @@ export default function Home(): ReactElement {
             onChange={(v) => setValue(v)}
           />
           <div>{value}</div>
-        </TabPane>
-        <TabPane tab="Select Box" key="3">
-          <UserSelect elements={elements} />
         </TabPane>
       </Tabs>
     </div>

@@ -78,6 +78,7 @@ const Wrapper = styled.div<StyledInputProps>`
   margin: 0 0.5em;
   flex-direction: row;
   align-items: center;
+  width: ${(props) => props.width};
   background-color: ${(props) => backgroundColor(props)};
 
   border: 1px solid #ffffff;
@@ -94,7 +95,7 @@ const Contents = styled.input<StyledInputProps>`
   outline: none;
   color: ${(props) => foregroundColor(props)};
   font-size: 10pt;
-  width: ${(props) => props.width};
+  width: 80%;
 
   &::-webkit-input-placeholder {
     color: ${inputTextInActive};
@@ -118,8 +119,8 @@ const ContentInfo = styled.div`
 const Input: FC<Props> = (props: Props) => {
   const { label, value, refValue, onChange, onKeyPress, disabled, width } =
     props;
-  const [inputValue, setInputValue] = useState<InputValueType>(value);
-  const [refInput, setRefValue] = useState<InputValueType>(refValue);
+  const [, setInputValue] = useState<InputValueType>(value);
+  const [refInput] = useState<InputValueType>(refValue);
   const [isValueChange, setIsValueChange] = useState<boolean>(false);
 
   useEffect(() => {
@@ -154,7 +155,7 @@ const Input: FC<Props> = (props: Props) => {
   return (
     <Box>
       <Label>{label}</Label>
-      <Wrapper disabled={disabled} isChanged={isValueChange}>
+      <Wrapper disabled={disabled} isChanged={isValueChange} width={width}>
         <Contents
           width={width}
           value={value}
