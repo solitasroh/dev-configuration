@@ -19,6 +19,7 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
       this.dataAddress + unit * 10,
       unit * 10,
     );
+
     const ob3 = ModbusService.read<number[]>(
       this.dataAddress + unit * 20,
       unit * 7,
@@ -40,45 +41,51 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
   }
 
   setter(_data: UserDefineIOData): void {
-    this.unlockSetup();
+    const observable = this.unlockSetup();
 
     ModbusService.read<number[]>(this.accessAddress, 1);
+
     // io data
     let offset = 0;
     const data: DefinedIO[][] = chunkArray2<DefinedIO>(_data.definedIO, 10);
 
     const observables = data.map((splitData) => {
-      const writeBuffer: number[] = [];
+      let writeBuffer: number[] = [];
       splitData.forEach((ioData) => {
         const tmp = [ioData.type, ioData.mapping];
         const nameTmp = [];
+
         const nameArray = RegisterLMHUserDefineIOSetup.getCharCode(ioData.name);
+
         for (let i = 0; i < 20; i += 2) {
-          if (nameArray.length < i) {
-            nameTmp.push(nameArray[i] | (nameArray[i + 1] << 8));
+          if (nameArray.length > i) {
+            nameTmp.push((nameArray[i] << 8) | nameArray[i + 1]);
           } else {
             nameTmp.push(0);
           }
         }
         const res = tmp.concat(...nameTmp);
-        tmp.concat(...res);
+
+        writeBuffer = writeBuffer.concat(...res);
       });
 
       const observable = ModbusService.write(
         this.dataAddress + offset,
         writeBuffer,
       );
-      console.log(
-        `write address: ${this.dataAddress + offset} offset: ${offset}`,
-      );
+
       offset += writeBuffer.length;
       return observable;
     });
 
-    observables.push(ModbusService.write(this.accessAddress, [1]));
+    observables.push();
 
-    observables.forEach((ob) => {
-      ob.subscribe();
+    const ob = forkJoin([observable, ...observables]);
+    ob.subscribe({
+      next: (value) => console.log('next : ', value),
+      complete: () => {
+        ModbusService.write(this.accessAddress, [1]).subscribe();
+      },
     });
   }
 

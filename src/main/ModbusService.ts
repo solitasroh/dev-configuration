@@ -222,10 +222,10 @@ class ModbusService {
     const register = data as number[];
     return from(this.GetClient().writeRegisters(address - 1, register)).pipe(
       map((result) => result.address),
-      catchError((error) =>
-        // console.log(error);
-        [],
-      ),
+      catchError((error) => {
+        console.log(error);
+        return [];
+      }),
     );
   }
 
