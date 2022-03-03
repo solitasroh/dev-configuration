@@ -90,10 +90,16 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
   }
 
   private parse(buffer: number[]) {
-    console.log(this.accessAddress);
     const chucked = chunkArray(buffer, 12);
     return chucked.map((data) => {
-      const name = String.fromCharCode(data.slice(2, 12));
+      const nameBuffer = data.slice(2, 12);
+      const buf: number[] = [];
+      nameBuffer.forEach((b: number) => {
+        buf.push(b >> 8);
+        buf.push(b & 0xff);
+      });
+
+      const name = String.fromCharCode(...buf);
       const definedIO: DefinedIO = {
         type: data[0],
         mapping: data[1],

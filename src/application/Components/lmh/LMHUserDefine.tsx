@@ -4,8 +4,17 @@ import UserDefineIOData, { DefinedIO } from '@src/Data/UserDefineIOData';
 import { WRITE_REQ } from '@src/ipcChannels';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import IpcService from '@src/main/IPCService';
-import { Button, Form, Input, InputNumber, Modal, Row, Select, Table } from 'antd';
-import React, { ReactElement, useState } from 'react';
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Row,
+  Select,
+  Table,
+} from 'antd';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const UserButton = styled(Button)`
@@ -39,20 +48,21 @@ export default function LMHUserDefine(): ReactElement {
   const [itemList, setItemList] = useState<DefinedIO[]>([]);
   const [myForm] = Form.useForm();
 
-  useOncePolling(
-    {
-      requestType: 'LMUserDefine',
-      responseChannel: 'POLL-LM-USER-DEFINE',
-    },
-    (evt, resp) => {
-      // const data = resp as UserDefineIOData;
-      // if (data !== undefined  && data !== null) {
-      //   setItemList(data.definedIO);
-      //   console.log("use Once Polling %d", itemList)
-      // }
-
-    },
-  );
+  useEffect(() => {
+    useOncePolling(
+      {
+        requestType: 'LMUserDefine',
+        responseChannel: 'POLL-LM-USER-DEFINE',
+      },
+      (evt, resp) => {
+        const data = resp as UserDefineIOData;
+        if (data !== undefined && data !== null) {
+          setItemList(data.definedIO);
+          console.log('use Once Polling %d', itemList);
+        }
+      },
+    );
+  }, []);
 
   const onApply = () => {
     const data = new UserDefineIOData();
@@ -62,7 +72,7 @@ export default function LMHUserDefine(): ReactElement {
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: data,
       requestType: 'LMUserDefine',
-    });    
+    });
   };
 
   const options = [
@@ -108,9 +118,7 @@ export default function LMHUserDefine(): ReactElement {
         }}
       />
       <UserButton type="text" icon={<MinusCircleOutlined />} />
-      <UserButton onClick={onApply}>
-        Send to Device/
-      </UserButton>
+      <UserButton onClick={onApply}>Send to Device/</UserButton>
       <Row justify="start">
         <Table
           dataSource={itemList}
@@ -141,10 +149,7 @@ export default function LMHUserDefine(): ReactElement {
           size="small"
         >
           <Form.Item label="Type" name="type">
-            <Select
-              options={options}
-              size="small"
-            />
+            <Select options={options} size="small" />
           </Form.Item>
           <Form.Item label="Mapping" name="mapping">
             <InputNumber style={{ width: '100%' }} />
