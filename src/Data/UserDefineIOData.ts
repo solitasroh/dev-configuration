@@ -12,6 +12,7 @@ export interface DefinedIO {
 }
 
 export default class UserDefineIOData implements A2700Data {
+  id?: number;
   type: A2700DataType = A2700DataType.LMHUserIOSetup;
 
   definedIO: DefinedIO[];
@@ -27,6 +28,6 @@ export default class UserDefineIOData implements A2700Data {
   //   }
   // }
   constructor() {
-    this.definedIO = []
+    this.definedIO = [];
   }
 }
