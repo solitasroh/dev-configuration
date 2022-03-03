@@ -61,7 +61,7 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
           if (nameArray.length > i) {
             nameTmp.push((nameArray[i] << 8) | nameArray[i + 1]);
           } else {
-            nameTmp.push(0);
+            nameTmp.push('\0'.charCodeAt(0));
           }
         }
         const res = tmp.concat(...nameTmp);
