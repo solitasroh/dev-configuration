@@ -2,15 +2,12 @@ import React, { FC, useState } from 'react';
 import Select from 'react-select';
 import styled from 'styled-components';
 
-import { KeyInputEvent } from '@src/application/Components/Shared/Input/Input';
-
 interface Props extends StyledSelectProps {
   label?: string;
   value?: SelectValueType;
   refValue?: SelectValueType;
   disabled?: boolean;
   onChange?: (value: SelectChangeEvent) => void;
-  onKeyPress?: (event: KeyInputEvent) => void;
   options?: { label: string; value: any }[];
 }
 
@@ -112,7 +109,6 @@ const UserSelect: FC<Props> = ({
   refValue,
   onChange,
   isChanged,
-  onKeyPress,
 }: Props) => {
   const [, setSelectedValue] = useState<SelectValueType>(value);
   // const [refInput, setRefValue] = useState<SelectValueType>(refValue);
@@ -156,7 +152,6 @@ UserSelect.defaultProps = {
   value: '',
   refValue: '',
   onChange: null,
-  onKeyPress: null,
   width: '80px',
   disabled: false,
   isChanged: false,

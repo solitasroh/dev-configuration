@@ -3,7 +3,6 @@ import React, { ReactElement, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import UserSelect from '@src/application/Components/Shared/Select';
 import Input from '../Shared/Input/Input';
-import UserInput from '../UserInput';
 
 const { TabPane } = Tabs;
 
@@ -17,29 +16,27 @@ type FormValues = {
 };
 
 export default function Home(): ReactElement {
-  const [ref, setRef] = useState('0');
-  const [value, setValue] = useState(0);
-  const { control, handleSubmit } = useForm<FormValues>();
+  const [targetValue, setTargetValue] = useState('');
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
+    defaultValues: {
+      setupValue: 'test',
+    },
+  });
   const submit = (values: FormValues) => {
-    const newValue = values.setupValue;
-    setRef(newValue);
+    console.log(`submit value = ${values.setupValue}`);
+    setTargetValue(values.setupValue);
   };
+
   return (
     <div>
       <Tabs type="card">
         <TabPane tab="TEST" key="1">
           <form onSubmit={handleSubmit(submit)} style={{ height: '500px' }}>
-            <Controller
+            <Input
               name="setupValue"
-              render={({ field: { onChange, value: v } }) => (
-                <Input
-                  label="test"
-                  value={v}
-                  refValue={ref}
-                  onChange={onChange}
-                  width="130px"
-                />
-              )}
+              defaultValue={targetValue}
+              label="test"
+              width="130px"
               control={control}
             />
             <Controller
@@ -58,15 +55,6 @@ export default function Home(): ReactElement {
 
             <input type="submit" value="Apply" />
           </form>
-        </TabPane>
-
-        <TabPane tab="Input Box" key="2">
-          <UserInput
-            label="input"
-            value={value}
-            onChange={(v) => setValue(v)}
-          />
-          <div>{value}</div>
         </TabPane>
       </Tabs>
     </div>
