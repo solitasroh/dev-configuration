@@ -1,34 +1,27 @@
-import React, {
-  ChangeEvent,
-  FC,
-  KeyboardEvent,
-  useEffect,
-  useState,
-} from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import { InfoCircleFilled } from '@ant-design/icons';
+import { useController, UseControllerProps } from 'react-hook-form';
+import { Alert, Popover } from 'antd';
 
 export type InputValueType = string | number | ReadonlyArray<string>;
 export type InputChangeEvent = ChangeEvent<HTMLInputElement>;
-export type KeyInputEvent = KeyboardEvent<HTMLInputElement>;
 
-interface Props extends StyledInputProps {
+// ---- prop definition
+interface Props<T> extends UseControllerProps<T> {
   label?: string;
-  value?: InputValueType;
-  refValue?: InputValueType;
   disabled?: boolean;
-  onChange?: (event: InputChangeEvent) => void;
-  onKeyPress?: (event: KeyInputEvent) => void;
+  width?: string;
 }
 
 interface StyledInputProps {
   width?: string;
   disabled?: boolean;
-  // eslint-disable-next-line react/no-unused-prop-types
   isChanged?: boolean;
 }
 
+// ---- Brush resources
 const labelColor = '#7e7e7e';
 const fontColor = '#ffffff';
 const changedFontColor = '#000000';
@@ -37,25 +30,6 @@ const FieldActiveBack = '#393F54CC';
 const FieldChangedBack = 'rgb(236,226,61)';
 const FieldInactiveBack = 'rgba(57,63,84,0.59)';
 const inputTextInActive = '#7881a1';
-
-const Box = styled.div`
-  display: flex;
-  margin-bottom: 3px;
-  padding: 1px;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const Label = styled.div`
-  display: inline-block;
-  white-space: nowrap;
-  margin-right: 0.5em;
-  font-size: 9pt;
-  font-family: Roboto, serif;
-  font-weight: 500;
-  color: ${labelColor};
-  text-wrap: none;
-`;
 
 const backgroundColor = (props: StyledInputProps): string => {
   if (props.disabled) return FieldInactiveBack;
@@ -70,7 +44,27 @@ const foregroundColor = (props: StyledInputProps): string => {
   return fontColor;
 };
 
-const Wrapper = styled.div<StyledInputProps>`
+// ---- styled
+const InputContainer = styled.div`
+  display: flex;
+  margin-bottom: 3px;
+  padding: 1px;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const InputLabel = styled.div`
+  display: inline-block;
+  white-space: nowrap;
+  margin-right: 0.5em;
+  font-size: 9pt;
+  font-family: Roboto, serif;
+  font-weight: 500;
+  color: ${labelColor};
+  text-wrap: none;
+`;
+
+const ControlWrapper = styled.div<StyledInputProps>`
   display: flex;
   border-radius: 2px;
   font-size: 10px;
@@ -78,6 +72,7 @@ const Wrapper = styled.div<StyledInputProps>`
   margin: 0 0.5em;
   flex-direction: row;
   align-items: center;
+  width: ${(props) => props.width};
   background-color: ${(props) => backgroundColor(props)};
 
   border: 1px solid #ffffff;
@@ -88,98 +83,116 @@ const Wrapper = styled.div<StyledInputProps>`
   }
 `;
 
-const Contents = styled.input<StyledInputProps>`
+const InputControl = styled.input<StyledInputProps>`
   border: transparent 0;
   background: transparent;
   outline: none;
   color: ${(props) => foregroundColor(props)};
   font-size: 10pt;
-  width: ${(props) => props.width};
+  width: 80%;
 
   &::-webkit-input-placeholder {
     color: ${inputTextInActive};
   }
 
-  &:disabled ${Wrapper} {
+  &:disabled ${ControlWrapper} {
     background-color: ${FieldInactiveBack};
   }
 `;
 
-const ContentInfoIcon = styled(InfoCircleFilled)`
+const InputInformationIcon = styled(InfoCircleFilled)`
   color: white;
 `;
 
-const ContentInfo = styled.div`
-  &:hover ${ContentInfoIcon} {
+const InputInformationWrapper = styled.div`
+  &:hover ${InputInformationIcon} {
     color: #b29090;
   }
 `;
 
-const Input: FC<Props> = (props: Props) => {
-  const { label, value, refValue, onChange, onKeyPress, disabled, width } =
-    props;
-  const [inputValue, setInputValue] = useState<InputValueType>(value);
-  const [refInput, setRefValue] = useState<InputValueType>(refValue);
-  const [isValueChange, setIsValueChange] = useState<boolean>(false);
+type FieldValues = Record<string, InputValueType>;
+// ---- pop over content
+const Contents = (
+  <Alert
+    message="Error"
+
+    description="This is an error message about copywriting."
+    type="error"
+    showIcon
+  />
+);
+// ---- Main Component
+const Input = <T extends FieldValues>({
+  label,
+  name,
+  disabled,
+  width,
+  control,
+  rules,
+  defaultValue,
+  shouldUnregister,
+}: Props<T>): React.ReactElement => {
+  const [isValueChange, setValueChanged] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('ref is changed');
-    setIsValueChange(false);
-  }, [refInput]);
+    setValueChanged(false);
+  }, [defaultValue]);
 
-  const valueChanged = (event: InputChangeEvent) => {
-    const newValue = event.target.value;
+  const {
+    field: { onChange, onBlur, value, ref },
+  } = useController({
+    name,
+    control,
+    rules,
+    defaultValue,
+    shouldUnregister,
+  });
 
-    if (newValue !== refValue) {
-      setIsValueChange(true);
+  const valueChanged = (e: InputChangeEvent) => {
+    if (defaultValue !== e.target.value) {
+      setValueChanged(true);
     } else {
-      setIsValueChange(false);
+      setValueChanged(false);
     }
-
-    setInputValue(newValue);
 
     if (onChange !== null) {
-      onChange(event);
-    }
-  };
-
-  const keyEntered = (event: KeyInputEvent) => {
-    if (event.key === 'Enter') {
-      if (onKeyPress !== null) {
-        onKeyPress(event);
-      }
+      onChange(e);
     }
   };
 
   return (
-    <Box>
-      <Label>{label}</Label>
-      <Wrapper disabled={disabled} isChanged={isValueChange}>
-        <Contents
-          width={width}
+    <InputContainer>
+      <InputLabel>{label}</InputLabel>
+      <ControlWrapper
+        disabled={disabled}
+        isChanged={isValueChange}
+        width={width}
+      >
+        <InputControl
+          onBlur={onBlur}
           value={value}
+          name={name}
+          ref={ref}
+          onChange={valueChanged}
+          width={width}
           disabled={disabled}
           isChanged={isValueChange}
-          onChange={valueChanged}
-          onKeyPress={keyEntered}
         />
-        <ContentInfo>
-          <ContentInfoIcon />
-        </ContentInfo>
-      </Wrapper>
-    </Box>
+        <Popover content={Contents} trigger="click"  style={{padding: 0}}   overlayInnerStyle={{padding: 0}}>
+          <InputInformationWrapper>
+            <InputInformationIcon />
+          </InputInformationWrapper>
+        </Popover>
+      </ControlWrapper>
+    </InputContainer>
   );
 };
 
+// --- default value for props
 Input.defaultProps = {
   label: '',
-  value: '',
-  refValue: '',
-  onChange: null,
-  onKeyPress: null,
   width: '80px',
   disabled: false,
-  isChanged: false,
 };
 
 export default Input;

@@ -1,60 +1,60 @@
 import { Tabs } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import UserSelect from '@src/application/Components/Shared/Select';
 import Input from '../Shared/Input/Input';
-import UserInput from '../UserInput';
-import UserSelect from '../UserSelect';
 
 const { TabPane } = Tabs;
-const elements = [
-  { key: '1', value: '1', name: 'lolo' },
-  { key: '2', value: '2', name: '2lolo' },
-];
 
+const options = [
+  { label: 'label1', value: '1' },
+  { label: 'label2', value: '2' },
+];
 type FormValues = {
   setupValue: string;
+  selectValue: string;
 };
 
 export default function Home(): ReactElement {
-  const [ref, setRef] = useState("0");
-  const [value, setValue] = useState(0);
-  const { control, handleSubmit } = useForm<FormValues>();
+  const [targetValue, setTargetValue] = useState('');
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
+    defaultValues: {
+      setupValue: 'test',
+    },
+  });
   const submit = (values: FormValues) => {
-    const newValue = values.setupValue;
-    setRef(newValue);
+    console.log(`submit value = ${values.setupValue}`);
+    setTargetValue(values.setupValue);
   };
+
   return (
     <div>
       <Tabs type="card">
         <TabPane tab="TEST" key="1">
-          <form onSubmit={handleSubmit(submit)}>
-            <Controller
+          <form onSubmit={handleSubmit(submit)} style={{ height: '500px' }}>
+            <Input
               name="setupValue"
+              defaultValue={targetValue}
+              label="test"
+              width="130px"
+              control={control}
+            />
+            <Controller
+              name="selectValue"
               render={({ field: { onChange, value: v } }) => (
-                <Input
-                  label="test"
-                  value={v}
-                  refValue={ref}
+                <UserSelect
+                  width="130px"
+                  options={options}
                   onChange={onChange}
-                  width="80px"
+                  value={v}
+                  label="test"
                 />
               )}
               control={control}
             />
+
             <input type="submit" value="Apply" />
           </form>
-        </TabPane>
-
-        <TabPane tab="Input Box" key="2">
-          <UserInput
-            label="input"
-            value={value}
-            onChange={(v) => setValue(v)}
-          />
-          <div>{value}</div>
-        </TabPane>
-        <TabPane tab="Select Box" key="3">
-          <UserSelect elements={elements} />
         </TabPane>
       </Tabs>
     </div>

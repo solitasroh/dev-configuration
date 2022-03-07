@@ -65,7 +65,7 @@ class Main {
       // initTray();
     });
     app.disableHardwareAcceleration();
-    app.commandLine.appendSwitch("in-process-gpu")
+    app.commandLine.appendSwitch('in-process-gpu');
     ModbusService.modbusInit();
 
     this.registerIpcChannels(ipcChannels);
@@ -139,7 +139,7 @@ class Main {
         contextIsolation: false,
         nativeWindowOpen: true,
       },
-      show: false,
+      // show: false,
       icon: iconImage,
     });
 
