@@ -46,6 +46,10 @@ const columns: columnDef[] = [
 export default function LMHUserDefine(): ReactElement {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [itemList, setItemList] = useState<DefinedIO[]>([]);
+  const [selectedItem, setSelectedItem] = useState<DefinedIO>(null);
+  const [type, setType] = useState(0);
+  const [mapping, setMapping] = useState(0);
+  const [name, setName] = useState('');
   const [myForm] = Form.useForm();
 
   useEffect(() => {
@@ -57,22 +61,40 @@ export default function LMHUserDefine(): ReactElement {
       (evt, resp) => {
         const data = resp as UserDefineIOData;
         if (data !== undefined && data !== null) {
-          setItemList(data.definedIO);
-          console.log('use Once Polling %d', itemList);
+          const userIOData = data.definedIO.filter(x => x.type !== 0);
+          setItemList(userIOData);
+          console.log('use Once Polling %d', userIOData);
         }
       },
     );
   }, []);
 
-  const onApply = () => {
+ 
+
+  const onApply = async () => {
     const data = new UserDefineIOData();
     data.definedIO = itemList;
 
     const service = IpcService.getInstance();
-    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
+    await service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: data,
       requestType: 'LMUserDefine',
     });
+
+    useOncePolling(
+      {
+        requestType: 'LMUserDefine',
+        responseChannel: 'POLL-LM-USER-DEFINE',
+      },
+      (evt, resp) => {
+        const data = resp as UserDefineIOData;
+        if (data !== undefined && data !== null) {
+          const userIOData = data.definedIO.filter(x => x.type !== 0);
+          setItemList(userIOData);
+          console.log('use Once Polling %d', userIOData);
+        }
+      },
+    );
   };
 
   const options = [
@@ -92,22 +114,54 @@ export default function LMHUserDefine(): ReactElement {
 
   const onFinish = (values: any) => {
     setIsModalVisible(false);
-    console.log(values);
-    const i = itemList.length - 1;
-    const item = itemList[i];
 
-    const data: DefinedIO = {
-      key: item?.key + 1,
-      type: values.type,
-      mapping: values.mapping,
-      name: values.name,
-    };
+    if (selectedItem === null) {
+      const i = itemList.length - 1;
+      const item = itemList[i];
 
-    setItemList((prev) => [...prev, data]);
+      const data: DefinedIO = {
+        key: item?.key + 1,
+        type: values.type,
+        mapping: values.mapping,
+        name: values.name,
+      };
+      setItemList((prev) => [...prev, data]);
+    } else {              
+        console.log(values.name);
+        const changeData: DefinedIO = {
+        key: selectedItem.key,
+        type: values.type,
+        mapping: values.mapping,
+        name: values.name,
+      };
+      
+      itemList.splice(selectedItem.key, 1 , changeData)
+      setItemList((prev) => [...prev]);
+      console.log(itemList);
+    }
 
     myForm.resetFields();
   };
 
+  const itemClickHandle = (item: DefinedIO) => {
+    if (selectedItem === item) {
+      setSelectedItem(null);
+    } else {
+      setSelectedItem(item);
+    }
+  };
+
+  const removeElement = () => {
+    if (selectedItem !== null) {
+      setItemList(itemList.filter((item) => item !== selectedItem));
+    }
+  };
+  const itemDoubleClickHandle = (item: DefinedIO) => {
+    console.log(item);
+    setSelectedItem(item);
+    myForm.setFieldsValue(item);
+    showModal();
+  };
   return (
     <div>
       <UserButton
@@ -117,7 +171,11 @@ export default function LMHUserDefine(): ReactElement {
           showModal();
         }}
       />
-      <UserButton type="text" icon={<MinusCircleOutlined />} />
+      <UserButton
+        type="text"
+        icon={<MinusCircleOutlined />}
+        onClick={(e) => removeElement()}
+      />
       <UserButton onClick={onApply}>Send to Device/</UserButton>
       <Row justify="start">
         <Table
@@ -125,6 +183,14 @@ export default function LMHUserDefine(): ReactElement {
           columns={columns}
           size="small"
           scroll={{ y: 500 }}
+          onRow={(record, rowIndex) => ({
+            onDoubleClick: (event) => {
+              itemDoubleClickHandle(record);
+            },
+            onClick: () => {
+              itemClickHandle(record);
+            },
+          })}
         />
       </Row>
       <Modal
@@ -149,13 +215,13 @@ export default function LMHUserDefine(): ReactElement {
           size="small"
         >
           <Form.Item label="Type" name="type">
-            <Select options={options} size="small" />
+            <Select options={options} size="small" value={selectedItem?.type} onChange={(e) =>setType(e)} />
           </Form.Item>
           <Form.Item label="Mapping" name="mapping">
-            <InputNumber style={{ width: '100%' }} />
+            <InputNumber style={{ width: '100%' }} value={selectedItem?.mapping} onChange={(e) => setMapping(e)}/>
           </Form.Item>
           <Form.Item label="Name" name="name">
-            <Input type="text" style={{ width: '100%' }} />
+            <Input type="text" style={{ width: '100%' }} value={selectedItem?.name} onChange={(e) => setName(e.target.value)}/>
           </Form.Item>
         </Form>
       </Modal>
