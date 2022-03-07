@@ -26,7 +26,7 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
     );
 
     return forkJoin([read, ob1, ob2, ob3]).pipe(
-      map((data) => {
+      map((data, index) => {
         const [access, unit1, unit2, unit3] = data;
         if (access[0] === 0x8000) {
           const res = Array.of(...unit1, ...unit2, ...unit3);
@@ -90,8 +90,9 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
   }
 
   private parse(buffer: number[]) {
+    console.log(this.dataAddress);
     const chucked = chunkArray(buffer, 12);
-    return chucked.map((data) => {
+    return chucked.map((data, index) => {
       const nameBuffer = data.slice(2, 12);
       const buf: number[] = [];
       nameBuffer.forEach((b: number) => {
@@ -104,6 +105,7 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
         type: data[0],
         mapping: data[1],
         name,
+        key: index
       };
       return definedIO;
     });
