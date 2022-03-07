@@ -1,6 +1,6 @@
 import { usePolling } from '@src/application/hooks/ipcHook';
 import CoilAlarm from '@src/Data/CoilMapAlarm';
-import { Card, List, Space } from 'antd';
+import { Button, Card, List, Space, Select } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 
@@ -20,14 +20,25 @@ const Status = styled.div<statusProps>`
   background-color: ${(props) => (props.on ? '#8ad68e' : '#dd5e5e')};
   border-radius: 10px;
 `;
+type ModuleIDType = {
+  label: string;
+  value: number;
+};
 
 export default function CoilMapAlarmContent(): ReactElement {
   const [statusList, setStatusList] = useState<CoilAlarm>(new CoilAlarm());
+  const [moduleIdList, setModuleIDList] = useState<ModuleIDType[]>([
+    { label: 'ID01', value: 1 },
+  ]);
+  const [selectedId, setSelectedID] = useState(0);
 
   usePolling(
     {
       requestType: 'CoilMapAlarm',
       responseChannel: 'POLL-coil-alarm',
+      props: {
+        id: selectedId,
+      },
     },
     (evt, resp) => {
       const data = resp as CoilAlarm;
@@ -35,14 +46,15 @@ export default function CoilMapAlarmContent(): ReactElement {
     },
     3000,
   );
+
   return (
     <div>
       <List.Item>
         <Space align="start">
-          <Card size="small" >
+          <Card size="small" title="공통 알람">
             <Space size="middle" direction="vertical">
               <Space size="middle">
-                <Label>A2750PC Ring Alarm</Label>
+                <Label>A2750PC Comm Alarm</Label>
                 <Status on={statusList.ringState ?? false} />
               </Space>
               <Space size="middle">
@@ -63,7 +75,20 @@ export default function CoilMapAlarmContent(): ReactElement {
               </Space>
             </Space>
           </Card>
-          <Card size="small">
+          <Card
+            size="small"
+            title="개별 알람"
+            extra={
+              <Select
+                key="1"
+                options={moduleIdList}
+                value={selectedId}
+                onChange={(e) => setSelectedID(e)}
+              >
+                Accept
+              </Select>
+            }
+          >
             <Space size="small" direction="vertical">
               <Space size="small">
                 <Label>A2750PC Remote State</Label>

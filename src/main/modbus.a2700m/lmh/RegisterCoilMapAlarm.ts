@@ -9,7 +9,7 @@ import RegisterProps from '../RegisterProps';
 export default class RegisterCoilMapAlarm extends RegisterBase {
   private alarmAddress = 1995;
 
-  private pcStateAddress = 6;
+  private pcStateAddress = 5;
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
     const alarm = ModbusService.read<boolean[]>(this.alarmAddress, 5, {
