@@ -1,14 +1,19 @@
-import React, { FC, useState } from 'react';
-import Select from 'react-select';
+import React, { useState, useEffect } from 'react';
+import * as ReactSelect from 'react-select';
 import styled from 'styled-components';
+import { useController, UseControllerProps } from 'react-hook-form';
+import { InputValueType } from '@src/application/Components/Shared/Shared';
 
-interface Props extends StyledSelectProps {
+export type SelectOptionType = {
+  label: string;
+  value: InputValueType;
+};
+
+interface Props<T> extends UseControllerProps<T> {
   label?: string;
-  value?: SelectValueType;
-  refValue?: SelectValueType;
   disabled?: boolean;
-  onChange?: (value: SelectChangeEvent) => void;
-  options?: { label: string; value: any }[];
+  options?: SelectOptionType[];
+  width?: string;
 }
 
 interface StyledSelectProps {
@@ -17,20 +22,11 @@ interface StyledSelectProps {
   width?: string;
 }
 
-export type SelectValueType = string | number | ReadonlyArray<string>;
-export type SelectChangeEvent = {
-  label: string;
-  value: string;
-};
-
 const labelColor = '#7e7e7e';
-// const fontColor = '#ffffff';
-// const changedFontColor = '#000000';
 const borderFocused = '#BFD2FF';
 const FieldActiveBack = '#393F54CC';
 const FieldChangedBack = 'rgb(236,226,61)';
 const FieldInactiveBack = 'rgba(57,63,84,0.59)';
-// const inputTextInActive = '#7881a1';
 
 const backgroundColor = (props: StyledSelectProps): string => {
   if (props.disabled) return FieldInactiveBack;
@@ -39,13 +35,7 @@ const backgroundColor = (props: StyledSelectProps): string => {
   return FieldActiveBack;
 };
 
-// const foregroundColor = (props: StyledSelectProps): string => {
-//   if (props.isChanged) return changedFontColor;
-//
-//   return fontColor;
-// };
-
-const Box = styled.div`
+const Container = styled.div`
   display: flex;
   margin-bottom: 3px;
   padding: 1px;
@@ -53,7 +43,7 @@ const Box = styled.div`
   align-items: center;
 `;
 
-const Label = styled.div`
+const SelectLabel = styled.div`
   display: inline-block;
   white-space: nowrap;
   margin-right: 0.5em;
@@ -64,7 +54,7 @@ const Label = styled.div`
   text-wrap: none;
 `;
 
-const Contents = styled(Select)<StyledSelectProps>`
+const SelectControl = styled(ReactSelect.default)<StyledSelectProps>`
   .react-select__control {
     width: ${(props) => props.width};
     border: 1px solid #ffffff;
@@ -99,42 +89,54 @@ const Contents = styled(Select)<StyledSelectProps>`
     padding: 0;
   }
 `;
+type FieldValues = Record<string, InputValueType>;
 
-const UserSelect: FC<Props> = ({
+const Select = <T extends FieldValues>({
   label,
-  width,
+  name,
   options,
+  width,
+  control,
+  rules,
+  defaultValue,
+  shouldUnregister,
   disabled,
-  value,
-  refValue,
-  onChange,
-  isChanged,
-}: Props) => {
-  const [, setSelectedValue] = useState<SelectValueType>(value);
-  // const [refInput, setRefValue] = useState<SelectValueType>(refValue);
-  const [isValueChange, setIsValueChange] = useState<boolean>(false);
-  const valueChanged = (e: { label: string; value: string }) => {
-    console.log(e);
-    const newValue = e.value;
+}: Props<T>) => {
+  const [isValueChange, setValueChanged] = useState<boolean>(false);
+  const {
+    field: { onChange, onBlur, value, ref },
+  } = useController({
+    name,
+    control,
+    rules,
+    defaultValue,
+    shouldUnregister,
+  });
+  useEffect(() => {
+    setValueChanged(false);
+  }, [defaultValue]);
 
-    if (newValue !== refValue) {
-      setIsValueChange(true);
+  const valueChanged = (e: { label: string; value: string }) => {
+    if (defaultValue !== e.value) {
+      setValueChanged(true);
     } else {
-      setIsValueChange(false);
+      setValueChanged(false);
     }
 
-    setSelectedValue(newValue);
     if (onChange !== null) {
-      onChange(e);
+      onChange(e.value);
     }
   };
   return (
-    <Box>
-      <Label>{label}</Label>
+    <Container>
+      <SelectLabel>{label}</SelectLabel>
 
-      <Contents
+      <SelectControl
+        onBlur={onBlur}
+        name={name}
+        defaultValue={options.find((c) => c.value == defaultValue)}
         isSearchable={false}
-        value={value}
+        value={options.find((c) => c.value === value)}
         options={options}
         width={width}
         disabled={disabled}
@@ -143,14 +145,12 @@ const UserSelect: FC<Props> = ({
         className="react-select-container"
         classNamePrefix="react-select"
       />
-    </Box>
+    </Container>
   );
 };
 
-UserSelect.defaultProps = {
+Select.defaultProps = {
   label: '',
-  value: '',
-  refValue: '',
   onChange: null,
   width: '80px',
   disabled: false,
@@ -158,4 +158,4 @@ UserSelect.defaultProps = {
   options: [],
 };
 
-export default UserSelect;
+export default Select;

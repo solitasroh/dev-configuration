@@ -4,15 +4,18 @@ import styled from 'styled-components';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { useController, UseControllerProps } from 'react-hook-form';
 import { Alert, Popover } from 'antd';
-
-export type InputValueType = string | number | ReadonlyArray<string>;
-export type InputChangeEvent = ChangeEvent<HTMLInputElement>;
+import {
+  InputChangeEvent,
+  InputValueType,
+} from '@src/application/Components/Shared/Shared';
 
 // ---- prop definition
 interface Props<T> extends UseControllerProps<T> {
   label?: string;
   disabled?: boolean;
   width?: string;
+  minValue?: InputValueType;
+  maxValue?: InputValueType;
 }
 
 interface StyledInputProps {
@@ -112,17 +115,22 @@ const InputInformationWrapper = styled.div`
 
 type FieldValues = Record<string, InputValueType>;
 // ---- pop over content
-const Contents = (
+const Contents = ({
+  min,
+  max,
+}: {
+  min: InputValueType;
+  max: InputValueType;
+}) => (
   <Alert
-    message="Error"
-
-    description="This is an error message about copywriting."
-    type="error"
+    message="Value Range"
+    description={`Min : ${min} Max: ${max}`}
+    type="info"
     showIcon
   />
 );
 // ---- Main Component
-const Input = <T extends FieldValues>({
+const NumberInput = <T extends FieldValues>({
   label,
   name,
   disabled,
@@ -131,6 +139,8 @@ const Input = <T extends FieldValues>({
   rules,
   defaultValue,
   shouldUnregister,
+  minValue,
+  maxValue,
 }: Props<T>): React.ReactElement => {
   const [isValueChange, setValueChanged] = useState<boolean>(false);
 
@@ -143,12 +153,22 @@ const Input = <T extends FieldValues>({
   } = useController({
     name,
     control,
-    rules,
+    rules: { required: true },
     defaultValue,
     shouldUnregister,
   });
 
   const valueChanged = (e: InputChangeEvent) => {
+    if (parseInt(e.target.value) < minValue) {
+      e.preventDefault();
+      return;
+    }
+
+    if (parseInt(e.target.value) > maxValue) {
+      e.preventDefault();
+      return;
+    }
+
     if (defaultValue !== e.target.value) {
       setValueChanged(true);
     } else {
@@ -157,6 +177,14 @@ const Input = <T extends FieldValues>({
 
     if (onChange !== null) {
       onChange(e);
+    }
+  };
+
+  const onBlurHandle = () => {
+    if (value === 0) {
+    }
+    if (onBlur !== null) {
+      onBlur();
     }
   };
 
@@ -169,7 +197,7 @@ const Input = <T extends FieldValues>({
         width={width}
       >
         <InputControl
-          onBlur={onBlur}
+          onBlur={onBlurHandle}
           value={value}
           name={name}
           ref={ref}
@@ -178,7 +206,12 @@ const Input = <T extends FieldValues>({
           disabled={disabled}
           isChanged={isValueChange}
         />
-        <Popover content={Contents} trigger="click"  style={{padding: 0}}   overlayInnerStyle={{padding: 0}}>
+        <Popover
+          content={() => <Contents max={maxValue} min={minValue} />}
+          trigger="click"
+          style={{ padding: 0 }}
+          overlayInnerStyle={{ padding: 0 }}
+        >
           <InputInformationWrapper>
             <InputInformationIcon />
           </InputInformationWrapper>
@@ -189,10 +222,12 @@ const Input = <T extends FieldValues>({
 };
 
 // --- default value for props
-Input.defaultProps = {
+NumberInput.defaultProps = {
   label: '',
   width: '80px',
   disabled: false,
+  minValue: '',
+  maxValue: '',
 };
 
-export default Input;
+export default NumberInput;
