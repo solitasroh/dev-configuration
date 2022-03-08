@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import Select, {
   SelectOptionType,
 } from '@src/application/Components/Shared/Select';
-import NumberInput from '../Shared/NumberInput';
 import { InputValueType } from '@src/application/Components/Shared/Shared';
+import NumberInput from '../Shared/NumberInput';
 
 const { TabPane } = Tabs;
 
@@ -24,11 +24,12 @@ export default function Home(): ReactElement {
   const [targetSelectValue, setTargetSelectValue] = useState<InputValueType>(
     options[0].value,
   );
-  const { control, handleSubmit, setValue } = useForm<FormValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       setupValue: 0,
       selectValue: 1,
     },
+    mode: 'onChange',
   });
 
   const submit = (values: FormValues) => {

@@ -1,13 +1,19 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import { InfoCircleFilled } from '@ant-design/icons';
-import { useController, UseControllerProps } from 'react-hook-form';
-import { Alert, Popover } from 'antd';
+import {
+  Path,
+  PathValue,
+  useController,
+  UseControllerProps,
+} from 'react-hook-form';
+import { Popover } from 'evergreen-ui';
 import {
   InputChangeEvent,
   InputValueType,
 } from '@src/application/Components/Shared/Shared';
+import ValueRange from './ValueRange';
 
 // ---- prop definition
 interface Props<T> extends UseControllerProps<T> {
@@ -64,7 +70,6 @@ const InputLabel = styled.div`
   font-family: Roboto, serif;
   font-weight: 500;
   color: ${labelColor};
-  text-wrap: none;
 `;
 
 const ControlWrapper = styled.div<StyledInputProps>`
@@ -114,21 +119,7 @@ const InputInformationWrapper = styled.div`
 `;
 
 type FieldValues = Record<string, InputValueType>;
-// ---- pop over content
-const Contents = ({
-  min,
-  max,
-}: {
-  min: InputValueType;
-  max: InputValueType;
-}) => (
-  <Alert
-    message="Value Range"
-    description={`Min : ${min} Max: ${max}`}
-    type="info"
-    showIcon
-  />
-);
+
 // ---- Main Component
 const NumberInput = <T extends FieldValues>({
   label,
@@ -148,27 +139,29 @@ const NumberInput = <T extends FieldValues>({
     setValueChanged(false);
   }, [defaultValue]);
 
+  const isNumber = (target: string | PathValue<T, Path<T>>) => {
+    const value = parseInt(target.toString(), 10);
+    return !Number.isNaN(value);
+  };
+
   const {
     field: { onChange, onBlur, value, ref },
+    fieldState: { invalid, error },
   } = useController({
     name,
     control,
-    rules: { required: true },
+    rules: {
+      min: { value: minValue, message: `min is ${minValue}` },
+      max: { value: maxValue, message: `max is ${maxValue}` },
+      required: 'value is required',
+      minLength: { value: 1, message: 'value is too short' },
+      validate: (e) => isNumber(e) || 'invalid number',
+    },
     defaultValue,
     shouldUnregister,
   });
 
   const valueChanged = (e: InputChangeEvent) => {
-    if (parseInt(e.target.value) < minValue) {
-      e.preventDefault();
-      return;
-    }
-
-    if (parseInt(e.target.value) > maxValue) {
-      e.preventDefault();
-      return;
-    }
-
     if (defaultValue !== e.target.value) {
       setValueChanged(true);
     } else {
@@ -181,8 +174,6 @@ const NumberInput = <T extends FieldValues>({
   };
 
   const onBlurHandle = () => {
-    if (value === 0) {
-    }
     if (onBlur !== null) {
       onBlur();
     }
@@ -191,6 +182,7 @@ const NumberInput = <T extends FieldValues>({
   return (
     <InputContainer>
       <InputLabel>{label}</InputLabel>
+
       <ControlWrapper
         disabled={disabled}
         isChanged={isValueChange}
@@ -206,11 +198,14 @@ const NumberInput = <T extends FieldValues>({
           disabled={disabled}
           isChanged={isValueChange}
         />
+
         <Popover
-          content={() => <Contents max={maxValue} min={minValue} />}
+          minWidth={10}
+          content={() => (
+            <ValueRange max={maxValue} min={minValue} error={error?.message} />
+          )}
           trigger="click"
-          style={{ padding: 0 }}
-          overlayInnerStyle={{ padding: 0 }}
+          isShown={invalid}
         >
           <InputInformationWrapper>
             <InputInformationIcon />

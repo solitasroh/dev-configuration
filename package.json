@@ -116,6 +116,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
     "eslint-import-resolver-alias": "1.1.2",
+    "evergreen-ui": "^6.9.1",
     "modbus-serial": "^8.0.4",
     "ping": "^0.4.1",
     "react": "17.0.2",
