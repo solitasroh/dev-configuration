@@ -7,6 +7,7 @@ import { usePolling } from '@src/application/hooks/ipcHook';
 import LMHUserDefine from '../lmh/LMHUserDefine';
 import ModuleTypeSetup from '../lmh/ModuleTypeSetup';
 import AI2SetupPage from '../ioh/AI2SetupPage';
+import IOHUserDefine from '../ioh/IOHUserDefine';
 
 const { TabPane } = Tabs;
 export default function LogicSetupContents(): ReactElement {
@@ -41,6 +42,9 @@ export default function LogicSetupContents(): ReactElement {
         </TabPane>
         <TabPane tab="LMH Geneal DIO" key="3">
           <LMHUserDefine />
+        </TabPane>        
+        <TabPane tab="IOH Geneal DIO" key="4">
+          <IOHUserDefine moduleList = {moduleType} />
         </TabPane>
       </Tabs>
     </>

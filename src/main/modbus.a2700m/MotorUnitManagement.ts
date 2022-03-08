@@ -45,7 +45,7 @@ export default class MotorUnitManagement  {
                 // console.log("get state promise : ",this.moduleOperationStates);
             });
             forceChangeTime += 1;
-        }, 2000);
+        }, 500);
     }
 
     getStatus() : boolean[] {

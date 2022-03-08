@@ -13,12 +13,11 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
     const { id } = _params;
-
     const unit = 12;
     const ioCount = 22;
 
-    const read = ModbusService.read<number[]>(this.accessAddress, 1);
     const registerModuleId = ModbusService.write(this.accessIDAddress, [id]);
+    const read = ModbusService.read<number[]>(this.accessAddress, 1);
 
     let remaining = ioCount * unit;
     let offset = 0;
@@ -39,15 +38,19 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
       }
     }
 
-    return forkJoin([read, registerModuleId, ...observables]).pipe(
+    return forkJoin([registerModuleId, read, ...observables]).pipe(
       map((data) => {
-        const [access, module_id, ...units] = data;
-        console.log(`acc: ${access}, id: ${id}`);
-
+        
+        const [ moduleId, access,...units] = data;
+        console.log(`acc: ${access}, id: ${moduleId}`);
+        const buf: number[] = [];
         if (access[0] === 0x8000) {
-          const res = Array.of(...units);
-          console.log(res);
-          const ioData = this.parse(res);
+          units.forEach(element => {
+            buf.push(...element);
+          });
+         // const res = Array.of(...buf);
+          console.log(buf);
+          const ioData = this.parse(buf);
           const result = new UserDefineIOData();
           result.definedIO = ioData;
           return result;
@@ -79,7 +82,7 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
           if (nameArray.length > i) {
             nameTmp.push((nameArray[i] << 8) | nameArray[i + 1]);
           } else {
-            nameTmp.push(0);
+            nameTmp.push('\0'.charCodeAt(0));
           }
         }
         const res = tmp.concat(...nameTmp);
@@ -96,8 +99,8 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
       return observable;
     });
 
-    observables.push(accessReg);
     observables.push(registerModuleId);
+    observables.push(accessReg);
     observables.push(...bufferReg);
 
     const ob = forkJoin([unlockSetupReg, ...observables]);
@@ -110,8 +113,10 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
   }
 
   private parse(buffer: number[]) {
+    console.log(this.dataAddress);
+    
     const chucked = chunkArray(buffer, 12);
-    return chucked.map((data) => {
+    return chucked.map((data,index) => {
       const nameBuffer = data.slice(2, 12);
       const buf: number[] = [];
       nameBuffer.forEach((b: number) => {
@@ -124,6 +129,7 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
         type: data[0],
         mapping: data[1],
         name,
+        key: index
       };
       return definedIO;
     });
