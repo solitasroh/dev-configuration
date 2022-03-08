@@ -14,42 +14,13 @@ import { usePolling } from '../../hooks/ipcHook';
 const { Panel } = Collapse;
 
 export default function PCContents(): ReactElement {
-  let init = 0;
+  const [init, setInit] = useState(0);
   const [index, setIndex] = useState(1);
   const [id, setId] = useState(1);
   const [state, setState] = useState<boolean[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [statusList, setStatusList] = useState<PCStatus[]>([]);
-
   
-  useEffect(() => {
-    const service = IpcService.getInstance();
-    service.on('PC_STATUS_CHAGNED', (evt, rest) => {
-      const buffer = rest as boolean[];
-      const { length } = buffer.filter((v) => v);      
-      setState(buffer);
-      setTotalCount(length);
-      if(init === 0)
-      {
-        let idx = buffer.findIndex((res) => res ===true);
-        if(idx !== -1)
-        {               
-          setIndex(idx);
-          idx +=1 
-          setId(idx);
-        }
-        init = 1111;
-      }
-      return () => {
-        setState([]);
-        setTotalCount(0);
-        setStatusList([]);
-        setId(1);
-        setIndex(1);
-      };
-    });
-  }, []);
-
   usePolling(
     {
       requestType: 'A2750PCStatus',
@@ -62,8 +33,40 @@ export default function PCContents(): ReactElement {
       const data = resp as PCStatus[];
       setStatusList(data);
     },
-    1000,
+    500,
   );
+
+  useEffect(() => {
+    const service = IpcService.getInstance();
+    
+
+    service.on('PC_STATUS_CHAGNED', (evt, rest) => {
+      const buffer = rest as boolean[];
+      const { length } = buffer.filter((v) => v);      
+      setState(buffer);
+      setTotalCount(length);
+      if(init === 0)
+      {
+        let idx = buffer.findIndex((res) => res === true);
+        if(idx !== -1)
+        {               
+          setIndex(idx);
+          idx +=1 
+          setId(idx);
+        }
+       setInit(1111);
+      }
+      return () => {
+        setState([]);
+        setTotalCount(0);
+        setStatusList([]);
+        setId(1);
+        setIndex(1);
+      };
+    });
+  }, []);
+
+
 
   const onChange = (page: number, pageSize: number) => {
     // ��û�ϴ� ID�� �޶����� �ȴ�.
@@ -96,7 +99,7 @@ export default function PCContents(): ReactElement {
       <Space align="start" direction="horizontal">
         <Collapse defaultActiveKey={['1']} bordered={false} ghost>
           <Panel header="Status" key="1">
-            {statusList[index] == null ? (
+            {statusList.length === 0 ? (
               <Empty />
             ) : (
               <Space align="start">

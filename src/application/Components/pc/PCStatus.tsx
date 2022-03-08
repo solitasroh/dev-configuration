@@ -11,12 +11,12 @@ const Label = styled.p`
 `;
 
 type statusProps = {
-  on: boolean;
+  energized?: boolean;
 };
 const Status = styled.div<statusProps>`
   width: 15px;
   height: 15px;
-  background-color: ${(props) => (props.on ? '#8ad68e' : '#dd5e5e')};
+  background-color: ${(props) => (props.energized? '#8ad68e' : '#dd5e5e')};
   border-radius: 10px;
 `;
 interface Props {
@@ -32,27 +32,27 @@ export const DefaultView: FC<Props> = ({ id, status }) => (
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>Starting block</Label>
-          <Status on={status.startingBlock ?? false} />
+          <Status energized={status.startingBlock ?? false} />
         </Space>
         <Space size="small">
           <Label>Motor op state</Label>
-          <Status on={status.motorOperationState ?? false} />
+          <Status energized={status.motorOperationState ?? false} />
         </Space>
         <Space size="small">
           <Label>Remote mode</Label>
-          <Status on={status.remoteStatus ?? false} />
+          <Status energized={status.remoteStatus ?? false} />
         </Space>
         <Space size="small">
           <Label>abnormal</Label>
-          <Status on={status.abnormalState ?? false} />
+          <Status energized={status.abnormalState ?? false} />
         </Space>
         <Space size="small">
           <Label>alarm</Label>
-          <Status on={status.alarmState ?? false} />
+          <Status energized={status.alarmState ?? false} />
         </Space>
         <Space size="small">
           <Label>fault</Label>
-          <Status on={status.faultState ?? false} />
+          <Status energized={status.faultState ?? false} />
         </Space>
       </Space>
     </Card>
@@ -64,43 +64,43 @@ export const DIStatusView: FC<Props> = ({ id, status }) => (
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>DI 1</Label>
-          <Status on={status.di1 ?? false} />
+          <Status energized={status.di1.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 2</Label>
-          <Status on={status.di2 ?? false} />
+          <Status energized={status.di2.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 3</Label>
-          <Status on={status.di3 ?? false} />
+          <Status energized={status.di3.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 4</Label>
-          <Status on={status.di4 ?? false} />
+          <Status energized={status.di4.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 5</Label>
-          <Status on={status.di5 ?? false} />
+          <Status energized={status.di5.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 6</Label>
-          <Status on={status.di6 ?? false} />
+          <Status energized={status.di6.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 7</Label>
-          <Status on={status.di7 ?? false} />
+          <Status energized={status.di7.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 8</Label>
-          <Status on={status.di8 ?? false} />
+          <Status energized={status.di8.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 9</Label>
-          <Status on={status.di9 ?? false} />
+          <Status energized={status.di9.toString() === "true"} />
         </Space>
         <Space size="small">
           <Label>DI 10</Label>
-          <Status on={status.di10 ?? false} />
+          <Status energized={status.di10.toString() === "true"} />
         </Space>
       </Space>
     </Card>
@@ -113,19 +113,19 @@ export const DOStatusView: FC<Props> = ({ id, status }) => (
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>DO 1</Label>
-          <Status on={status.do1 ?? false} />
+          <Status energized={status.do1 ?? false} />
         </Space>
         <Space size="small">
           <Label>DO 2</Label>
-          <Status on={status.do2 ?? false} />
+          <Status energized={status.do2 ?? false} />
         </Space>
         <Space size="small">
           <Label>DO 3</Label>
-          <Status on={status.do3 ?? false} />
+          <Status energized={status.do3 ?? false} />
         </Space>
         <Space size="small">
           <Label>DO 4</Label>
-          <Status on={status.do4 ?? false} />
+          <Status energized={status.do4 ?? false} />
         </Space>
       </Space>
     </Card>
@@ -138,47 +138,47 @@ export const ProtectionView: FC<Props> = ({ id, status }) => (
       <Space size="small" direction="vertical">
         <Space size="small">
           <Label>THR</Label>
-          <Status on={status.thr ?? false} />
+          <Status energized={status.thr ?? false} />
         </Space>
         <Space size="small">
           <Label>OCR</Label>
-          <Status on={status.ocr ?? false} />
+          <Status energized={status.ocr ?? false} />
         </Space>
         <Space size="small">
           <Label>POCR</Label>
-          <Status on={status.pocr ?? false} />
+          <Status energized={status.pocr ?? false} />
         </Space>
         <Space size="small">
           <Label>PSR</Label>
-          <Status on={status.psr ?? false} />
+          <Status energized={status.psr ?? false} />
         </Space>
         <Space size="small">
           <Label>UBCR</Label>
-          <Status on={status.ubcr ?? false} />
+          <Status energized={status.ubcr ?? false} />
         </Space>
         <Space size="small">
           <Label>JAM</Label>
-          <Status on={status.jam ?? false} />
+          <Status energized={status.jam ?? false} />
         </Space>
         <Space size="small">
           <Label>LSR</Label>
-          <Status on={status.lsr ?? false} />
+          <Status energized={status.lsr ?? false} />
         </Space>
         <Space size="small">
           <Label>GR(ZCT)</Label>
-          <Status on={status.grzct ?? false} />
+          <Status energized={status.grzct ?? false} />
         </Space>
         <Space size="small">
           <Label>GR(CT)</Label>
-          <Status on={status.grct ?? false} />
+          <Status energized={status.grct ?? false} />
         </Space>
         <Space size="small">
           <Label>UCR</Label>
-          <Status on={status.ucr ?? false} />
+          <Status energized={status.ucr ?? false} />
         </Space>
         <Space size="small">
           <Label>MCCB TRIP</Label>
-          <Status on={status.mccbTrip ?? false} />
+          <Status energized={status.mccbTrip ?? false} />
         </Space>
       </Space>
     </Card>
