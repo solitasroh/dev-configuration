@@ -27,6 +27,7 @@ class IOHInfoData implements A2700Data {
     if (operationStatus === 1) this.operationStatus = 'ID conflict';
     if (operationStatus === 2) this.operationStatus = 'BOOTING';
     if (operationStatus === 3) this.operationStatus = 'OPERATING';
+    else this.operationStatus = 'UNIDENTIFIED';
   }
 
   setModuleType(type: number): void {

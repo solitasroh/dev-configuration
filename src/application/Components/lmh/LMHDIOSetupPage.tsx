@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { Button, Card, Select, Space } from 'antd';
+import { Button, Card, Space } from 'antd';
 import LMHLogicSetup, { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import '../contents/index.css';
 import styled from 'styled-components';
 import IpcService from '@src/main/IPCService';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import { WRITE_REQ } from '@src/ipcChannels';
-
-const labelColor = '#7e7e7e';
+import { useOncePolling } from '@src/application/hooks/ipcHook';
+import SelectEx from '../Shared/SelectEx';
 
 const SetupBox = styled.div`
   display: flex;
@@ -17,32 +17,6 @@ const SetupBox = styled.div`
   padding: 1px;
   justify-content: flex-start;
   align-items: center;
-`;
-
-const SetupLabel = styled.div`
-  display: inline-block;
-  white-space: nowrap;
-  margin-right: 6px;
-  font-size: 8pt;
-  font-family: Roboto, serif;
-  font-weight: 500;
-  color: ${labelColor};
-  text-wrap: none;
-`;
-
-const SetupValue = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  font-size: 10pt;
-  font-weight: 400;
-`;
-
-const SetupField = styled(Select)`
-  width: 120px;
-  font-family: Roboto, serif;
 `;
 
 type FormValues = {
@@ -100,6 +74,7 @@ const defaultDIMappingFields: LogicIOProps[] = [
 ];
 
 const defaultDOFields: LogicIOProps[] = [
+  { mapping: 0 },
   { mapping: 1 },
   { mapping: 2 },
   { mapping: 3 },
@@ -111,8 +86,12 @@ const defaultDOFields: LogicIOProps[] = [
   { mapping: 9 },
 ];
 
-const LMHDIOSetupPage: FC = () => {
-  const { control, handleSubmit } = useForm<FormValues>({
+interface Prop {
+  activeKey: string;
+}
+
+const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
       diPolaritySetup: defaultDIPolarityFields,
       diMappingSetup: defaultDIMappingFields,
@@ -141,6 +120,65 @@ const LMHDIOSetupPage: FC = () => {
     { label: 'Reverse', value: 2 },
   ];
 
+  const diMappingOptions = [
+    { label: 'No Use', value: 0 },
+    { label: 'LOGIC DI01', value: 1 },
+    { label: 'LOGIC DI02', value: 2 },
+    { label: 'LOGIC DI03', value: 3 },
+    { label: 'LOGIC DI04', value: 4 },
+    { label: 'LOGIC DI05', value: 5 },
+    { label: 'LOGIC DI06', value: 6 },
+    { label: 'LOGIC DI07', value: 7 },
+    { label: 'LOGIC DI08', value: 8 },
+    { label: 'LOGIC DI09', value: 9 },
+    { label: 'LOGIC DI10', value: 10 },
+    { label: 'LOGIC DI11', value: 11 },
+    { label: 'LOGIC DI12', value: 12 },
+    { label: 'LOGIC DI13', value: 13 },
+    { label: 'LOGIC DI14', value: 14 },
+    { label: 'LOGIC DI15', value: 15 },
+    { label: 'LOGIC DI16', value: 16 },
+    { label: 'LOGIC DI17', value: 17 },
+    { label: 'LOGIC DI18', value: 18 },
+  ];
+
+  const doMappingOptions = [
+    { label: 'No Use', value: 0 },
+    { label: 'LOGIC DO01', value: 1 },
+    { label: 'LOGIC DO02', value: 2 },
+    { label: 'LOGIC DO03', value: 3 },
+    { label: 'LOGIC DO04', value: 4 },
+    { label: 'LOGIC DO05', value: 5 },
+    { label: 'LOGIC DO06', value: 6 },
+    { label: 'LOGIC DO07', value: 7 },
+    { label: 'LOGIC DO08', value: 8 },
+    { label: 'LOGIC DO09', value: 9 },
+  ];
+
+  const onRefresh = (): void => {
+    useOncePolling(
+      {
+        requestType: 'LMLogicIOSetup',
+        responseChannel: 'get-lm-logic-setup-data',
+      },
+      (evt, rest) => {
+        const setup = rest as LMHLogicSetup;
+        setup.diSetups.forEach((s, index) => {
+          setValue(`diMappingSetup.${index}.mapping`, s.mapping);
+          setValue(`diPolaritySetup.${index}.polarity`, s.polarity);
+        });
+        console.log(setup.doSetups);
+        setup.doSetups.forEach((s, index) => {
+          setValue(`doSetup.${index}.mapping`, s.mapping);
+        });
+      },
+    );
+  };
+
+  useEffect(() => {
+    onRefresh();
+  }, []);
+
   const onSubmit = (data: FormValues) => {
     const setup = new LMHLogicSetup(18);
     const diPolarity = data.diPolaritySetup.map((v) => v.polarity);
@@ -151,7 +189,7 @@ const LMHDIOSetupPage: FC = () => {
       setup.diSetups[i].polarity = diPolarity[i];
       setup.diSetups[i].mapping = diMapping[i];
     }
-    for (let i = 0; i < 18; i += 1) {
+    for (let i = 0; i < 9; i += 1) {
       setup.doSetups[i].mapping = doMapping[i];
     }
 
@@ -161,31 +199,33 @@ const LMHDIOSetupPage: FC = () => {
       requestType: 'LMLogicIOSetup',
     });
   };
-
+  const ButtonBox = () => (
+    <div style={{ display: 'flex' }}>
+      <Button htmlType="submit">Accept</Button>
+      <Button onClick={() => onRefresh()}>Refresh</Button>
+    </div>
+  );
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Card
-          size="small"
-          title={`A2750LMH `}
-          extra={<Button htmlType="submit">Accept</Button>}
-        >
+        <Card size="small" title={`A2750LMH `} extra={<ButtonBox />}>
           <Space wrap={false} align="start">
             <Card size="small" title="DI 극성 설정" type="inner">
               {diFields.map((field, index) => (
                 <SetupBox key={field.id}>
-                  <SetupLabel>{`CH ${(index + 1)
-                    .toString()
-                    .padStart(2, '0')}`}</SetupLabel>
                   <Controller
                     name={`diPolaritySetup.${index}.polarity` as const}
                     render={({ field: { onChange, value } }) => (
-                      <SetupField
+                      <SelectEx
+                        label={`CH ${(index + 1).toString().padStart(2, '0')}`}
+                        defaultValue={0}
                         onChange={onChange}
                         value={value}
                         options={options}
+                        width="130px"
                       />
                     )}
+                    defaultValue={0}
                     control={control}
                   />
                 </SetupBox>
@@ -195,18 +235,20 @@ const LMHDIOSetupPage: FC = () => {
             <Card size="small" title="DI 용도 설정" type="inner">
               {diMappingFields.map((field, index) => (
                 <SetupBox key={field.id}>
-                  <SetupLabel>{`CH ${(index + 1)
-                    .toString()
-                    .padStart(2, '0')}`}</SetupLabel>
-                  <SetupValue>
-                    <Controller
-                      name={`diMappingSetup.${index}.mapping` as const}
-                      render={({ field: { onChange, value } }) => (
-                        <SetupField onChange={onChange} value={value} />
-                      )}
-                      control={control}
-                    />
-                  </SetupValue>
+                  <Controller
+                    name={`diMappingSetup.${index}.mapping` as const}
+                    render={({ field: { onChange, value } }) => (
+                      <SelectEx
+                        label={`CH ${(index + 1).toString().padStart(2, '0')}`}
+                        defaultValue={0}
+                        onChange={onChange}
+                        value={value}
+                        options={diMappingOptions}
+                        width="130px"
+                      />
+                    )}
+                    control={control}
+                  />
                 </SetupBox>
               ))}
             </Card>
@@ -214,18 +256,20 @@ const LMHDIOSetupPage: FC = () => {
             <Card size="small" title="DO 용도 설정" type="inner">
               {doFields.map((field, index) => (
                 <SetupBox key={field.id}>
-                  <SetupLabel>{`CH ${(index + 1)
-                    .toString()
-                    .padStart(2, '0')}`}</SetupLabel>
-                  <SetupValue>
-                    <Controller
-                      name={`doSetup.${index}.mapping` as const}
-                      render={({ field: { onChange, value } }) => (
-                        <SetupField onChange={onChange} value={value} />
-                      )}
-                      control={control}
-                    />
-                  </SetupValue>
+                  <Controller
+                    name={`doSetup.${index}.mapping` as const}
+                    render={({ field: { onChange, value } }) => (
+                      <SelectEx
+                        label={`CH ${(index + 1).toString().padStart(2, '0')}`}
+                        defaultValue={0}
+                        onChange={onChange}
+                        value={value}
+                        options={doMappingOptions}
+                        width="130px"
+                      />
+                    )}
+                    control={control}
+                  />
                 </SetupBox>
               ))}
             </Card>

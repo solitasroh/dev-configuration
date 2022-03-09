@@ -20,6 +20,8 @@ export default class LMHLogicSetup implements A2700Data {
 
   constructor(channelCounts: number) {
     this.detail = [];
+    this.diSetups = [];
+    this.doSetups = [];
     for (let index = 0; index < channelCounts; index += 1) {
       this.detail.push({
         polarity: 0,
@@ -29,6 +31,12 @@ export default class LMHLogicSetup implements A2700Data {
 
     for (let index = 0; index < channelCounts; index+=1) {
       this.diSetups.push({
+        polarity: 0,
+        mapping : 0,
+      })
+    }
+    for (let index = 0; index < channelCounts; index+=1) {
+      this.doSetups.push({
         polarity: 0,
         mapping : 0,
       })

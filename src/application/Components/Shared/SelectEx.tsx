@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as ReactSelect from 'react-select';
 import styled from 'styled-components';
-import { useController, UseControllerProps } from 'react-hook-form';
 import { InputValueType } from '@src/application/Components/Shared/Shared';
 
 export type SelectOptionType = {
@@ -9,11 +8,15 @@ export type SelectOptionType = {
   value: InputValueType;
 };
 
-interface Props<T> extends UseControllerProps<T> {
+interface Props {
   label?: string;
   disabled?: boolean;
   options?: SelectOptionType[];
   width?: string;
+  onChange?: (e: InputValueType) => void;
+  onBlur?: () => void;
+  value?: InputValueType;
+  defaultValue?: InputValueType;
 }
 
 interface StyledSelectProps {
@@ -95,34 +98,24 @@ const SelectControl = styled(ReactSelect.default)<StyledSelectProps>`
     padding: 0;
   }
 `;
-type FieldValues = Record<string, InputValueType>;
 
-const Select = <T extends FieldValues>({
+const SelectEx = ({
   label,
-  name,
+  onChange,
+  onBlur,
   options,
   width,
-  control,
-  rules,
-  defaultValue,
-  shouldUnregister,
   disabled,
-}: Props<T>) => {
+  value,
+  defaultValue,
+}: Props) => {
   const [isValueChange, setValueChanged] = useState<boolean>(false);
-  const {
-    field: { onChange, onBlur, value },
-  } = useController({
-    name,
-    control,
-    rules,
-    defaultValue,
-    shouldUnregister,
-  });
+
   useEffect(() => {
     setValueChanged(false);
   }, [defaultValue]);
 
-  const valueChanged = (e: { label: string; value: string }) => {
+  const valueChanged = (e: SelectOptionType) => {
     if (defaultValue !== e.value) {
       setValueChanged(true);
     } else {
@@ -139,7 +132,6 @@ const Select = <T extends FieldValues>({
 
       <SelectControl
         onBlur={onBlur}
-        name={name}
         defaultValue={options.find((c) => c.value === defaultValue)}
         isSearchable={false}
         value={options.find((c) => c.value === value)}
@@ -155,11 +147,15 @@ const Select = <T extends FieldValues>({
   );
 };
 
-Select.defaultProps = {
-  label: "",
-  width: "80px",
+SelectEx.defaultProps = {
+  label: '',
+  onChange: null,
+  onBlur: null,
+  width: '80px',
   disabled: false,
-  options: []
+  value: '',
+  defaultValue: '',
+  options: [],
 };
 
-export default Select;
+export default SelectEx;

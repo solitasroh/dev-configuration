@@ -14,9 +14,7 @@ abstract class RegisterBase {
     const ob3 = ModbusService.write(51000, [700]);
     const ob4 = ModbusService.write(51000, [1]);
     return forkJoin([ob1, ob2, ob3, ob4]).pipe(
-      map((x) => {
-        return true;
-      }),
+      map((x) => true),
     );
   };
 }
