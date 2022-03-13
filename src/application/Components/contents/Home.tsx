@@ -5,6 +5,10 @@ import Select, {
   SelectOptionType,
 } from '@src/application/Components/Shared/Select';
 import { InputValueType } from '@src/application/Components/Shared/Shared';
+import MotorUnitBox, {
+  ControlModeDefinition,
+  MotorStatusDefinition,
+} from '@src/application/Components/pc/MotorUnitBox';
 import NumberInput from '../Shared/NumberInput';
 
 const { TabPane } = Tabs;
@@ -18,6 +22,99 @@ type FormValues = {
   setupValue: InputValueType;
   selectValue: InputValueType;
 };
+const motorUnits = [
+  {
+    key: 1,
+    id: 1,
+    name: 'motor unit 01',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 2,
+    id: 2,
+    name: 'motor unit 02',
+    motorStatus: MotorStatusDefinition.Stop,
+    controlMode: ControlModeDefinition.Remote,
+  },
+  {
+    key: 3,
+    id: 3,
+    name: 'motor unit 03',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 4,
+    id: 4,
+    name: 'motor unit 04',
+    motorStatus: MotorStatusDefinition.Stop,
+    controlMode: ControlModeDefinition.Remote,
+  },
+  {
+    key: 5,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 6,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 7,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 8,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 9,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 10,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 11,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 12,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+  {
+    key: 13,
+    id: 5,
+    name: 'motor unit 05',
+    motorStatus: MotorStatusDefinition.Run,
+    controlMode: ControlModeDefinition.Local,
+  },
+];
 
 export default function Home(): ReactElement {
   const [targetValue, setTargetValue] = useState<InputValueType>(0);
@@ -38,8 +135,8 @@ export default function Home(): ReactElement {
     setTargetSelectValue(values.selectValue);
   };
 
-  return (
-    <div>
+  function getTabs() {
+    return (
       <Tabs type="card">
         <TabPane tab="TEST" key="1">
           <form onSubmit={handleSubmit(submit)} style={{ height: '500px' }}>
@@ -66,6 +163,27 @@ export default function Home(): ReactElement {
           </form>
         </TabPane>
       </Tabs>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        backgroundColor: '#f2f2f2',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        height: '100vh',
+      }}
+    >
+      {motorUnits.map((ni) => (
+        <MotorUnitBox
+          id={ni.id}
+          name={ni.name}
+          controlMode={ni.controlMode}
+          motorStatus={ni.motorStatus}
+        />
+      ))}
     </div>
   );
 }
