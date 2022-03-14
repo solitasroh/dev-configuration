@@ -24,22 +24,23 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
         if (acc[0] === 0x8000) {
           for (let i = 0; i < 18; i += 1) {
             const diSetup = buffer[i];
-            setup.diSetups[i].mapping = +diSetup & 0xf;
+            setup.diSetups[i].mapping = +diSetup & 0xff;
             setup.diSetups[i].polarity = +diSetup >> 8;
           }
 
           for (let i = 0; i < 9; i += 1) {
             const doSetup = buffer[i + 18];
-            setup.doSetups[i].mapping = +doSetup & 0xf;
+            setup.doSetups[i].mapping = +doSetup & 0xff;
           }
+          console.log('get do setup', setup.doSetups);
         }
         return setup;
       }),
     );
   }
 
-  setter(_data: LMHLogicSetup): void {
-    const unlock = this.unlockSetup();
+  async setter(_data: LMHLogicSetup): Promise<void> {
+    const unlock = await this.unlockSetup();
 
     const buffer = [];
 
@@ -48,15 +49,21 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
         _data.diSetups[i].mapping | (_data.diSetups[i].polarity << 8);
       buffer.push(value);
     }
-
+    console.log(_data.doSetups);
     for (let i = 0; i < 9; i += 1) {
-      const value = _data.doSetups[i].mapping;
+      const value = _data.doSetups[i].mapping | (0x0 << 8);
+      console.log(`set do value ${value}`);
       buffer.push(value);
     }
 
     const ob1 = ModbusService.write(this.dataAddress, buffer);
     const ob2 = ModbusService.write(this.accessAddress, [1]);
 
-    forkJoin([unlock, ob1, ob2]).subscribe();
+    forkJoin([unlock, ob1, ob2]).subscribe({
+      next: () => {},
+      complete: () => {
+        console.log('lmh logic setup complete');
+      },
+    });
   }
 }

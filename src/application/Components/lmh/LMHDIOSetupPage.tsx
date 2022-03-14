@@ -52,7 +52,6 @@ const defaultDIPolarityFields: LogicIOProps[] = [
   { polarity: 0 },
 ];
 const defaultDOFields: LogicIOProps[] = [
-  { mapping: 0 },
   { mapping: 1 },
   { mapping: 2 },
   { mapping: 3 },
@@ -145,7 +144,7 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
           setValue(`diMappingSetup.${index}.mapping`, s.mapping);
           setValue(`diPolaritySetup.${index}.polarity`, s.polarity);
         });
-
+        console.log(setup.doSetups);
         setup.doSetups.forEach((s, index) => {
           setValue(`doSetup.${index}.mapping`, s.mapping);
         });
@@ -170,6 +169,7 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
       setup.diSetups[i].polarity = diPolarity[i];
       setup.diSetups[i].mapping = diMapping[i];
     }
+
     for (let i = 0; i < 9; i += 1) {
       setup.doSetups[i].mapping = doMapping[i];
     }
@@ -180,10 +180,11 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
         writeData: setup,
         requestType: 'LMLogicIOSetup',
       })
-      .then(() => {});
-
-    onRefresh();
+      .then(() => {
+        onRefresh();
+      });
   };
+
   const ButtonBox = () => (
     <div style={{ display: 'flex' }}>
       <Button htmlType="submit">Accept</Button>

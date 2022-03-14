@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { Card, List, Space, Tabs } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Select, {
@@ -167,23 +167,28 @@ export default function Home(): ReactElement {
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#f2f2f2',
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        height: '100vh',
-      }}
-    >
-      {motorUnits.map((ni) => (
-        <MotorUnitBox
-          id={ni.id}
-          name={ni.name}
-          controlMode={ni.controlMode}
-          motorStatus={ni.motorStatus}
+    <div>
+      <Card title="MOTOR UNIT" size="small" bordered={false}>
+        <List
+          dataSource={motorUnits}
+          split
+          pagination={{
+            pageSize: 5,
+          }}
+          itemLayout="horizontal"
+          renderItem={(item) => (
+            <Space>
+              <MotorUnitBox
+                id={item.id}
+                name={item.name}
+                controlMode={item.controlMode}
+                motorStatus={item.motorStatus}
+              />
+            </Space>
+          )}
         />
-      ))}
+      </Card>
+      <Card title="LOCAL UNIT" size="small" bordered={false} />
     </div>
   );
 }

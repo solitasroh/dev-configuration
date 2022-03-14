@@ -27,6 +27,7 @@ const Container = styled.div`
   max-height: 66px;
   border: 1px solid #e0e0e0;
   justify-content: space-between;
+  margin: 3px;
 `;
 
 const Bottom = styled.div`
