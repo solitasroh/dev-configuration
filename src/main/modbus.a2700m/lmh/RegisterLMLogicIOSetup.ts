@@ -24,8 +24,8 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
         if (acc[0] === 0x8000) {
           for (let i = 0; i < 18; i += 1) {
             const diSetup = buffer[i];
-            setup.diSetups[i].polarity = +diSetup & 0xf;
-            setup.diSetups[i].mapping = +diSetup >> 8;
+            setup.diSetups[i].mapping = +diSetup & 0xf;
+            setup.diSetups[i].polarity = +diSetup >> 8;
           }
 
           for (let i = 0; i < 9; i += 1) {
