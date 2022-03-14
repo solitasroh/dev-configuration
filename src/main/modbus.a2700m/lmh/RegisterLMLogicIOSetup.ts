@@ -32,7 +32,6 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
             const doSetup = buffer[i + 18];
             setup.doSetups[i].mapping = +doSetup & 0xff;
           }
-          console.log('get do setup', setup.doSetups);
         }
         return setup;
       }),
@@ -52,7 +51,6 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
     console.log(_data.doSetups);
     for (let i = 0; i < 9; i += 1) {
       const value = _data.doSetups[i].mapping | (0x0 << 8);
-      console.log(`set do value ${value}`);
       buffer.push(value);
     }
 
@@ -61,9 +59,7 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
 
     forkJoin([unlock, ob1, ob2]).subscribe({
       next: () => {},
-      complete: () => {
-        console.log('lmh logic setup complete');
-      },
+      complete: () => {},
     });
   }
 }

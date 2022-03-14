@@ -180,21 +180,40 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
         writeData: setup,
         requestType: 'LMLogicIOSetup',
       })
-      .then(() => {
-        onRefresh();
-      });
+      .then(() => {});
+    onRefresh();
   };
 
   const ButtonBox = () => (
     <div style={{ display: 'flex' }}>
-      <Button htmlType="submit">Accept</Button>
-      <Button onClick={() => onRefresh()}>Refresh</Button>
+      <Space>
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="small"
+          style={{ fontSize: '10px' }}
+        >
+          Accept
+        </Button>
+        <Button
+          onClick={() => onRefresh()}
+          size="small"
+          style={{ fontSize: '10px' }}
+        >
+          Refresh
+        </Button>
+      </Space>
     </div>
   );
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Card size="small" title={`A2750LMH `} extra={<ButtonBox />}>
+        <Card
+          size="small"
+          title={`A2750LMH `}
+          bordered={false}
+          extra={<ButtonBox />}
+        >
           <Space wrap={false} align="start">
             <Card size="small" title="DI 극성 설정" type="inner">
               {diFields.map((field, index) => (
