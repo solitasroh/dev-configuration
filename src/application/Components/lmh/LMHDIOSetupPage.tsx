@@ -93,9 +93,8 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
   });
 
   const options = [
-    { label: 'None', value: 0 },
-    { label: 'Normal', value: 1 },
-    { label: 'Reverse', value: 2 },
+    { label: 'Normal', value: 0 },
+    { label: 'Reverse', value: 1 },
   ];
 
   const diMappingOptions = [
