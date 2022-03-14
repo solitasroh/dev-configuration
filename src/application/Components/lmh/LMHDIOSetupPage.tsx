@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Button, Card, Space } from 'antd';
 import LMHLogicSetup, { LogicIOProps } from '@src/Data/LMHLogicSetup';
@@ -86,14 +86,13 @@ const defaultDOFields: LogicIOProps[] = [
   { mapping: 9 },
 ];
 
-interface Prop {
-  activeKey: string;
-}
+interface Prop {}
 
-const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
+const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
+  const [defaultValue, setDefaultValue] = useState(defaultDIPolarityFields);
   const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
-      diPolaritySetup: defaultDIPolarityFields,
+      diPolaritySetup: defaultValue,
       diMappingSetup: defaultDIMappingFields,
       doSetup: defaultDOFields,
     },
@@ -163,14 +162,17 @@ const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
       },
       (evt, rest) => {
         const setup = rest as LMHLogicSetup;
+
         setup.diSetups.forEach((s, index) => {
           setValue(`diMappingSetup.${index}.mapping`, s.mapping);
           setValue(`diPolaritySetup.${index}.polarity`, s.polarity);
         });
-        console.log(setup.doSetups);
+
         setup.doSetups.forEach((s, index) => {
           setValue(`doSetup.${index}.mapping`, s.mapping);
         });
+
+        setDefaultValue(setup.diSetups);
       },
     );
   };
@@ -194,10 +196,13 @@ const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
     }
 
     const service = IpcService.getInstance();
+    console.log(setup);
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: setup,
       requestType: 'LMLogicIOSetup',
     });
+
+    onRefresh();
   };
   const ButtonBox = () => (
     <div style={{ display: 'flex' }}>
@@ -218,14 +223,13 @@ const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
                     render={({ field: { onChange, value } }) => (
                       <SelectEx
                         label={`CH ${(index + 1).toString().padStart(2, '0')}`}
-                        defaultValue={0}
                         onChange={onChange}
+                        defaultValue={defaultValue[index].polarity}
                         value={value}
                         options={options}
                         width="130px"
                       />
                     )}
-                    defaultValue={0}
                     control={control}
                   />
                 </SetupBox>
@@ -240,7 +244,6 @@ const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
                     render={({ field: { onChange, value } }) => (
                       <SelectEx
                         label={`CH ${(index + 1).toString().padStart(2, '0')}`}
-                        defaultValue={0}
                         onChange={onChange}
                         value={value}
                         options={diMappingOptions}
@@ -261,7 +264,6 @@ const LMHDIOSetupPage: FC<Prop> = ({ activeKey }: Prop) => {
                     render={({ field: { onChange, value } }) => (
                       <SelectEx
                         label={`CH ${(index + 1).toString().padStart(2, '0')}`}
-                        defaultValue={0}
                         onChange={onChange}
                         value={value}
                         options={doMappingOptions}

@@ -17,14 +17,13 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
     const data = ModbusService.read<number[]>(this.dataAddress, this.size);
 
     return forkJoin([access, data]).pipe(
-      map((d) => {
-        console.log('lmh logic io setup get!', d);
-        const [acc, buffer] = d;
+      map((resp) => {
+        const [acc, buffer] = resp;
         const setup = new LMHLogicSetup(this.size);
-        if (acc[0] === 1) {
+
+        if (acc[0] === 0x8000) {
           for (let i = 0; i < 18; i += 1) {
             const diSetup = buffer[i];
-
             setup.diSetups[i].polarity = +diSetup & 0xf;
             setup.diSetups[i].mapping = +diSetup >> 8;
           }
@@ -41,9 +40,10 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
   }
 
   setter(_data: LMHLogicSetup): void {
-    // const unlock = this.unlockSetup();
+    const unlock = this.unlockSetup();
 
     const buffer = [];
+
     for (let i = 0; i < 18; i += 1) {
       const value =
         _data.diSetups[i].polarity | (_data.diSetups[i].mapping << 8);
@@ -54,10 +54,11 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
       const value = _data.doSetups[i].mapping << 8;
       buffer.push(value);
     }
+
     console.log('buffer is ', buffer);
     const ob1 = ModbusService.write(this.dataAddress, buffer);
     const ob2 = ModbusService.write(this.accessAddress, [1]);
 
-    forkJoin([ob1, ob2]).subscribe()
+    forkJoin([unlock, ob1, ob2]).subscribe();
   }
 }
