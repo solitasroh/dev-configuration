@@ -51,28 +51,6 @@ const defaultDIPolarityFields: LogicIOProps[] = [
   { polarity: 0 },
   { polarity: 0 },
 ];
-
-const defaultDIMappingFields: LogicIOProps[] = [
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-];
-
 const defaultDOFields: LogicIOProps[] = [
   { mapping: 0 },
   { mapping: 1 },
@@ -89,12 +67,13 @@ const defaultDOFields: LogicIOProps[] = [
 interface Prop {}
 
 const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
-  const [defaultValue, setDefaultValue] = useState(defaultDIPolarityFields);
+  const [defaultDISetup, setDefaultDISetup] = useState(defaultDIPolarityFields);
+  const [defaultDOSetup, setDefaultDOSetup] = useState(defaultDOFields);
   const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
-      diPolaritySetup: defaultValue,
-      diMappingSetup: defaultDIMappingFields,
-      doSetup: defaultDOFields,
+      diPolaritySetup: defaultDISetup,
+      diMappingSetup: defaultDISetup,
+      doSetup: defaultDOSetup,
     },
   });
 
@@ -172,7 +151,8 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
           setValue(`doSetup.${index}.mapping`, s.mapping);
         });
 
-        setDefaultValue(setup.diSetups);
+        setDefaultDISetup(setup.diSetups);
+        setDefaultDOSetup(setup.doSetups);
       },
     );
   };
@@ -196,11 +176,12 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
     }
 
     const service = IpcService.getInstance();
-    console.log(setup);
-    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
-      writeData: setup,
-      requestType: 'LMLogicIOSetup',
-    });
+    service
+      .send<void, ChannelWriteDataProps>(WRITE_REQ, {
+        writeData: setup,
+        requestType: 'LMLogicIOSetup',
+      })
+      .then(() => {});
 
     onRefresh();
   };
@@ -224,7 +205,7 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
                       <SelectEx
                         label={`CH ${(index + 1).toString().padStart(2, '0')}`}
                         onChange={onChange}
-                        defaultValue={defaultValue[index].polarity}
+                        defaultValue={defaultDISetup[index].polarity}
                         value={value}
                         options={options}
                         width="130px"
@@ -246,6 +227,7 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
                         label={`CH ${(index + 1).toString().padStart(2, '0')}`}
                         onChange={onChange}
                         value={value}
+                        defaultValue={defaultDISetup[index].mapping}
                         options={diMappingOptions}
                         width="130px"
                       />
@@ -266,6 +248,7 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
                         label={`CH ${(index + 1).toString().padStart(2, '0')}`}
                         onChange={onChange}
                         value={value}
+                        defaultValue={defaultDOSetup[index].mapping}
                         options={doMappingOptions}
                         width="130px"
                       />

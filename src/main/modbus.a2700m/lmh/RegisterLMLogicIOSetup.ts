@@ -55,7 +55,6 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
       buffer.push(value);
     }
 
-    console.log('buffer is ', buffer);
     const ob1 = ModbusService.write(this.dataAddress, buffer);
     const ob2 = ModbusService.write(this.accessAddress, [1]);
 

@@ -43,14 +43,6 @@ export default function LogicSetupContents(): ReactElement {
           <ModuleTypeSetup />
         </TabPane>
         <TabPane tab="Logic IO" key="2">
-          {/*<div*/}
-          {/*  style={{*/}
-          {/*    flex: 1,*/}
-          {/*    display: 'flex',*/}
-          {/*    overflowX: 'auto',*/}
-          {/*    overflowY: 'scroll',*/}
-          {/*  }}*/}
-          {/*>*/}
           <LMHDIOSetupPage />
           {moduleType.map((data) =>
             data.moduleType === 'DIO' ? (
@@ -59,7 +51,6 @@ export default function LogicSetupContents(): ReactElement {
               <AI2SetupPage moduleId={data.id} />
             ),
           )}
-          {/*</div>*/}
         </TabPane>
         <TabPane tab="LMH General DIO" key="3">
           <LMHUserDefine />
