@@ -10,18 +10,18 @@ export default class RegisterIOHLogicalTypeSetup extends RegisterBase {
   private dataAddress = 52004;
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
+    console.log('ioh logical io setup access id : ', _params.id);
+
     const pageChange = ModbusService.write(65535, [this.mapPage]);
-
     const data = ModbusService.read<number[]>(this.dataAddress, 15);
+    const pageChangeToZero = ModbusService.write(65535, [0]);
 
-    const pageZeroChange = ModbusService.write(65535, [0]);
-    return forkJoin([pageChange, data, pageZeroChange]).pipe(
+    return forkJoin([pageChange, data, pageChangeToZero]).pipe(
       map((resp) => {
-        const [_, d] = resp;
+        const [, data] = resp;
         const moduleTypeSetup = new IOHLogicalTypeSetup();
         for (let i = 0; i < 15; i += 1) {
-          moduleTypeSetup.moduleTypes[i].moduleType = (d[i]);
-          console.log(`module type = ${moduleTypeSetup.moduleTypes[i].moduleType}`);
+          moduleTypeSetup.moduleTypes[i].moduleType = data[i];
         }
         return moduleTypeSetup;
       }),
@@ -31,13 +31,13 @@ export default class RegisterIOHLogicalTypeSetup extends RegisterBase {
   async setter(_data: any): Promise<void> {
     const buffer = [];
     for (let i = 0; i < 15; i += 1) {
-      const type = (_data.moduleTypes[i].moduleType << 8 | 1);
-      console.log(`module type = ${_data.moduleTypes[i].moduleType}`);
-      buffer.push(type);
+      const type = _data.moduleTypes[i].moduleType;
+      const writeData = (type << 8) | 1;
+      buffer.push(writeData);
     }
     const pageChange = ModbusService.write(65535, [this.mapPage]);
-    const data = ModbusService.write(this.dataAddress, buffer);
+    const regRead = ModbusService.write(this.dataAddress, buffer);
 
-    forkJoin([pageChange, data]).subscribe();
+    forkJoin([pageChange, regRead]).subscribe();
   }
 }
