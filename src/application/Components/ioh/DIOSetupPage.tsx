@@ -1,9 +1,13 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Button, Card, Select, Space } from 'antd';
-import { LogicIOProps } from '@src/Data/LMHLogicSetup';
+import LMHLogicSetup, { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import '../contents/index.css';
 import styled from 'styled-components';
+import { useOncePolling } from '@src/application/hooks/ipcHook';
+import IpcService from '@src/main/IPCService';
+import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
+import { WRITE_REQ } from '@src/ipcChannels';
 
 const labelColor = '#7e7e7e';
 
@@ -72,20 +76,6 @@ const defaultDIPolarityFields: LogicIOProps[] = [
   { polarity: 0 },
 ];
 
-const defaultDIMappingFields: LogicIOProps[] = [
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-  { mapping: 0 },
-];
-
 const defaultDOFields: LogicIOProps[] = [
   { mapping: 1 },
   { mapping: 2 },
@@ -96,11 +86,13 @@ const defaultDOFields: LogicIOProps[] = [
 ];
 
 const DIOSetupPage: FC<Props> = ({ moduleId }) => {
-  const { control, handleSubmit } = useForm<FormValues>({
+  const [defaultDISetup, setDefaultDISetup] = useState(defaultDIPolarityFields);
+  const [defaultDOSetup, setDefaultDOSetup] = useState(defaultDOFields);
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
-      diPolaritySetup: defaultDIPolarityFields,
-      diMappingSetup: defaultDIMappingFields,
-      doSetup: defaultDOFields,
+      diPolaritySetup: defaultDISetup,
+      diMappingSetup: defaultDISetup,
+      doSetup: defaultDOSetup,
     },
   });
 
@@ -119,19 +111,116 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
     name: 'doSetup',
   });
 
+  const diMappingOptions = [
+    { label: 'No Use', value: 0 },
+    { label: 'LOGIC DI01', value: 1 },
+    { label: 'LOGIC DI02', value: 2 },
+    { label: 'LOGIC DI03', value: 3 },
+    { label: 'LOGIC DI04', value: 4 },
+    { label: 'LOGIC DI05', value: 5 },
+    { label: 'LOGIC DI06', value: 6 },
+    { label: 'LOGIC DI07', value: 7 },
+    { label: 'LOGIC DI08', value: 8 },
+    { label: 'LOGIC DI09', value: 9 },
+    { label: 'LOGIC DI10', value: 10 },
+    { label: 'LOGIC DI11', value: 11 },
+  ];
+  const doMappingOptions = [
+    { label: 'No Use', value: 0 },
+    { label: 'LOGIC DO01', value: 1 },
+    { label: 'LOGIC DO02', value: 2 },
+    { label: 'LOGIC DO03', value: 3 },
+    { label: 'LOGIC DO04', value: 4 },
+    { label: 'LOGIC DO05', value: 5 },
+    { label: 'LOGIC DO06', value: 6 },
+  ];
   const options = [
-    { label: 'None', value: 0 },
-    { label: 'Normal', value: 1 },
-    { label: 'Reverse', value: 2 },
+    { label: 'Normal', value: 0 },
+    { label: 'Reverse', value: 1 },
   ];
 
+  const onRefresh = (): void => {
+    useOncePolling(
+      {
+        requestType: 'IOHDIOSetup',
+        responseChannel: 'get-ioh-logic-setup-data',
+        props: { id: moduleId },
+      },
+      (evt, rest) => {
+        const setup = rest as LMHLogicSetup;
+
+        setup.diSetups.forEach((s, index) => {
+          setValue(`diMappingSetup.${index}.mapping`, s.mapping);
+          setValue(`diPolaritySetup.${index}.polarity`, s.polarity);
+        });
+        console.log(setup.doSetups);
+        setup.doSetups.forEach((s, index) => {
+          setValue(`doSetup.${index}.mapping`, s.mapping);
+        });
+
+        setDefaultDISetup(setup.diSetups);
+        setDefaultDOSetup(setup.doSetups);
+      },
+    );
+  };
+
+  useEffect(() => {
+    onRefresh();
+  }, []);
+
+  const onSubmit = (data: FormValues) => {
+    const setup = new LMHLogicSetup(11);
+    const diPolarity = data.diPolaritySetup.map((v) => v.polarity);
+    const diMapping = data.diMappingSetup.map((v) => v.mapping);
+    const doMapping = data.doSetup.map((v) => v.mapping);
+
+    for (let i = 0; i < 11; i += 1) {
+      setup.diSetups[i].polarity = diPolarity[i];
+      setup.diSetups[i].mapping = diMapping[i];
+    }
+
+    for (let i = 0; i < 6; i += 1) {
+      setup.doSetups[i].mapping = doMapping[i];
+    }
+    console.log(setup);
+    const service = IpcService.getInstance();
+    service
+      .send<void, ChannelWriteDataProps>(WRITE_REQ, {
+        writeData: {id: moduleId, setup},
+        requestType: 'IOHDIOSetup',
+      })
+      .then(() => {});
+    onRefresh();
+  };
+
+  const ButtonBox = () => (
+    <div style={{ display: 'flex' }}>
+      <Space>
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="middle"
+          style={{ fontSize: '10px' }}
+        >
+          Accept
+        </Button>
+        <Button
+          onClick={() => onRefresh()}
+          size="middle"
+          style={{ fontSize: '10px' }}
+        >
+          Refresh
+        </Button>
+      </Space>
+    </div>
+  );
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Card
           size="small"
           title={`ID ${moduleId} A2750IOH-DIO `}
-          extra={<Button htmlType="submit">Accept</Button>}
+          extra={<ButtonBox />}
         >
           <Space wrap={false} align="start">
             <Card size="small" title="DI 극성 설정" type="inner">
@@ -146,6 +235,7 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
                       <SetupField
                         onChange={onChange}
                         value={value}
+                        defaultValue={defaultDISetup[index].polarity}
                         options={options}
                       />
                     )}
@@ -164,7 +254,12 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
                     <Controller
                       name={`diMappingSetup.${index}.mapping` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupField onChange={onChange} value={value} />
+                        <SetupField
+                          onChange={onChange}
+                          value={value}
+                          options={diMappingOptions}
+                          defaultValue={defaultDISetup[index].mapping}
+                        />
                       )}
                       control={control}
                     />
@@ -182,7 +277,12 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
                     <Controller
                       name={`doSetup.${index}.mapping` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupField onChange={onChange} value={value} />
+                        <SetupField
+                          onChange={onChange}
+                          value={value}
+                          options={doMappingOptions}
+                          defaultValue={defaultDOSetup[index].mapping}
+                        />
                       )}
                       control={control}
                     />

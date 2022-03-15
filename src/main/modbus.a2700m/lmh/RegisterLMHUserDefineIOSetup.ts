@@ -96,8 +96,10 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
       const nameBuffer = data.slice(2, 12);
       const buf: number[] = [];
       nameBuffer.forEach((b: number) => {
-        buf.push(b >> 8);
-        buf.push(b & 0xff);
+        if (b !== 0) {
+          buf.push(b >> 8);
+          buf.push(b & 0xff);
+        }
       });
 
       const name = String.fromCharCode(...buf);

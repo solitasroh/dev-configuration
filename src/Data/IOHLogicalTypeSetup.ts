@@ -2,7 +2,7 @@ import A2700Data from './A2700Data';
 import A2700DataType from './A2700DataType';
 export interface LogicModuleType {
   moduleType: number;
-  exist: boolean;
+  exist?: boolean;
 }
 
 export default class IOHLogicalTypeSetup implements A2700Data {

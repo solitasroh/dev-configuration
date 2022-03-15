@@ -1,6 +1,11 @@
+import React, { FC, useEffect, useState } from 'react';
+import { useOncePolling } from '@src/application/hooks/ipcHook';
+import IOHLogicalTypeSetup, { LogicModuleType } from '@src/Data/IOHLogicalTypeSetup';
 import { LogicTypeProps } from '@src/Data/LogicModuleSetup';
+import { WRITE_REQ } from '@src/ipcChannels';
+import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
+import IpcService from '@src/main/IPCService';
 import { Button, Card, Select, Space } from 'antd';
-import React, { FC } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
@@ -31,31 +36,32 @@ const SetupField = styled(Select)`
 `;
 
 type FormValues = {
-    logicalModuleTypeSetup: {
-    type: number;
+  logicalModuleTypeSetup: {
+    moduleType: number;
   }[];
 };
-const defaultModuleTypeFields: LogicTypeProps[] = [
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
-  { type: 0 },
+const defaultModuleTypeFields: LogicModuleType[] = [
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
+  { moduleType: 0 },
 ];
-const ModuleTypeSetup: FC = () => {
-  const { control, handleSubmit } = useForm<FormValues>({
+const ModuleTypeSetup: FC = () => {  
+  const [typeSetup, setTypeSetup] = useState(defaultModuleTypeFields);
+  const { control, handleSubmit,setValue } = useForm<FormValues>({
     defaultValues: {
-      logicalModuleTypeSetup: defaultModuleTypeFields,
+      logicalModuleTypeSetup: typeSetup,
     },
   });
   const { fields: typeFields } = useFieldArray({
@@ -74,31 +80,76 @@ const ModuleTypeSetup: FC = () => {
     { label: 'AIO', value: 7 },
     { label: 'AI2', value: 8 },
   ];
+  const onRefresh = (): void => {
+    useOncePolling(
+      {
+        requestType: 'IOHLogicalTypeSetup',
+        responseChannel: 'get-lm-logic-type-data',
+      },
+      (evt, rest) => {
+        console.log("on Refresh");
+        const setup = rest as IOHLogicalTypeSetup;
+        
+        setup.moduleTypes.forEach((s, index) => {
+          setValue(`logicalModuleTypeSetup.${index}.moduleType`, s.moduleType);
+        });
+        setTypeSetup(setup.moduleTypes);
+      },
+    );
+  };
+
+  useEffect(() => {
+    onRefresh();
+  }, []);
+
+  const onSubmit = (data: FormValues) => {
+    const setup = new IOHLogicalTypeSetup();
+    const moduleType = data.logicalModuleTypeSetup.map((v) => v.moduleType);
+
+    for (let i = 0; i < 15; i += 1) {
+      setup.moduleTypes[i].moduleType = moduleType[i];
+    }
+    const service = IpcService.getInstance();
+    service
+      .send<void, ChannelWriteDataProps>(WRITE_REQ, {
+        writeData: setup,
+        requestType: 'IOHLogicalTypeSetup',
+      })
+      .then(() => {});
+    onRefresh();
+  };
+
   return (
     <div>
-      <form>
-          <Space wrap={false} align="start">
-            <Card size="small" title="Logical Module Type 설정" type="inner" extra={<Button htmlType="submit">Accept</Button>}>
-              {typeFields.map((field, index) => (
-                <SetupBox key={field.id}>
-                  <SetupLabel>{`IO ID ${(index + 1)
-                    .toString()
-                    .padStart(2, '0')}`}</SetupLabel>
-                  <Controller
-                    name={`logicalModuleTypeSetup.${index}.type` as const}
-                    render={({ field: { onChange, value } }) => (
-                      <SetupField
-                        onChange={onChange}
-                        value={value}
-                        options={options}
-                      />
-                    )}
-                    control={control}
-                  />
-                </SetupBox>
-              ))}
-            </Card>
-          </Space>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Space wrap={false} align="start">
+          <Card
+            size="small"
+            title="Logical Module Type 설정"
+            type="inner"
+            extra={<Button htmlType="submit">Accept</Button>}
+          >
+            {typeFields.map((field, index) => (
+              <SetupBox key={field.id}>
+                <SetupLabel>{`IO ID ${(index + 1)
+                  .toString()
+                  .padStart(2, '0')}`}</SetupLabel>
+                <Controller
+                  name={`logicalModuleTypeSetup.${index}.moduleType` as const}
+                  render={({ field: { onChange, value } }) => (
+                    <SetupField
+                      onChange={onChange}
+                      value={value}
+                      defaultValue={typeSetup[index].moduleType}
+                      options={options}
+                    />
+                  )}
+                  control={control}
+                />
+              </SetupBox>
+            ))}
+          </Card>
+        </Space>
       </form>
     </div>
   );

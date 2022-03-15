@@ -1,6 +1,9 @@
 import RegisterLMHLogicalUserIO from '@src/main/modbus.a2700m/lmh/RegisterLMHLogicalUserIO';
 import RegisterLMLogicIOSetup from '@src/main/modbus.a2700m/lmh/RegisterLMLogicIOSetup';
 import RegisterIOHLogicalUserIO from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalUserIO';
+import RegisterIOHLogicalDIOSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalDIOSetup';
+import RegisterIOHLogicalAI2Setup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalAI2Setup';
+import RegisterIOHLogicalTypeSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalTypeSetup';
 import RegisterLMSetup from './lmh/RegisterLMSetup';
 import RegisterLMInformation from './lmh/RegisterLMInformation';
 import RegisterLDInformation from './lmh/RegisterLDInformation';
@@ -22,9 +25,7 @@ import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
 import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
 import RegisterCoilMapAlarm from './lmh/RegisterCoilMapAlarm';
 import RegisterLMHUserDefineIOSetup from './lmh/RegisterLMHUserDefineIOSetup';
-import RegisterIOHLogicalDIOSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalDIOSetup';
-import RegisterIOHLogicalAI2Setup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalAI2Setup';
-import RegisterIOHLogicalTypeSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalTypeSetup';
+
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
