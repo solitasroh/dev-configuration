@@ -10,6 +10,8 @@ import { WRITE_REQ } from '@src/ipcChannels';
 import IpcService from '@src/main/IPCService';
 import IOHLogicAISetup from '@src/Data/IOHLogicAISetup';
 import { useOncePolling } from '@src/application/hooks/ipcHook';
+import SelectEx from '../Shared/SelectEx';
+import { SelectField } from 'evergreen-ui';
 
 const labelColor = '#7e7e7e';
 
@@ -50,6 +52,7 @@ const SetupField = styled(Select)`
 const SetupInputField = styled(Input)`
   width: 120px;
   font-family: Roboto, serif;
+  .onChange : () => void;
 `;
 
 interface Props {
@@ -65,10 +68,10 @@ type FormValues = {
   }[];
   aiMappingSetup: {
     mapping: number;
-  }[];  
+  }[];
   minValueSetup: {
     minValue: number;
-  }[];  
+  }[];
   maxValueSetup: {
     maxValue: number;
   }[];
@@ -147,14 +150,13 @@ const defaultAIMaxValueFields: LogicAIProps[] = [
 ];
 const AI2SetupPage: FC<Props> = ({ moduleId }) => {
   const [defaultAISetup, setDefaultAISetup] = useState(defaultAIMappingFields);
-  const { control, handleSubmit ,setValue } = useForm<FormValues>({
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
       aiInputTypeSetup: defaultAISetup,
       aiUnitTypeSetup: defaultAISetup,
       aiMappingSetup: defaultAISetup,
       minValueSetup: defaultAISetup,
       maxValueSetup: defaultAISetup,
-
     },
   });
 
@@ -205,7 +207,7 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
     { label: 'Logical Input 6', value: 6 },
     { label: 'Logical Input 7', value: 7 },
     { label: 'Logical Input 8', value: 8 },
-    { label: 'Logical Input 9', value: 9 },    
+    { label: 'Logical Input 9', value: 9 },
     { label: 'Logical Input 10', value: 10 },
     { label: 'Logical Input 11', value: 11 },
     { label: 'Logical Input 12', value: 12 },
@@ -228,7 +230,7 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
           setValue(`maxValueSetup.${index}.maxValue`, s.maxValue);
           setValue(`minValueSetup.${index}.minValue`, s.minValue);
         });
-console.log(setup);
+        console.log(setup);
         setDefaultAISetup(setup.aiSetups);
       },
     );
@@ -241,7 +243,7 @@ console.log(setup);
   const onSubmit = (data: FormValues) => {
     const setup = new IOHLogicAISetup();
     const aiInputType = data.aiInputTypeSetup.map((v) => v.inputType);
-    const aiMapping = data.aiMappingSetup.map((v) => v.mapping);    
+    const aiMapping = data.aiMappingSetup.map((v) => v.mapping);
     const aiUnit = data.aiUnitTypeSetup.map((v) => v.unitType);
     const aiMax = data.maxValueSetup.map((v) => v.maxValue);
     const aiMin = data.minValueSetup.map((v) => v.minValue);
@@ -257,7 +259,7 @@ console.log(setup);
     const service = IpcService.getInstance();
     service
       .send<void, ChannelWriteDataProps>(WRITE_REQ, {
-        writeData: {id: moduleId, setup},
+        writeData: { id: moduleId, setup },
         requestType: 'IOHAI2Setup',
       })
       .then(() => {});
@@ -303,10 +305,12 @@ console.log(setup);
                   <Controller
                     name={`aiInputTypeSetup.${index}.inputType` as const}
                     render={({ field: { onChange, value } }) => (
-                      <SetupField
+                      <SelectEx
                         onChange={onChange}
-                        value={value}
+                        value={value}                        
+                        defaultValue={defaultAISetup[index].inputType}
                         options={inputTypeoptions}
+                        width="130px"
                       />
                     )}
                     control={control}
@@ -323,10 +327,12 @@ console.log(setup);
                   <Controller
                     name={`aiUnitTypeSetup.${index}.unitType` as const}
                     render={({ field: { onChange, value } }) => (
-                      <SetupField
+                      <SelectEx
                         onChange={onChange}
                         value={value}
+                        defaultValue={defaultAISetup[index].unitType}
                         options={unitTypeoptions}
+                        width="130px"
                       />
                     )}
                     control={control}
@@ -344,8 +350,13 @@ console.log(setup);
                     <Controller
                       name={`aiMappingSetup.${index}.mapping` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupField onChange={onChange} value={value} 
-                        options={mappingOptions}/>
+                        <SelectEx
+                          onChange={onChange}
+                          value={value}
+                          options={mappingOptions}
+                          defaultValue={defaultAISetup[index].mapping}
+                          width="130px"
+                        />
                       )}
                       control={control}
                     />
@@ -363,7 +374,12 @@ console.log(setup);
                     <Controller
                       name={`minValueSetup.${index}.minValue` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupInputField onChange={onChange} value={value} />
+                        <SetupInputField
+                          onChange={onChange}
+                          value={value}
+                          defaultValue={defaultAISetup[index].minValue}
+                          width="130px"
+                        />
                       )}
                       control={control}
                     />
@@ -381,7 +397,12 @@ console.log(setup);
                     <Controller
                       name={`maxValueSetup.${index}.maxValue` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupInputField onChange={onChange} value={value} />
+                        <SetupInputField
+                          onChange={onChange}
+                          defaultValue={defaultAISetup[index].maxValue}
+                          value={value}
+                          width="130px"
+                        />
                       )}
                       control={control}
                     />

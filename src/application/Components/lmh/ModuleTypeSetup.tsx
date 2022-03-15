@@ -8,6 +8,7 @@ import IpcService from '@src/main/IPCService';
 import { Button, Card, Select, Space } from 'antd';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import styled from 'styled-components';
+import SelectEx from '../Shared/SelectEx';
 
 const labelColor = '#7e7e7e';
 
@@ -137,11 +138,12 @@ const ModuleTypeSetup: FC = () => {
                 <Controller
                   name={`logicalModuleTypeSetup.${index}.moduleType` as const}
                   render={({ field: { onChange, value } }) => (
-                    <SetupField
+                    <SelectEx
                       onChange={onChange}
                       value={value}
                       defaultValue={typeSetup[index].moduleType}
                       options={options}
+                      width="130px"
                     />
                   )}
                   control={control}

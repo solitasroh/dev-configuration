@@ -8,6 +8,7 @@ import { useOncePolling } from '@src/application/hooks/ipcHook';
 import IpcService from '@src/main/IPCService';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import { WRITE_REQ } from '@src/ipcChannels';
+import SelectEx from '../Shared/SelectEx';
 
 const labelColor = '#7e7e7e';
 
@@ -232,11 +233,12 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
                   <Controller
                     name={`diPolaritySetup.${index}.polarity` as const}
                     render={({ field: { onChange, value } }) => (
-                      <SetupField
+                      <SelectEx
                         onChange={onChange}
                         value={value}
                         defaultValue={defaultDISetup[index].polarity}
                         options={options}
+                        width="130px"
                       />
                     )}
                     control={control}
@@ -254,11 +256,12 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
                     <Controller
                       name={`diMappingSetup.${index}.mapping` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupField
+                        <SelectEx
                           onChange={onChange}
                           value={value}
                           options={diMappingOptions}
                           defaultValue={defaultDISetup[index].mapping}
+                          width="130px"
                         />
                       )}
                       control={control}
@@ -277,11 +280,12 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
                     <Controller
                       name={`doSetup.${index}.mapping` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupField
+                        <SelectEx
                           onChange={onChange}
                           value={value}
                           options={doMappingOptions}
                           defaultValue={defaultDOSetup[index].mapping}
+                          width="130px"
                         />
                       )}
                       control={control}
