@@ -4,6 +4,7 @@ import A2700Data from '@src/Data/A2700Data';
 import { forkJoin, map, Observable } from 'rxjs';
 import ModbusService from '@src/main/ModbusService';
 import IOHLogicAISetup from '@src/Data/IOHLogicAISetup';
+import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 export default class RegisterIOHLogicalAI2Setup extends RegisterBase {
   private idSetAddress = 61931;
@@ -38,13 +39,22 @@ export default class RegisterIOHLogicalAI2Setup extends RegisterBase {
             setup.aiSetups[i].mapping = buffer[off];
           }
           for (let i = 0; i < 12; i += 1, off += 2) {
-            setup.aiSetups[i].minValue =
-              (buffer[off] << 16) | (buffer[off + 1] & 0xffff);
+            
+            const b = Buffer.alloc(4);
+            b[0] = buffer[off] >> 8;
+            b[1] = buffer[off] & 0xff;
+            b[2] = buffer[off+1] >> 8;
+            b[3] = buffer[off+1]&0xff;
+            setup.aiSetups[i].minValue = b.readFloatBE();
           }
 
           for (let i = 0; i < 12; i += 1, off += 2) {
-            setup.aiSetups[i].maxValue =
-              (buffer[off] << 16) | (buffer[off + 1] & 0xffff);
+            const b = Buffer.alloc(4);
+            b[0] = buffer[off] >>8;
+            b[1] = buffer[off];
+            b[2] = buffer[off+1]>> 8;
+            b[3] = buffer[off+1];
+            setup.aiSetups[i].maxValue = b.readFloatBE();
           }
         }
         return setup;
@@ -68,10 +78,15 @@ export default class RegisterIOHLogicalAI2Setup extends RegisterBase {
       aiTypes.push(_data.setup.aiSetups[i].aiType);
       units.push(_data.setup.aiSetups[i].unit);
       mapping.push(_data.setup.aiSetups[i].mapping);
-      minValue.push(_data.setup.aiSetups[i].minValue & 0xffff);
-      minValue.push((_data.setup.aiSetups[i].minValue >> 16) & 0xffff);
-      maxValue.push(_data.setup.aiSetups[i].maxValue & 0xffff);
-      maxValue.push((_data.setup.aiSetups[i].maxValue >> 16) & 0xffff);
+      const b = Buffer.alloc(4);
+      b.writeFloatBE(_data.setup.aiSetups[i].minValue);
+      minValue.push(b[0] << 8 | b[1]);
+      minValue.push(b[2] << 8 | b[3]);
+
+      const c = Buffer.alloc(4);
+      c.writeFloatBE(_data.setup.aiSetups[i].maxValue);
+      maxValue.push(c[0] << 8 | c[1]);
+      maxValue.push(c[2] << 8 | c[3]);
     }
 
     buffer.push(...aiTypes, ...units, ...mapping, ...minValue, ...maxValue);

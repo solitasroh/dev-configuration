@@ -30,7 +30,7 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
 
           for (let i = 0; i < 9; i += 1) {
             const doSetup = buffer[i + 18];
-            setup.doSetups[i].mapping = +doSetup & 0xff;
+            setup.doSetups[i].mapping = (+doSetup >> 8)& 0xff;
           }
         }
         return setup;

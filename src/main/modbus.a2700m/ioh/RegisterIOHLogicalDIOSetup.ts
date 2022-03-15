@@ -33,7 +33,7 @@ export default class RegisterIOHLogicalDIOSetup extends RegisterBase {
 
           for (let i = 0; i < 6; i += 1) {
             const doSetup = buffer[i + 11];
-            setup.doSetups[i].mapping = +doSetup & 0xff;
+            setup.doSetups[i].mapping = (+doSetup >> 8) & 0xff;
           }
         }
         return setup;

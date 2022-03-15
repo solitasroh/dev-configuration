@@ -1,10 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Button, Card, Input, Select, Space } from 'antd';
 import { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import '../contents/index.css';
 import styled from 'styled-components';
 import { LogicAIProps } from '@src/Data/IOHLogicSetup';
+import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
+import { WRITE_REQ } from '@src/ipcChannels';
+import IpcService from '@src/main/IPCService';
+import IOHLogicAISetup from '@src/Data/IOHLogicAISetup';
+import { useOncePolling } from '@src/application/hooks/ipcHook';
 
 const labelColor = '#7e7e7e';
 
@@ -141,13 +146,14 @@ const defaultAIMaxValueFields: LogicAIProps[] = [
   { maxValue: 0 },
 ];
 const AI2SetupPage: FC<Props> = ({ moduleId }) => {
-  const { control, handleSubmit } = useForm<FormValues>({
+  const [defaultAISetup, setDefaultAISetup] = useState(defaultAIMappingFields);
+  const { control, handleSubmit ,setValue } = useForm<FormValues>({
     defaultValues: {
-      aiInputTypeSetup: defaultAIInputTypeFields,
-      aiUnitTypeSetup: defaultAIUnitTypeFields,
-      aiMappingSetup: defaultAIMappingFields,
-      minValueSetup: defaultAIMinValueFields,
-      maxValueSetup: defaultAIMaxValueFields,
+      aiInputTypeSetup: defaultAISetup,
+      aiUnitTypeSetup: defaultAISetup,
+      aiMappingSetup: defaultAISetup,
+      minValueSetup: defaultAISetup,
+      maxValueSetup: defaultAISetup,
 
     },
   });
@@ -174,7 +180,6 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
     name: 'maxValueSetup',
   });
   const inputTypeoptions = [
-    { label: 'None', value: -1 },
     { label: '4-20mA', value: 0 },
     { label: '0-20mA', value: 1 },
   ];
@@ -205,13 +210,88 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
     { label: 'Logical Input 11', value: 11 },
     { label: 'Logical Input 12', value: 12 },
   ];
+
+  const onRefresh = (): void => {
+    useOncePolling(
+      {
+        requestType: 'IOHAI2Setup',
+        responseChannel: 'get-ioh-ai2-logic-setup-data',
+        props: { id: moduleId },
+      },
+      (evt, rest) => {
+        const setup = rest as IOHLogicAISetup;
+
+        setup.aiSetups.forEach((s, index) => {
+          setValue(`aiMappingSetup.${index}.mapping`, s.mapping);
+          setValue(`aiInputTypeSetup.${index}.inputType`, s.aiType);
+          setValue(`aiUnitTypeSetup.${index}.unitType`, s.unit);
+          setValue(`maxValueSetup.${index}.maxValue`, s.maxValue);
+          setValue(`minValueSetup.${index}.minValue`, s.minValue);
+        });
+console.log(setup);
+        setDefaultAISetup(setup.aiSetups);
+      },
+    );
+  };
+
+  useEffect(() => {
+    onRefresh();
+  }, []);
+
+  const onSubmit = (data: FormValues) => {
+    const setup = new IOHLogicAISetup();
+    const aiInputType = data.aiInputTypeSetup.map((v) => v.inputType);
+    const aiMapping = data.aiMappingSetup.map((v) => v.mapping);    
+    const aiUnit = data.aiUnitTypeSetup.map((v) => v.unitType);
+    const aiMax = data.maxValueSetup.map((v) => v.maxValue);
+    const aiMin = data.minValueSetup.map((v) => v.minValue);
+
+    for (let i = 0; i < 12; i += 1) {
+      setup.aiSetups[i].aiType = aiInputType[i];
+      setup.aiSetups[i].mapping = aiMapping[i];
+      setup.aiSetups[i].unit = aiUnit[i];
+      setup.aiSetups[i].maxValue = aiMax[i];
+      setup.aiSetups[i].minValue = aiMin[i];
+    }
+
+    const service = IpcService.getInstance();
+    service
+      .send<void, ChannelWriteDataProps>(WRITE_REQ, {
+        writeData: {id: moduleId, setup},
+        requestType: 'IOHAI2Setup',
+      })
+      .then(() => {});
+    onRefresh();
+  };
+
+  const ButtonBox = () => (
+    <div style={{ display: 'flex' }}>
+      <Space>
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="middle"
+          style={{ fontSize: '10px' }}
+        >
+          Accept
+        </Button>
+        <Button
+          onClick={() => onRefresh()}
+          size="middle"
+          style={{ fontSize: '10px' }}
+        >
+          Refresh
+        </Button>
+      </Space>
+    </div>
+  );
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Card
           size="small"
           title={`ID ${moduleId} A2750IOH-AI2 `}
-          extra={<Button htmlType="submit">Accept</Button>}
+          extra={<ButtonBox />}
         >
           <Space wrap={false} align="start">
             <Card size="small" title="AI Input Type 설정" type="inner">

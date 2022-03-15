@@ -10,8 +10,6 @@ export default class RegisterIOHLogicalTypeSetup extends RegisterBase {
   private dataAddress = 52004;
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
-    console.log('ioh logical io setup access id : ', _params.id);
-
     const pageChange = ModbusService.write(65535, [this.mapPage]);
     const data = ModbusService.read<number[]>(this.dataAddress, 15);
     const pageChangeToZero = ModbusService.write(65535, [0]);
