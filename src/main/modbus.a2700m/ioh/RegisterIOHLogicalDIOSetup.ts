@@ -8,12 +8,11 @@ import LMHLogicSetup from '@src/Data/LMHLogicSetup';
 export default class RegisterIOHLogicalDIOSetup extends RegisterBase {
   private accessAddress = 61910;
   private idSetAddress = 61909;
-  private dataAddress = 61912;
+  private dataAddress = 61913;
 
   private size = 17; // di: 11 , do: 6
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
-    console.log('ioh logical io setup access id : ', _params.id);
     const registerAccessID = ModbusService.write(this.idSetAddress, [
       _params.id,
     ]);
@@ -22,7 +21,7 @@ export default class RegisterIOHLogicalDIOSetup extends RegisterBase {
 
     return forkJoin([registerAccessID, registerAccess, registerData]).pipe(
       map((resp) => {
-        const [_, acc, buffer] = resp;
+        const [, acc, buffer] = resp;
         const setup = new LMHLogicSetup(this.size);
 
         if (acc[0] === 0x8000) {
