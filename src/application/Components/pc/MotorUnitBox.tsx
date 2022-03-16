@@ -1,9 +1,13 @@
 import React, { FC, ReactNode, useState } from 'react';
 import styled from 'styled-components';
-import { useOncePolling, usePolling } from '@src/application/hooks/ipcHook';
+import { usePolling } from '@src/application/hooks/ipcHook';
 import MotorUnitStatusData, {
   MotorUnitStatus,
 } from '@src/Data/MotorUnitStatus';
+import IpcService from '@src/main/IPCService';
+import { WRITE_REQ } from '@src/ipcChannels';
+import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
+import PCCommand from '@src/Data/PCCommand';
 
 export const ControlModeDefinition = {
   Local: 'LOCAL',
@@ -145,6 +149,7 @@ const ButtonContainer = styled.div`
 type Prop = {
   children: ReactNode;
   status: boolean;
+  command: () => void;
 };
 
 type styledProp = {
@@ -171,18 +176,32 @@ const ButtonContents = styled.div`
   }
 `;
 
-const ControlButton = ({ status, children }: Prop) => (
-  <ButtonContainer>
+const ControlButton = ({ status, children, command }: Prop) => (
+  <ButtonContainer onClick={() => command()}>
     <ButtonStatus status={status} />
     <ButtonContents>{children}</ButtonContents>
   </ButtonContainer>
 );
-const ControlCommand = ({ motorStatus }: { motorStatus: string }) => (
+const ControlCommand = ({
+  motorStatus,
+  runCommand,
+  stopCommand,
+}: {
+  motorStatus: string;
+  runCommand: () => void;
+  stopCommand: () => void;
+}) => (
   <ButtonContainer>
-    <ControlButton status={motorStatus === MotorStatusDefinition.Run}>
+    <ControlButton
+      status={motorStatus === MotorStatusDefinition.Run}
+      command={runCommand}
+    >
       RUN
     </ControlButton>
-    <ControlButton status={motorStatus === MotorStatusDefinition.Stop}>
+    <ControlButton
+      status={motorStatus === MotorStatusDefinition.Stop}
+      command={stopCommand}
+    >
       STOP
     </ControlButton>
   </ButtonContainer>
@@ -223,12 +242,44 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
     },
     3000,
   );
+  const run = () => {
+    const data = new PCCommand();
+    data.command = 1;
+    data.id = id;
+    if (id <= 0) {
+      return;
+    }
+    console.log('write run command');
+    const service = IpcService.getInstance();
+    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
+      writeData: data,
+      requestType: 'PCCommand',
+    });
+  };
+
+  const stop = () => {
+    const data = new PCCommand();
+    data.command = 2;
+    data.id = id;
+    if (id <= 0) {
+      return;
+    }
+    const service = IpcService.getInstance();
+    service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
+      writeData: data,
+      requestType: 'PCCommand',
+    });
+  };
   return (
     <Container>
       <UnitHeader id={id} mccName={name} operationMode={operationMode} />
       <Bottom>
         <ControlMode controlMode={controlMode} />
-        <ControlCommand motorStatus={motorStatus} />
+        <ControlCommand
+          motorStatus={motorStatus}
+          runCommand={run}
+          stopCommand={stop}
+        />
       </Bottom>
     </Container>
   );
