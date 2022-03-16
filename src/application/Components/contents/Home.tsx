@@ -22,98 +22,48 @@ type FormValues = {
   setupValue: InputValueType;
   selectValue: InputValueType;
 };
+
 const motorUnits = [
-  {
-    key: 1,
-    id: 1,
-    name: 'motor unit 01',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 2,
-    id: 2,
-    name: 'motor unit 02',
-    motorStatus: MotorStatusDefinition.Stop,
-    controlMode: ControlModeDefinition.Remote,
-  },
-  {
-    key: 3,
-    id: 3,
-    name: 'motor unit 03',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 4,
-    id: 4,
-    name: 'motor unit 04',
-    motorStatus: MotorStatusDefinition.Stop,
-    controlMode: ControlModeDefinition.Remote,
-  },
-  {
-    key: 5,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 6,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 7,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 8,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 9,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 10,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 11,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 12,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
-  {
-    key: 13,
-    id: 5,
-    name: 'motor unit 05',
-    motorStatus: MotorStatusDefinition.Run,
-    controlMode: ControlModeDefinition.Local,
-  },
+  { key: 1, id: 1 },
+  { key: 2, id: 2 },
+  { key: 3, id: 3 },
+  { key: 4, id: 4 },
+  { key: 5, id: 5 },
+  { key: 6, id: 6 },
+  { key: 7, id: 7 },
+  { key: 8, id: 8 },
+  { key: 9, id: 9 },
+  { key: 10, id: 10 },
+  { key: 11, id: 11 },
+  { key: 12, id: 12 },
+  { key: 13, id: 13 },
+  { key: 14, id: 14 },
+  { key: 15, id: 15 },
+  { key: 16, id: 16 },
+  { key: 17, id: 17 },
+  { key: 18, id: 18 },
+  { key: 19, id: 19 },
+  { key: 20, id: 20 },
+  { key: 21, id: 21 },
+  { key: 22, id: 22 },
+  { key: 23, id: 23 },
+  { key: 24, id: 24 },
+  { key: 25, id: 25 },
+  { key: 26, id: 26 },
+  { key: 27, id: 27 },
+  { key: 28, id: 28 },
+  { key: 29, id: 29 },
+  { key: 30, id: 30 },
+  { key: 31, id: 31 },
+  { key: 32, id: 32 },
+  { key: 33, id: 33 },
+  { key: 34, id: 34 },
+  { key: 35, id: 35 },
+  { key: 36, id: 36 },
+  { key: 37, id: 37 },
+  { key: 38, id: 38 },
+  { key: 39, id: 39 },
+  { key: 40, id: 40 },
 ];
 
 export default function Home(): ReactElement {
@@ -178,12 +128,7 @@ export default function Home(): ReactElement {
           itemLayout="horizontal"
           renderItem={(item) => (
             <Space>
-              <MotorUnitBox
-                id={item.id}
-                name={item.name}
-                controlMode={item.controlMode}
-                motorStatus={item.motorStatus}
-              />
+              <MotorUnitBox id={item.id} />
             </Space>
           )}
         />

@@ -1,5 +1,9 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import styled from 'styled-components';
+import { useOncePolling, usePolling } from '@src/application/hooks/ipcHook';
+import MotorUnitStatusData, {
+  MotorUnitStatus,
+} from '@src/Data/MotorUnitStatus';
 
 export const ControlModeDefinition = {
   Local: 'LOCAL',
@@ -13,9 +17,6 @@ export const MotorStatusDefinition = {
 
 interface Props {
   id: number;
-  name: string;
-  controlMode: string;
-  motorStatus: string;
 }
 
 const Container = styled.div`
@@ -57,8 +58,10 @@ const HeaderTitle = styled.div`
   white-space: nowrap;
   overflow: hidden;
 `;
-
-const HeaderId = styled.div`
+type HeaderProps = {
+  operationMode: number;
+};
+const HeaderId = styled.div<HeaderProps>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,14 +70,23 @@ const HeaderId = styled.div`
   font-weight: 600;
   width: 35px;
   font-family: Roboto, ui-serif;
-  background-color: #efc1c1;
+  background-color: ${(props) =>
+    props.operationMode === 4 ? '#66d45a' : '#efc1c1'};
   border-radius: 2px;
 `;
 
-const UnitHeader = ({ mccName, id }: { mccName: string; id: number }) => (
+const UnitHeader = ({
+  mccName,
+  id,
+  operationMode,
+}: {
+  mccName: string;
+  id: number;
+  operationMode: number;
+}) => (
   <HeaderContainer>
     <HeaderTitle>{mccName}</HeaderTitle>
-    <HeaderId>ID {id.toString(10)}</HeaderId>
+    <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
   </HeaderContainer>
 );
 
@@ -176,11 +188,44 @@ const ControlCommand = ({ motorStatus }: { motorStatus: string }) => (
   </ButtonContainer>
 );
 
-const MotorUnitBox: FC<Props> = ({ id, name, controlMode, motorStatus }) => {
+const MotorUnitBox: FC<Props> = ({ id }) => {
   console.log('motor unit box');
+  const [name, setName] = useState('unknown');
+  const [controlMode, setControlMode] = useState('unknown');
+  const [motorStatus, setMotorStatus] = useState('unknown');
+  const [operationMode, setOperationMode] = useState(0);
+
+  usePolling(
+    {
+      requestType: 'MotorUnitStatus',
+      responseChannel: `motor-unit-status-getter-${id}`,
+      props: {
+        id: id,
+      },
+    },
+    (evt, rest) => {
+      const setup = rest as MotorUnitStatusData;
+
+      if (setup !== null) {
+        setName(setup.name);
+        setControlMode(
+          setup.controlMode == 1
+            ? ControlModeDefinition.Remote
+            : ControlModeDefinition.Local,
+        );
+        setMotorStatus(
+          setup.motorStatus == 1
+            ? MotorStatusDefinition.Run
+            : MotorStatusDefinition.Stop,
+        );
+        setOperationMode(setup.operationMode);
+      }
+    },
+    3000,
+  );
   return (
     <Container>
-      <UnitHeader id={id} mccName={name} />
+      <UnitHeader id={id} mccName={name} operationMode={operationMode} />
       <Bottom>
         <ControlMode controlMode={controlMode} />
         <ControlCommand motorStatus={motorStatus} />
