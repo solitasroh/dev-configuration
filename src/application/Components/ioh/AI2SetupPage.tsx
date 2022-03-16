@@ -11,6 +11,7 @@ import IpcService from '@src/main/IPCService';
 import { useOncePolling } from '@src/application/hooks/ipcHook';
 import SelectEx from '../Shared/SelectEx';
 import NumberInput from '../Shared/NumberInput';
+import InputEx from '../Shared/InputEx';
 
 const labelColor = '#7e7e7e';
 
@@ -74,7 +75,6 @@ type FormValues = {
     maxValue: number;
   }[];
 };
-
 
 const defaultAIMappingFields: LogicAIProps[] = [
   { mapping: 0 },
@@ -248,9 +248,9 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
                   <Controller
                     name={`aiInputTypeSetup.${index}.aiType` as const}
                     render={({ field: { onChange, value } }) => (
-                      <SelectEx                       
+                      <SelectEx
                         onChange={onChange}
-                        value={value}                        
+                        value={value}
                         defaultValue={defaultAISetup[index].aiType}
                         options={inputTypeoptions}
                         width="130px"
@@ -315,13 +315,20 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
                     .padStart(2, '0')}`}</SetupLabel>
                   <SetupValue>
                     <Controller
-                      name={`minValueSetup.${index}.minValue` as const}
-                      render={({ field: { onChange, value } }) => (
-                        <SetupInputField
+                      name={`minValueSetup.${index}.minValue` as const}                      
+                      render={({
+                        field: { onChange, value },
+                        fieldState: { invalid, error },
+                      }) => (
+                        <InputEx
                           onChange={onChange}
                           value={value}
                           defaultValue={defaultAISetup[index].minValue}
                           width="130px"
+                          error={error}
+                          invalid={invalid}
+                          min={-1000000}
+                          max={1000000}
                         />
                       )}
                       control={control}
@@ -340,11 +347,13 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
                     <Controller
                       name={`maxValueSetup.${index}.maxValue` as const}
                       render={({ field: { onChange, value } }) => (
-                        <SetupInputField
+                        <InputEx
                           onChange={onChange}
                           defaultValue={defaultAISetup[index].maxValue}
                           value={value}
                           width="130px"
+                          min={-1000000}
+                          max={1000000}
                         />
                       )}
                       control={control}
