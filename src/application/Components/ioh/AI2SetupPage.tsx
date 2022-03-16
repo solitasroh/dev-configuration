@@ -1,17 +1,16 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Button, Card, Input, Select, Space } from 'antd';
-import { LogicIOProps } from '@src/Data/LMHLogicSetup';
 import '../contents/index.css';
 import styled from 'styled-components';
-import { LogicAIProps } from '@src/Data/IOHLogicSetup';
+import IOHLogicAISetup, { LogicAIProps } from '@src/Data/IOHLogicAISetup';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import { WRITE_REQ } from '@src/ipcChannels';
 import IpcService from '@src/main/IPCService';
-import IOHLogicAISetup from '@src/Data/IOHLogicAISetup';
+
 import { useOncePolling } from '@src/application/hooks/ipcHook';
 import SelectEx from '../Shared/SelectEx';
-import { SelectField } from 'evergreen-ui';
+import NumberInput from '../Shared/NumberInput';
 
 const labelColor = '#7e7e7e';
 
@@ -52,7 +51,6 @@ const SetupField = styled(Select)`
 const SetupInputField = styled(Input)`
   width: 120px;
   font-family: Roboto, serif;
-  .onChange : () => void;
 `;
 
 interface Props {
@@ -61,10 +59,10 @@ interface Props {
 
 type FormValues = {
   aiInputTypeSetup: {
-    inputType: number;
+    aiType: number;
   }[];
   aiUnitTypeSetup: {
-    unitType: number;
+    unit: number;
   }[];
   aiMappingSetup: {
     mapping: number;
@@ -77,34 +75,7 @@ type FormValues = {
   }[];
 };
 
-const defaultAIInputTypeFields: LogicAIProps[] = [
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-  { inputType: 0 },
-];
-const defaultAIUnitTypeFields: LogicAIProps[] = [
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-  { unitType: 0 },
-];
+
 const defaultAIMappingFields: LogicAIProps[] = [
   { mapping: 0 },
   { mapping: 0 },
@@ -120,37 +91,9 @@ const defaultAIMappingFields: LogicAIProps[] = [
   { mapping: 0 },
 ];
 
-const defaultAIMinValueFields: LogicAIProps[] = [
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-  { minValue: 0 },
-];
-const defaultAIMaxValueFields: LogicAIProps[] = [
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-  { maxValue: 0 },
-];
 const AI2SetupPage: FC<Props> = ({ moduleId }) => {
   const [defaultAISetup, setDefaultAISetup] = useState(defaultAIMappingFields);
-  const { control, handleSubmit, setValue } = useForm<FormValues>({
+  const { control, handleSubmit, setValue, register } = useForm<FormValues>({
     defaultValues: {
       aiInputTypeSetup: defaultAISetup,
       aiUnitTypeSetup: defaultAISetup,
@@ -225,8 +168,8 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
 
         setup.aiSetups.forEach((s, index) => {
           setValue(`aiMappingSetup.${index}.mapping`, s.mapping);
-          setValue(`aiInputTypeSetup.${index}.inputType`, s.aiType);
-          setValue(`aiUnitTypeSetup.${index}.unitType`, s.unit);
+          setValue(`aiInputTypeSetup.${index}.aiType`, s.aiType);
+          setValue(`aiUnitTypeSetup.${index}.unit`, s.unit);
           setValue(`maxValueSetup.${index}.maxValue`, s.maxValue);
           setValue(`minValueSetup.${index}.minValue`, s.minValue);
         });
@@ -242,9 +185,9 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
 
   const onSubmit = (data: FormValues) => {
     const setup = new IOHLogicAISetup();
-    const aiInputType = data.aiInputTypeSetup.map((v) => v.inputType);
+    const aiInputType = data.aiInputTypeSetup.map((v) => v.aiType);
     const aiMapping = data.aiMappingSetup.map((v) => v.mapping);
-    const aiUnit = data.aiUnitTypeSetup.map((v) => v.unitType);
+    const aiUnit = data.aiUnitTypeSetup.map((v) => v.unit);
     const aiMax = data.maxValueSetup.map((v) => v.maxValue);
     const aiMin = data.minValueSetup.map((v) => v.minValue);
 
@@ -273,14 +216,14 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
           htmlType="submit"
           type="primary"
           size="middle"
-          style={{ fontSize: '10px' }}
+          style={{ fontSize: '12px' }}
         >
           Accept
         </Button>
         <Button
           onClick={() => onRefresh()}
           size="middle"
-          style={{ fontSize: '10px' }}
+          style={{ fontSize: '12px' }}
         >
           Refresh
         </Button>
@@ -303,12 +246,12 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
                     .toString()
                     .padStart(2, '0')}`}</SetupLabel>
                   <Controller
-                    name={`aiInputTypeSetup.${index}.inputType` as const}
+                    name={`aiInputTypeSetup.${index}.aiType` as const}
                     render={({ field: { onChange, value } }) => (
-                      <SelectEx
+                      <SelectEx                       
                         onChange={onChange}
                         value={value}                        
-                        defaultValue={defaultAISetup[index].inputType}
+                        defaultValue={defaultAISetup[index].aiType}
                         options={inputTypeoptions}
                         width="130px"
                       />
@@ -325,12 +268,12 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
                     .toString()
                     .padStart(2, '0')}`}</SetupLabel>
                   <Controller
-                    name={`aiUnitTypeSetup.${index}.unitType` as const}
+                    name={`aiUnitTypeSetup.${index}.unit` as const}
                     render={({ field: { onChange, value } }) => (
                       <SelectEx
                         onChange={onChange}
                         value={value}
-                        defaultValue={defaultAISetup[index].unitType}
+                        defaultValue={defaultAISetup[index].unit}
                         options={unitTypeoptions}
                         width="130px"
                       />

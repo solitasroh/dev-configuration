@@ -190,15 +190,15 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
         <Button
           htmlType="submit"
           type="primary"
-          size="small"
-          style={{ fontSize: '10px' }}
+          size="middle"
+          style={{ fontSize: '12px' }}
         >
           Accept
         </Button>
         <Button
           onClick={() => onRefresh()}
-          size="small"
-          style={{ fontSize: '10px' }}
+          size="middle"
+          style={{ fontSize: '12px' }}
         >
           Refresh
         </Button>
