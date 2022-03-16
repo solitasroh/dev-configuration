@@ -119,16 +119,37 @@ const ModuleTypeSetup: FC = () => {
       .then(() => {});
     onRefresh();
   };
-
+  const ButtonBox = () => (
+    <div style={{ display: 'flex' }}>
+      <Space>
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="middle"
+          style={{ fontSize: '12px' }}
+        >
+          Accept
+        </Button>
+        <Button
+          onClick={() => onRefresh()}
+          size="middle"
+          style={{ fontSize: '12px' }}
+        >
+          Refresh
+        </Button>
+      </Space>
+    </div>
+  );
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Space wrap={false} align="start">
           <Card
             size="small"
+            style={{ width: "500px" }}
             title="Logical Module Type 설정"
-            type="inner"
-            extra={<Button htmlType="submit">Accept</Button>}
+            type="inner"            
+            extra={<ButtonBox />}
           >
             {typeFields.map((field, index) => (
               <SetupBox key={field.id}>

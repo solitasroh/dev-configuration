@@ -201,14 +201,14 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
           htmlType="submit"
           type="primary"
           size="middle"
-          style={{ fontSize: '10px' }}
+          style={{ fontSize: '12px' }}
         >
           Accept
         </Button>
         <Button
           onClick={() => onRefresh()}
           size="middle"
-          style={{ fontSize: '10px' }}
+          style={{ fontSize: '12px' }}
         >
           Refresh
         </Button>
