@@ -1,7 +1,6 @@
 import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
 
-
 /// TODO:  설정 데이터를 통해 아래 배열에서 참조하여 화면 표시해야함
 const DISetupDefinition = [
   'No Use', // 0
@@ -58,11 +57,11 @@ interface Props {
   operationMode: number;
 }
 
-type DIBoxProps = {
-  dists : boolean;
-  disetup:number; 
-  ch : number;
-}
+type BoxProps = {
+  sts: boolean;
+  setup: number;
+  ch: number;
+};
 type HeaderProps = {
   operationMode: number;
 };
@@ -70,7 +69,7 @@ type FalutProps = {
   fault: boolean;
 };
 type DIProps = {
-  diStatus: boolean;
+  Status: boolean;
 };
 
 const Container = styled.div`
@@ -108,7 +107,7 @@ const MiddleContainer1 = styled.div`
   display: flex;
   flex-wrap: nowrap;
   padding: 0.2em;
-  width:100%;
+  width: 100%;
   justify-content: space-between;
 `;
 const HeaderTitle = styled.div`
@@ -141,7 +140,7 @@ const HeaderId = styled.div<HeaderProps>`
 const MiddleText = styled.div`
   font-size: 9px;
   padding: 0.2em;
-  align-items : flex-start;
+  align-items: flex-start;
 `;
 const Middle = styled.div`
   display: flex;
@@ -159,12 +158,11 @@ const Middle1 = styled.div`
   font-weight: 600;
   font-size: 8px;
   line-height: 9px;
-  align-items: center;    
+  align-items: center;
   justify-content: space-between;
   ${MiddleText} {
     width: 70%;
   }
-  
 `;
 const Middle2 = styled.div`
   display: flex;
@@ -174,7 +172,7 @@ const Middle2 = styled.div`
   font-size: 8px;
   line-height: 9px;
   flex-direction: column;
-  width:100%;
+  width: 100%;
 `;
 const MiddleFaultStatus = styled.div<FalutProps>`
   align-items: center;
@@ -187,14 +185,21 @@ const MiddleFaultStatus = styled.div<FalutProps>`
 const UseText = styled.div<DIProps>`
   font-size: 9px;
   padding: 0.2em;
-  color: ${(props) => (props.diStatus ? '#716D6D' : '#CACACA')};
+  color: ${(props) => (props.Status ? '#716D6D' : '#CACACA')};
 `;
 const MiddleDIStatus = styled.div<DIProps>`
   align-items: center;
   border-radius: 4px;
   width: 35px;
   height: 9.18px;
-  background-color: ${(props) => (props.diStatus ? '#40AB64' : '#DF6A51')};
+  background-color: ${(props) => (props.Status ? '#40AB64' : '#DF6A51')};
+`;
+const MiddleDOStatus = styled.div<DIProps>`
+  align-items: center;
+  border-radius: 4px;
+  width: 13px;
+  height: 9px;
+  background-color: ${(props) => (props.Status ? '#40AB64' : '#DF6A51')};
 `;
 const FaultStatus = ({ status }: { status: boolean }) => (
   <Middle>
@@ -209,35 +214,54 @@ const FaultStatus = ({ status }: { status: boolean }) => (
   </Middle>
 );
 
-const RemoteMode =({mode} : {mode:boolean}) => (
-  <MiddleText>
-    {mode === true ? "Remote Mode" : "Local Mode"}
-  </MiddleText>
+const RemoteMode = ({ mode }: { mode: boolean }) => (
+  <MiddleText>{mode === true ? 'Remote Mode' : 'Local Mode'}</MiddleText>
 );
 
-function DIBox ({data} : {data : DetailData}): ReactElement {
-  const array:DIBoxProps[] = data.diStatus.map((value,index) => {
-    const result: DIBoxProps = {
-      dists: value,
-      ch: index+1,
-      disetup: data.currentDISetup[index]
-    }
-    return result
+function DIBox({ data }: { data: DetailData }): ReactElement {
+  const array: BoxProps[] = data.diStatus.map((value, index) => {
+    const result: BoxProps = {
+      sts: value,
+      ch: index + 1,
+      setup: data.currentDISetup[index],
+    };
+    return result;
   });
 
-  return(
-  <Middle2>
-    {array.map((value , index) => (
-      <Middle1>
-        <MiddleDIStatus diStatus = {value.dists}/>
-        <MiddleText>{DISetupDefinition[value.disetup]}</MiddleText>
-        <UseText diStatus = {value.dists}>CH {index+1}</UseText>
-      </Middle1>
-    ))}
-  </Middle2>
+  return (
+    <Middle2>
+      {array.map((value, index) => (
+        <Middle1>
+          <MiddleDIStatus Status={value.sts} />
+          <MiddleText>{DISetupDefinition[value.setup]}</MiddleText>
+          <UseText Status={value.sts}>CH {index + 1}</UseText>
+        </Middle1>
+      ))}
+    </Middle2>
   );
-};
+}
+function DOBox({ data }: { data: DetailData }): ReactElement {
+  const array: BoxProps[] = data.doStatus.map((value, index) => {
+    const result: BoxProps = {
+      sts: value,
+      ch: index + 1,
+      setup: data.currentDOSetup[index],
+    };
+    return result;
+  });
 
+  return (
+    <Middle2>
+      {array.map((value, index) => (
+        <Middle1>
+          <MiddleDIStatus Status={value.sts} />
+          <MiddleText>{DOSetupDefinition[value.setup]}</MiddleText>
+          <UseText Status={value.sts}>CH {index + 1}</UseText>
+        </Middle1>
+      ))}
+    </Middle2>
+  );
+}
 interface DetailData {
   id: number;
   remoteMode: boolean;
@@ -247,6 +271,7 @@ interface DetailData {
   doStatus: boolean[];
   generaDISetup: string[];
   currentDISetup: number[];
+  currentDOSetup: number[];
 }
 
 const data: DetailData = {
@@ -258,6 +283,7 @@ const data: DetailData = {
   doStatus: [true, false, false, false],
   generaDISetup: ['G-DIO1', 'G-DIO2'],
   currentDISetup: [6, 0, 0, 0, 4, 13, 0, 0, 1, 3],
+  currentDOSetup: [1, 2, 3, 4],
 };
 
 const MotorUnitDetailView: FC<Props> = ({ id, operationMode }) => (
@@ -268,10 +294,13 @@ const MotorUnitDetailView: FC<Props> = ({ id, operationMode }) => (
     </HeaderContainer>
     <MiddleContainer>
       <FaultStatus status={data.faultStatus} />
-      <RemoteMode mode = {data.remoteMode}/>
+      <RemoteMode mode={data.remoteMode} />
     </MiddleContainer>
     <MiddleContainer1>
-      <DIBox data = {data}/>
+      <DIBox data={data} />
+    </MiddleContainer1>
+    <MiddleContainer1>
+      <DOBox data={data} />
     </MiddleContainer1>
   </Container>
 );
