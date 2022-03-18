@@ -8,6 +8,8 @@ import IpcService from '@src/main/IPCService';
 import { WRITE_REQ } from '@src/ipcChannels';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import PCCommand from '@src/Data/PCCommand';
+import { Popover } from 'evergreen-ui';
+import MotorUnitDetailView from '@src/application/Components/pc/MotorUnitDetailView';
 
 export const ControlModeDefinition = {
   Local: 'LOCAL',
@@ -44,6 +46,7 @@ const Bottom = styled.div`
 `;
 
 const HeaderContainer = styled.div`
+  background-color: white;
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
@@ -90,7 +93,13 @@ const UnitHeader = ({
 }) => (
   <HeaderContainer>
     <HeaderTitle>{mccName}</HeaderTitle>
-    <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
+    <Popover
+      trigger="click"
+      minWidth={10}
+      content={() => <MotorUnitDetailView id={id} />}
+    >
+      <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
+    </Popover>
   </HeaderContainer>
 );
 
@@ -270,9 +279,21 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
       requestType: 'PCCommand',
     });
   };
+
   return (
     <Container>
-      <UnitHeader id={id} mccName={name} operationMode={operationMode} />
+      <Popover
+        trigger="click"
+        minWidth={10}
+        content={() => (
+          <div>
+            {' '}
+            <div>test</div>
+          </div>
+        )}
+      >
+        <UnitHeader id={id} mccName={name} operationMode={operationMode} />
+      </Popover>
       <Bottom>
         <ControlMode controlMode={controlMode} />
         <ControlCommand

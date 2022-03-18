@@ -14,15 +14,44 @@ export interface MotorUnitStatus {
 }
 
 export default class MotorUnitStatusData implements A2700Data {
-  type: A2700DataType = 2020;
+  type: A2700DataType = 51051;
 
-  moduleId: number;
+  readonly moduleId: number;
 
-  name: string;
+  readonly name: string;
 
-  motorStatus: number;
+  readonly motorStatus: number;
 
-  controlMode: number;
+  readonly controlMode: number;
 
-  operationMode: number;
+  readonly operationMode: number;
+
+  readonly faultStatus: boolean;
+
+  readonly alarmStatus: boolean;
+
+  readonly abnormalStatus: boolean;
+
+  readonly diStatus: boolean[];
+
+  readonly doStatus: boolean[];
+
+  constructor(
+    id: number,
+    name: string,
+    operationMode: number,
+    status: Boolean[],
+  ) {
+    this.moduleId = id;
+    this.motorStatus = status[3] ? 1 : 0;
+    this.controlMode = status[4] ? 1 : 0;
+    this.faultStatus = status[7].valueOf();
+    this.alarmStatus = status[6].valueOf();
+    this.operationMode = operationMode;
+
+    this.name = name;
+
+    this.diStatus = status.slice(8, 17).map((b) => b.valueOf());
+    this.doStatus = status.slice(18, 21).map((b) => b.valueOf());
+  }
 }

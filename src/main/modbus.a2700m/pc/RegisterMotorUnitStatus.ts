@@ -1,11 +1,8 @@
 import RegisterBase from '@src/main/modbus.a2700m/RegisterBase';
 import A2700Data from '@src/Data/A2700Data';
 import { forkJoin, map, Observable } from 'rxjs';
-import MotorUnitStatusData, {
-  MotorUnitStatus,
-} from '@src/Data/MotorUnitStatus';
+import MotorUnitStatusData from '@src/Data/MotorUnitStatus';
 import ModbusService from '@src/main/ModbusService';
-import chunkArray from '@src/Utils';
 import RegisterProps from '@src/main/modbus.a2700m/RegisterProps';
 
 export default class RegisterMotorUnitStatus extends RegisterBase {
@@ -47,18 +44,14 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       map((resp) => {
         const [, setup, operation, status] = resp;
 
-        const sts = new MotorUnitStatusData();
-        sts.moduleId = id;
-        sts.motorStatus = status[3] ? 1 : 0;
-        sts.controlMode = status[4] ? 1 : 0;
-        sts.operationMode = operation[0];
         const charBuffer: number[] = [];
         setup.slice(16, 31).forEach((b: number) => {
           charBuffer.push(b >> 8);
           charBuffer.push(b & 0xff);
         });
-        sts.name = String.fromCharCode(...charBuffer);
-        return sts;
+        const name = String.fromCharCode(...charBuffer);
+
+        return new MotorUnitStatusData(id, name, operation[0], status);
       }),
     );
   };
