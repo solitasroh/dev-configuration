@@ -96,7 +96,7 @@ const UnitHeader = ({
     <Popover
       trigger="click"
       minWidth={10}
-      content={() => <MotorUnitDetailView id={id} />}
+      content={() => <MotorUnitDetailView id={id} operationMode = {operationMode} />}
     >
       <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
     </Popover>
