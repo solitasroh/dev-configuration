@@ -23,6 +23,7 @@ const DISetupDefinition = [
   'INV Fault1',
   'INV Fault2',
 ];
+
 /// TODO: 101 ~ 115 까지 의 값으로 맵핑됨 (, 아래 배열 인덱스 - 101 을 해야함)
 const GeneraDIDefinition = [
   'General DI1',
@@ -36,6 +37,7 @@ const GeneraDIDefinition = [
   'General DI9',
   'General DI10',
 ];
+
 const DOSetupDefinition = [
   'No Use',
   'RUN1',
@@ -52,6 +54,7 @@ const GeneralDODefinition = [
   'General DO3',
   'General DO4',
 ];
+
 interface Props {
   id: number;
   operationMode: number;
@@ -65,7 +68,7 @@ type BoxProps = {
 type HeaderProps = {
   operationMode: number;
 };
-type FalutProps = {
+type FaultProps = {
   fault: boolean;
 };
 type DIProps = {
@@ -79,8 +82,6 @@ const Container = styled.div`
   box-shadow: 3px 4px 3px 1px rgba(0, 0, 0, 0.25);
   border-radius: 2px;
   flex-direction: column;
-  width: 257px;
-  max-height: 303px;
   justify-content: space-between;
   margin: 3px;
 `;
@@ -95,6 +96,7 @@ const HeaderContainer = styled.div`
   padding: 0.2em;
   overflow-wrap: unset;
 `;
+
 const MiddleContainer = styled.div`
   background-color: white;
   display: flex;
@@ -102,6 +104,7 @@ const MiddleContainer = styled.div`
   padding: 0.2em;
   justify-content: space-between;
 `;
+
 const MiddleContainer1 = styled.div`
   background-color: white;
   display: flex;
@@ -110,13 +113,13 @@ const MiddleContainer1 = styled.div`
   width: 100%;
   justify-content: space-between;
 `;
+
 const HeaderTitle = styled.div`
-  font-family: 'Roboto';
+  font-family: 'Roboto', serif;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 16px;
-
   white-space: nowrap;
   overflow: hidden;
 `;
@@ -131,7 +134,6 @@ const HeaderId = styled.div<HeaderProps>`
   width: 32px;
   height: 15px;
   font-family: Roboto, ui-serif;
-  background-color: white;
   border-radius: 2px;
   background-color: ${(props) =>
     props.operationMode === 4 ? '#40AB64' : '#DF6A51'};
@@ -141,40 +143,31 @@ const MiddleText = styled.div`
   font-size: 9px;
   padding: 0.2em;
   align-items: flex-start;
+  text-wrap: none;
 `;
+
 const Middle = styled.div`
   display: flex;
-  font-family: 'Roboto';
+  font-family: 'Roboto', serif;
   font-style: normal;
   font-weight: 600;
   font-size: 8px;
   line-height: 9px;
   flex-direction: column;
 `;
+
 const Middle1 = styled.div`
   display: flex;
-  font-family: 'Roboto';
+  font-family: 'Roboto', serif;
   font-style: normal;
   font-weight: 600;
   font-size: 8px;
   line-height: 9px;
   align-items: center;
   justify-content: space-between;
-  ${MiddleText} {
-    width: 70%;
-  }
 `;
-const Middle2 = styled.div`
-  display: flex;
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 600;
-  font-size: 8px;
-  line-height: 9px;
-  flex-direction: column;
-  width: 100%;
-`;
-const MiddleFaultStatus = styled.div<FalutProps>`
+
+const MiddleFaultStatus = styled.div<FaultProps>`
   align-items: center;
   border-radius: 10px;
   width: 8px;
@@ -182,25 +175,14 @@ const MiddleFaultStatus = styled.div<FalutProps>`
   background-color: ${(props) => (props.fault ? '#40AB64' : '#DF6A51')};
 `;
 
-const UseText = styled.div<DIProps>`
-  font-size: 9px;
-  padding: 0.2em;
-  color: ${(props) => (props.Status ? '#716D6D' : '#CACACA')};
-`;
-const MiddleDIStatus = styled.div<DIProps>`
+const DIOStatusIcon = styled.div<DIProps>`
   align-items: center;
   border-radius: 4px;
   width: 35px;
   height: 9.18px;
   background-color: ${(props) => (props.Status ? '#40AB64' : '#DF6A51')};
 `;
-const MiddleDOStatus = styled.div<DIProps>`
-  align-items: center;
-  border-radius: 4px;
-  width: 13px;
-  height: 9px;
-  background-color: ${(props) => (props.Status ? '#40AB64' : '#DF6A51')};
-`;
+
 const FaultStatus = ({ status }: { status: boolean }) => (
   <Middle>
     <Middle1>
@@ -218,6 +200,47 @@ const RemoteMode = ({ mode }: { mode: boolean }) => (
   <MiddleText>{mode === true ? 'Remote Mode' : 'Local Mode'}</MiddleText>
 );
 
+type DIOSetupProps = {
+  invalid: boolean;
+};
+
+const DIOBoxContainer = styled.div`
+  display: flex;
+  font-family: 'Roboto', serif;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 9px;
+  flex-direction: column;
+  width: 100%;
+`;
+
+const DIOContentsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  font-family: 'Roboto', serif;
+  font-style: normal;
+  font-weight: 600;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const DIOSetupLabel = styled.div<DIOSetupProps>`
+  display: flex;
+  font-size: 12px;
+  padding: 0.2em;
+  align-items: flex-start;
+  color: ${(props) => (props.invalid ? '#CACACA' : '#716D6D')};
+  margin: 1px 0;
+`;
+
+const ChannelLabel = styled.div<DIOSetupProps>`
+  display: flex;
+  justify-content: flex-end;
+  font-size: 9px;
+  padding: 0.2em;
+  color: ${(props) => (props.invalid ? '#CACACA' : '#716D6D')};
+`;
+
 function DIBox({ data }: { data: DetailData }): ReactElement {
   const array: BoxProps[] = data.diStatus.map((value, index) => {
     const result: BoxProps = {
@@ -229,15 +252,20 @@ function DIBox({ data }: { data: DetailData }): ReactElement {
   });
 
   return (
-    <Middle2>
+    <DIOBoxContainer>
+      <div style={{ fontSize: '11px', margin: '5px 0' }}>DI Status</div>
       {array.map((value, index) => (
-        <Middle1>
-          <MiddleDIStatus Status={value.sts} />
-          <MiddleText>{DISetupDefinition[value.setup]}</MiddleText>
-          <UseText Status={value.sts}>CH {index + 1}</UseText>
-        </Middle1>
+        <DIOContentsWrapper>
+          <DIOStatusIcon Status={value.sts} />
+          <DIOSetupLabel invalid={value.setup === 0}>
+            {DISetupDefinition[value.setup]}
+          </DIOSetupLabel>
+          <ChannelLabel invalid={value.setup === 0}>
+            CH {(index + 1).toString().padStart(2, '0')}
+          </ChannelLabel>
+        </DIOContentsWrapper>
       ))}
-    </Middle2>
+    </DIOBoxContainer>
   );
 }
 function DOBox({ data }: { data: DetailData }): ReactElement {
@@ -251,17 +279,23 @@ function DOBox({ data }: { data: DetailData }): ReactElement {
   });
 
   return (
-    <Middle2>
+    <DIOBoxContainer>
+      <div style={{ fontSize: '11px', margin: '5px 0' }}>DO Status</div>
       {array.map((value, index) => (
-        <Middle1>
-          <MiddleDIStatus Status={value.sts} />
-          <MiddleText>{DOSetupDefinition[value.setup]}</MiddleText>
-          <UseText Status={value.sts}>CH {index + 1}</UseText>
-        </Middle1>
+        <DIOContentsWrapper>
+          <DIOStatusIcon Status={value.sts} />
+          <DIOSetupLabel invalid={value.setup === 0}>
+            {DOSetupDefinition[value.setup]}
+          </DIOSetupLabel>
+          <ChannelLabel invalid={value.setup === 0}>
+            CH {(index + 1).toString().padStart(2, '0')}
+          </ChannelLabel>
+        </DIOContentsWrapper>
       ))}
-    </Middle2>
+    </DIOBoxContainer>
   );
 }
+
 interface DetailData {
   id: number;
   remoteMode: boolean;
