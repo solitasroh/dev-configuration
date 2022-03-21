@@ -10,6 +10,7 @@ import MotorUnitBox, {
   MotorStatusDefinition,
 } from '@src/application/Components/pc/MotorUnitBox';
 import NumberInput from '../Shared/NumberInput';
+import IncomingUnitBox from './IncomingUnitBox';
 
 const { TabPane } = Tabs;
 
@@ -118,6 +119,9 @@ export default function Home(): ReactElement {
 
   return (
     <div>
+      <Space>
+        <IncomingUnitBox/>
+      </Space>
       <Card title="MOTOR UNIT" size="small" bordered={false}>
         <List
           dataSource={motorUnits}
