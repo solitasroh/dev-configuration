@@ -80,6 +80,7 @@ const HeaderId = styled.div<HeaderProps>`
   background-color: ${(props) =>
     props.operationMode === 4 ? '#66d45a' : '#efc1c1'};
   border-radius: 2px;
+  cursor: pointer; 
 `;
 
 const UnitHeader = ({
@@ -228,7 +229,7 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
       requestType: 'MotorUnitStatus',
       responseChannel: `motor-unit-status-getter-${id}`,
       props: {
-        id: id,
+        id,
       },
     },
     (evt, rest) => {
@@ -237,12 +238,12 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
       if (setup !== null) {
         setName(setup.name);
         setControlMode(
-          setup.controlMode == 1
+          setup.controlMode === 1
             ? ControlModeDefinition.Remote
             : ControlModeDefinition.Local,
         );
         setMotorStatus(
-          setup.motorStatus == 1
+          setup.motorStatus === 1
             ? MotorStatusDefinition.Run
             : MotorStatusDefinition.Stop,
         );

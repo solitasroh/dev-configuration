@@ -11,6 +11,7 @@ import MotorUnitBox, {
 } from '@src/application/Components/pc/MotorUnitBox';
 import NumberInput from '../Shared/NumberInput';
 import IncomingUnitBox from './IncomingUnitBox';
+import LocalUnitBox from '../lmh/LocalUnitBox';
 
 const { TabPane } = Tabs;
 
@@ -137,7 +138,9 @@ export default function Home(): ReactElement {
           )}
         />
       </Card>
-      <Card title="LOCAL UNIT" size="small" bordered={false} />
+      <Card title="LOCAL UNIT" size="small" bordered={false} >
+        <LocalUnitBox unitInfo = {motorUnits.slice(0, 15)}/>
+      </Card>
     </div>
   );
 }

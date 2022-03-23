@@ -316,7 +316,7 @@ const data: DetailData = {
   diStatus: [true, true, false, false, true, true, true, false, false, false],
   doStatus: [true, false, false, false],
   generaDISetup: ['G-DIO1', 'G-DIO2'],
-  currentDISetup: [6, 0, 0, 0, 4, 13, 0, 0, 1, 3],
+  currentDISetup: [6, 0, 0, 0, 4, 13, 101, 0, 1, 3],
   currentDOSetup: [1, 2, 3, 4],
 };
 
