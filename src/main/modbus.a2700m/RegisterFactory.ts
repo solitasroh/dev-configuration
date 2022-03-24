@@ -4,6 +4,7 @@ import RegisterIOHLogicalUserIO from '@src/main/modbus.a2700m/ioh/RegisterIOHLog
 import RegisterIOHLogicalDIOSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalDIOSetup';
 import RegisterIOHLogicalAI2Setup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalAI2Setup';
 import RegisterIOHLogicalTypeSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalTypeSetup';
+import RegisterMotorUnitStatus from '@src/main/modbus.a2700m/pc/RegisterMotorUnitStatus';
 import RegisterLMSetup from './lmh/RegisterLMSetup';
 import RegisterLMInformation from './lmh/RegisterLMInformation';
 import RegisterLDInformation from './lmh/RegisterLDInformation';
@@ -25,7 +26,6 @@ import RegisterLMManageSetup from './lmh/RegisterLMManageSetup';
 import RegisterLMLogicSetup from './lmh/RegisterLMLogicSetup';
 import RegisterCoilMapAlarm from './lmh/RegisterCoilMapAlarm';
 import RegisterLMHUserDefineIOSetup from './lmh/RegisterLMHUserDefineIOSetup';
-import RegisterMotorUnitStatus from '@src/main/modbus.a2700m/pc/RegisterMotorUnitStatus';
 import RegisterIncomingStatus from './m/RegisterIncomingStatus';
 import RegisterMismatchStatus from './m/RegisterMismatchStatus';
 

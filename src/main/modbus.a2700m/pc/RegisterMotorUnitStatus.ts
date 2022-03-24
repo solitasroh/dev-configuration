@@ -62,9 +62,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
           charBuffer.push(b & 0xff);
         });
         const name = String.fromCharCode(...charBuffer);
-        console.log(diSetup);
-        console.log(doSetup);
-        console.log(generalDioSetup);
+
         try {
           return new MotorUnitStatusData(
             id,
@@ -76,7 +74,6 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
             generalDioSetup,
           );
         } catch (e) {
-          console.log(e);
           return undefined;
         }
       }),

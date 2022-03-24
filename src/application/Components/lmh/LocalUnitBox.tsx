@@ -8,6 +8,7 @@ import IOHAIStatus from '../ioh/IOHAIStatus';
 import IOHDIDetailView from '../ioh/IOHIODetailView';
 import LMHDIDetailView from './LMHDIDetailView';
 import LMHDIStatus from './LMHDIStatus';
+import MismatchDetailView from './MismatchDetailView';
 
 type MismatchProps = {
   status: boolean;
@@ -17,7 +18,7 @@ type OpreationgProps = {
 };
 const Container = styled.div`
   width: 320px;
-  height: 200px;
+  height: 220px;
   border-radius: 4px;
   border: 1px solid #e0e0e0;
   background: #ffffff;
@@ -47,10 +48,10 @@ const IOHContainer = styled.div`
   display: grid;
   flex-wrap: nowrap;
   width: 100%;
-  justify-content: space-between;
-  padding: 0.2em;
+  height : 150px;
   gap: 10px;
   grid-template-columns: repeat(5, 1fr);
+  align-content: center;
  }
 `;
 const LMHStatus = styled.div`
@@ -115,6 +116,7 @@ const MismatchLabel = styled.div<MismatchProps>`
   font-size: 10px;
   line-height: 14px;
   color: ${(props) => (props.status === true ? '#29C141' : '#CACACA')};
+  cursor: pointer;
 `;
 const MismatchStatus = styled.div<MismatchProps>`
   width: 17px;
@@ -127,7 +129,15 @@ const MismatchStatus = styled.div<MismatchProps>`
 const Mismatch = ({ status }: { status: boolean }) => (
   <MismatchContainer>
     <MismatchStatus status={status} />
-    <MismatchLabel status={status}>Mismatch</MismatchLabel>
+    {status === true ? (
+      <Popover
+        trigger="click"
+        minWidth={300}
+        content={() => <MismatchDetailView />}
+      >
+        <MismatchLabel status={status}>Mismatch</MismatchLabel>
+      </Popover>
+    ) : <MismatchLabel status={status}>Mismatch</MismatchLabel>}
   </MismatchContainer>
 );
 type Props = {
@@ -135,14 +145,17 @@ type Props = {
     key: number;
     id: number;
   }[];
+  mismatch: boolean;
 };
 
-export default function LocalUnitBox({ unitInfo }: Props): ReactElement {
-  const [mismatch, setMismatch] = useState(false);
+export default function LocalUnitBox({
+  unitInfo,
+  mismatch,
+}: Props): ReactElement {
   const [operation, setOperation] = useState<boolean[]>([]);
-  
+
   const [information, setInformation] = useState<IOHInfoData[]>([]);
-  
+
   usePolling(
     {
       responseChannel: 'POLL-IO-information',
@@ -153,7 +166,7 @@ export default function LocalUnitBox({ unitInfo }: Props): ReactElement {
       const infoList = rest as IOHInfoData[];
       const validIO = [];
 
-      for (let i = 0; i < 15; i+=1) {
+      for (let i = 0; i < 15; i += 1) {
         if (infoList[i].operationStatus === 'OPERATING') validIO.push(true);
         else validIO.push(false);
       }
@@ -190,7 +203,13 @@ export default function LocalUnitBox({ unitInfo }: Props): ReactElement {
                   <Popover
                     trigger="click"
                     minWidth={300}
-                    content={() => information[index]?.moduleType === 'DIO' ? <IOHDIDetailView id={index + 1} /> : <IOHAIStatus id={index+1}/>}
+                    content={() =>
+                      information[index]?.moduleType === 'DIO' ? (
+                        <IOHDIDetailView id={index + 1} />
+                      ) : (
+                        <IOHAIStatus id={index + 1} />
+                      )
+                    }
                   >
                     <GiftOutlined />
                   </Popover>
