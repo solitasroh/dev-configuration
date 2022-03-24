@@ -1,7 +1,9 @@
 import ModbusRTU from 'modbus-serial';
 
-import { catchError, from, map, Observable } from 'rxjs';
+import { catchError, forkJoin, from, map, Observable } from 'rxjs';
 import ElectronStore from 'electron-store';
+import { ReadRegisterResult } from 'modbus-serial/ModbusRTU';
+import * as buffer from 'buffer';
 
 export const ConnectionStatus = {
   NoConnect: 0,
@@ -175,6 +177,38 @@ class ModbusService {
     options?: { isCoil?: boolean },
   ): Observable<T> {
     if (options === undefined) {
+      if (length > 125) {
+        let remaining = length;
+        let readLen = 0;
+        let len = 125;
+        let offset = address;
+        const ob: Observable<ReadRegisterResult>[] = [];
+
+        while (len > 0) {
+          const observable = from(
+            this.GetClient().readHoldingRegisters(offset - 1, len),
+          );
+          offset += len;
+          remaining = remaining - len;
+          len = remaining > 125 ? 125 : remaining;
+          ob.push(observable);
+
+          console.log(
+            `read multiple register : offs: ${offset}, remaining: ${remaining}, len: ${len}`,
+          );
+        }
+
+        return forkJoin([...ob]).pipe(
+          map((resp) => {
+            const data = resp.map((v) => v.data || v.buffer);
+            return data.reduce((prev, curr) => {
+              return [...prev, ...curr];
+            });
+          }),
+          catchError((e) => []),
+        );
+      }
+
       return from(
         this.GetClient().readHoldingRegisters(address - 1, length),
       ).pipe(

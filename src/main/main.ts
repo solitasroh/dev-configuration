@@ -147,7 +147,7 @@ class Main {
     this.mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+    this.mainWindow.webContents.openDevTools();
 
     this.mainWindow.on('close', (e) => {
       // e.preventDefault();

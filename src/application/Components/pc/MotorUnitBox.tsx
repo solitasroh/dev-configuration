@@ -80,27 +80,39 @@ const HeaderId = styled.div<HeaderProps>`
   background-color: ${(props) =>
     props.operationMode === 4 ? '#66d45a' : '#efc1c1'};
   border-radius: 2px;
-  cursor: pointer; 
+  cursor: pointer;
 `;
 
 const UnitHeader = ({
   mccName,
   id,
   operationMode,
+  data,
 }: {
   mccName: string;
   id: number;
   operationMode: number;
+  data: MotorUnitStatusData;
 }) => (
   <HeaderContainer>
     <HeaderTitle>{mccName}</HeaderTitle>
-    <Popover
-      trigger="click"
-      minWidth={10}
-      content={() => <MotorUnitDetailView id={id} operationMode = {operationMode} />}
-    >
+    {data !== null ? (
+      <Popover
+        trigger="click"
+        minWidth={10}
+        content={() => (
+          <MotorUnitDetailView
+            id={id}
+            operationMode={operationMode}
+            data={data}
+          />
+        )}
+      >
+        <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
+      </Popover>
+    ) : (
       <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
-    </Popover>
+    )}
   </HeaderContainer>
 );
 
@@ -223,7 +235,7 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
   const [controlMode, setControlMode] = useState('unknown');
   const [motorStatus, setMotorStatus] = useState('unknown');
   const [operationMode, setOperationMode] = useState(0);
-
+  const [data, setData] = useState<MotorUnitStatusData>(null);
   usePolling(
     {
       requestType: 'MotorUnitStatus',
@@ -249,6 +261,7 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
         );
         setOperationMode(setup.operationMode);
       }
+      setData(setup);
     },
     3000,
   );
@@ -293,7 +306,12 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
           </div>
         )}
       >
-        <UnitHeader id={id} mccName={name} operationMode={operationMode} />
+        <UnitHeader
+          id={id}
+          mccName={name}
+          operationMode={operationMode}
+          data={data}
+        />
       </Popover>
       <Bottom>
         <ControlMode controlMode={controlMode} />

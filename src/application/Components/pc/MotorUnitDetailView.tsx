@@ -1,5 +1,8 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import styled from 'styled-components';
+import { usePolling } from '@src/application/hooks/ipcHook';
+import IOHInfoData from '@src/Data/IOHInfoData';
+import MotorUnitStatusData from '@src/Data/MotorUnitStatus';
 
 /// TODO:  설정 데이터를 통해 아래 배열에서 참조하여 화면 표시해야함
 const DISetupDefinition = [
@@ -58,6 +61,7 @@ const GeneralDODefinition = [
 interface Props {
   id: number;
   operationMode: number;
+  data: MotorUnitStatusData;
 }
 
 type BoxProps = {
@@ -241,12 +245,12 @@ const ChannelLabel = styled.div<DIOSetupProps>`
   color: ${(props) => (props.invalid ? '#CACACA' : '#716D6D')};
 `;
 
-function DIBox({ data }: { data: DetailData }): ReactElement {
+function DIBox({ data }: { data: MotorUnitStatusData }): ReactElement {
   const array: BoxProps[] = data.diStatus.map((value, index) => {
     const result: BoxProps = {
       sts: value,
       ch: index + 1,
-      setup: data.currentDISetup[index],
+      setup: data.diSetup[index],
     };
     return result;
   });
@@ -255,7 +259,7 @@ function DIBox({ data }: { data: DetailData }): ReactElement {
     <DIOBoxContainer>
       <div style={{ fontSize: '11px', margin: '5px 0' }}>DI Status</div>
       {array.map((value, index) => (
-        <DIOContentsWrapper>
+        <DIOContentsWrapper key={index}>
           <DIOStatusIcon Status={value.sts} />
           <DIOSetupLabel invalid={value.setup === 0}>
             {DISetupDefinition[value.setup]}
@@ -268,12 +272,12 @@ function DIBox({ data }: { data: DetailData }): ReactElement {
     </DIOBoxContainer>
   );
 }
-function DOBox({ data }: { data: DetailData }): ReactElement {
+function DOBox({ data }: { data: MotorUnitStatusData }): ReactElement {
   const array: BoxProps[] = data.doStatus.map((value, index) => {
     const result: BoxProps = {
       sts: value,
       ch: index + 1,
-      setup: data.currentDOSetup[index],
+      setup: data.doSetup[index],
     };
     return result;
   });
@@ -282,7 +286,7 @@ function DOBox({ data }: { data: DetailData }): ReactElement {
     <DIOBoxContainer>
       <div style={{ fontSize: '11px', margin: '5px 0' }}>DO Status</div>
       {array.map((value, index) => (
-        <DIOContentsWrapper>
+        <DIOContentsWrapper key={index}>
           <DIOStatusIcon Status={value.sts} />
           <DIOSetupLabel invalid={value.setup === 0}>
             {DOSetupDefinition[value.setup]}
@@ -308,35 +312,55 @@ interface DetailData {
   currentDOSetup: number[];
 }
 
-const data: DetailData = {
-  id: 1,
-  remoteMode: true,
-  abnormal: true,
+const prevData: MotorUnitStatusData = {
+  type: 1212,
+  moduleId: 1,
   faultStatus: false,
+  alarmStatus: false,
+  abnormalStatus: false,
   diStatus: [true, true, false, false, true, true, true, false, false, false],
   doStatus: [true, false, false, false],
-  generaDISetup: ['G-DIO1', 'G-DIO2'],
-  currentDISetup: [6, 0, 0, 0, 4, 13, 101, 0, 1, 3],
-  currentDOSetup: [1, 2, 3, 4],
+  generalDIData: ['G-DIO1', 'G-DIO2'],
+  generalDOData: ['G-DIO1', 'G-DIO2'],
+  diSetup: [6, 0, 0, 0, 4, 13, 101, 0, 1, 3],
+  doSetup: [1, 2, 3, 4],
+  controlMode: 1,
+  motorStatus: 1,
+  operationMode: 4,
+  name: 'test',
 };
 
-const MotorUnitDetailView: FC<Props> = ({ id, operationMode }) => (
-  <Container>
-    <HeaderContainer>
-      <HeaderTitle>Detail</HeaderTitle>
-      <HeaderId operationMode={operationMode}>ID {id}</HeaderId>
-    </HeaderContainer>
-    <MiddleContainer>
-      <FaultStatus status={data.faultStatus} />
-      <RemoteMode mode={data.remoteMode} />
-    </MiddleContainer>
-    <MiddleContainer1>
-      <DIBox data={data} />
-    </MiddleContainer1>
-    <MiddleContainer1>
-      <DOBox data={data} />
-    </MiddleContainer1>
-  </Container>
-);
+const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => {
+  // const [data, setData] = useState(prevData);
+  // usePolling(
+  //   {
+  //     requestType: 'MotorUnitStatus',
+  //     responseChannel: 'motor-unit-status-polling',
+  //     props: { id: id },
+  //   },
+  //   (evt, rest) => {
+  //     setData(rest as MotorUnitStatusData);
+  //   },
+  //   1000,
+  // );
+  return (
+    <Container>
+      <HeaderContainer>
+        <HeaderTitle>Detail</HeaderTitle>
+        <HeaderId operationMode={operationMode}>ID {id}</HeaderId>
+      </HeaderContainer>
+      <MiddleContainer>
+        <FaultStatus status={data.faultStatus} />
+        <RemoteMode mode={data.controlMode === 1} />
+      </MiddleContainer>
+      <MiddleContainer1>
+        <DIBox data={data} />
+      </MiddleContainer1>
+      <MiddleContainer1>
+        <DOBox data={data} />
+      </MiddleContainer1>
+    </Container>
+  );
+};
 
 export default MotorUnitDetailView;
