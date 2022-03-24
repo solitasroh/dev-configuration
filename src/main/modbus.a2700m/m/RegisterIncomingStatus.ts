@@ -18,7 +18,7 @@ export class IncomingStatus implements A2700Data {
 }
 
 export default class RegisterIncomingStatus extends RegisterBase {
-  type ="register incoming state";
+  type = 'register incoming state';
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
     return this.fetch();
@@ -29,7 +29,6 @@ export default class RegisterIncomingStatus extends RegisterBase {
   }
 
   private fetch = () => {
-    console.log(this.type);
     return forkJoin([
       ModbusService.write(65535, [60000]),
       ModbusService.read<number[]>(65510, 7),
@@ -68,7 +67,6 @@ export default class RegisterIncomingStatus extends RegisterBase {
         result.A2700DHDisconnected = displayConnAlarm;
         result.mccName = mccName;
         result.mismatchState = mismatchAlarm;
-        console.log(result);
         return result;
       }),
     );

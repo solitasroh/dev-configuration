@@ -83,12 +83,10 @@ export class ChannelReadToDevice
     const service = ModbusService.GetClient();
     service.writeRegister(65534, 65535);
     const authority = await this.getAuthority();
-    console.log(authority);
     if (authority) {
       if (await this.setFileType(request.fileType)) {
         if (await this.setReadCommand()) {
           const info = await this.getFileInformation();
-          console.log(info);
           this.buffer = [];
           this.elements = [];
           const result = await this.readFile(info.fileSize, 0);
@@ -155,21 +153,15 @@ export class ChannelReadToDevice
       const status = await this.getOperationStatus();
       const error = await this.getErrorStatus();
 
-      console.log(
-        `read data ${offs} remaining = ${remainingBytes} status = ${status}`,
-      );
       await sleep(100);
       if (status === FileAccessStatus.Completed || readByteSize <= 0) {
         if (error === FileAccessError.NoError) {
-          console.log('no error');
           return new ChannelReadToDeviceResult(true, null, this.elements);
         }
         if (error === FileAccessError.ReadError) {
-          console.log('read error');
           return new ChannelReadToDeviceResult(false, 'read failed');
         }
         if (error === FileAccessError.TimeoutError) {
-          console.log('timeout error');
           return new ChannelReadToDeviceResult(false, 'read failed: timeout');
         } else {
           return new ChannelReadToDeviceResult(

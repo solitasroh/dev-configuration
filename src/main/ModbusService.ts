@@ -4,6 +4,7 @@ import { catchError, forkJoin, from, map, Observable } from 'rxjs';
 import ElectronStore from 'electron-store';
 import { ReadRegisterResult } from 'modbus-serial/ModbusRTU';
 import * as buffer from 'buffer';
+import { sleep } from '@src/Utils';
 
 export const ConnectionStatus = {
   NoConnect: 0,
@@ -32,6 +33,8 @@ class ModbusService {
   public connectionState: number;
 
   private prevConnectionState: number;
+
+  private lock: boolean;
 
   static getIpAddress(): string {
     return this.instance.ip;
@@ -192,10 +195,6 @@ class ModbusService {
           remaining = remaining - len;
           len = remaining > 125 ? 125 : remaining;
           ob.push(observable);
-
-          console.log(
-            `read multiple register : offs: ${offset}, remaining: ${remaining}, len: ${len}`,
-          );
         }
 
         return forkJoin([...ob]).pipe(
@@ -205,7 +204,10 @@ class ModbusService {
               return [...prev, ...curr];
             });
           }),
-          catchError((e) => []),
+          catchError((e) => {
+            console.log(`[error]modbus multi read address: ${address}`, e);
+            return [];
+          }),
         );
       }
 
@@ -213,10 +215,10 @@ class ModbusService {
         this.GetClient().readHoldingRegisters(address - 1, length),
       ).pipe(
         map((value) => value.data || value.buffer),
-        catchError((e) =>
-          // console.log(e);
-          [],
-        ),
+        catchError((e) => {
+          console.log(`[error] modbus read address: ${address}`, e);
+          return [];
+        }),
       );
     }
     return from(this.GetClient().readCoils(address - 1, length)).pipe(
@@ -226,7 +228,10 @@ class ModbusService {
         // );
         value.data.slice(0, length + 1),
       ),
-      catchError(() => []),
+      catchError((e) => {
+        console.log(`[error] modbus coil address: ${address}`, e);
+        return [];
+      }),
     );
   }
 

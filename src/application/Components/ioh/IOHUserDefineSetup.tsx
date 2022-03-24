@@ -55,9 +55,8 @@ export default function IOHUserDefineSetup({ moduleID }: Props): ReactElement {
   const [mapping, setMapping] = useState(0);
   const [name, setName] = useState('');
   const [myForm] = Form.useForm();
-  
+
   useEffect(() => {
-    console.log(moduleID);
     useOncePolling(
       {
         requestType: 'IOUserDefine',
@@ -70,7 +69,7 @@ export default function IOHUserDefineSetup({ moduleID }: Props): ReactElement {
         const data = resp as UserDefineIOData;
         if (data !== undefined && data !== null) {
           const userIOData = data.definedIO.filter((x) => x.type !== 0);
-          console.log(data.definedIO);
+
           setItemList(userIOData);
         }
       },
@@ -135,7 +134,6 @@ export default function IOHUserDefineSetup({ moduleID }: Props): ReactElement {
       };
       setItemList((prev) => [...prev, data]);
     } else {
-      console.log(values.name);
       const changeData: DefinedIO = {
         key: selectedItem.key,
         type: values.type,
@@ -145,7 +143,6 @@ export default function IOHUserDefineSetup({ moduleID }: Props): ReactElement {
 
       itemList.splice(selectedItem.key, 1, changeData);
       setItemList((prev) => [...prev]);
-      console.log(itemList);
     }
 
     myForm.resetFields();
@@ -165,7 +162,6 @@ export default function IOHUserDefineSetup({ moduleID }: Props): ReactElement {
     }
   };
   const itemDoubleClickHandle = (item: DefinedIO) => {
-    console.log(item);
     setSelectedItem(item);
     myForm.setFieldsValue(item);
     showModal();

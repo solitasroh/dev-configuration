@@ -33,7 +33,6 @@ export default class RegisterMissmatchState extends RegisterBase {
         return result;
       }),
       catchError((err) => {
-        console.log(err);
         return [];
       }),
     );

@@ -22,9 +22,6 @@ export default class MeasureData<T> implements A2700Data {
 
   public setValue(index: number, value: T): void {
     if (this.detail.length <= index) {
-      // console.log(
-      //   `measure data array length: ${this.detail.length} , index: ${index}`,
-      // );
       return;
     }
     this.detail[index].value = value;

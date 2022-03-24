@@ -74,12 +74,12 @@ const ConnectWrapper: FC<Props> = ({ collapsed }: Props) => {
     });
 
     service.on(CONNECTION, (event, args) => {
-      console.log('connected ...');
+      // console.log('connected ...');
       setConnectionState(Status.CONNECTED);
     });
 
     service.on(DISCONNECT, (event, args) => {
-      console.log('diconnected...');
+      // console.log('diconnected...');
       setConnectionState(Status.DISCONNECTED);
     });
   }, []);

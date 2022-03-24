@@ -18,7 +18,10 @@ function chunkArray(myArray: any, chunkSize: number): Array<any> {
   return results;
 }
 
-export function chunkArray2<T>(myArray: Array<T>, chunkSize: number): Array<T[]> {
+export function chunkArray2<T>(
+  myArray: Array<T>,
+  chunkSize: number,
+): Array<T[]> {
   if (!(myArray instanceof Array)) {
     return null;
   }
@@ -41,19 +44,16 @@ export function calculateCRC(buffer: Uint8Array, length: number): number {
   let crcIndex;
   let index;
 
-  console.log(`buffer size = ${buffer.byteLength}`);
   let count = 0;
   for (index = 0; index < length; index += 1) {
     if (buffer[index] !== undefined) {
       count += 1;
-      //    console.log(buffer[index]);
     }
 
     crcIndex = uchCRCHi ^ buffer[index];
     uchCRCHi = uchCRCLo ^ (crcTable[crcIndex] & 0xff);
     uchCRCLo = (crcTable[crcIndex] >> 8) & 0xff;
   }
-  console.log('crc count ', count);
   return (uchCRCHi << 8) | uchCRCLo;
 }
 

@@ -116,7 +116,6 @@ const SelectEx = ({
   }, [defaultValue]);
 
   const valueChanged = (e: SelectOptionType) => {
-    console.log(`default : ${defaultValue} value: ${e.value}`);
     if (defaultValue !== e.value) {
       setValueChanged(true);
     } else {

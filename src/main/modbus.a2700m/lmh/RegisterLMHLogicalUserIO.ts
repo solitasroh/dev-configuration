@@ -22,7 +22,6 @@ export default class RegisterLMHLogicalUserIO extends RegisterBase {
         return result;
       }),
       catchError((err) => {
-        console.log(err);
         return [];
       }),
     );

@@ -30,11 +30,12 @@ const Container = styled.div`
   background-color: #ffffff;
   border-radius: 4px;
   flex-direction: column;
-  width: 180px;
-  max-height: 66px;
+  width: 200px;
+  height: 130px;
   border: 1px solid #e0e0e0;
   justify-content: space-between;
   margin: 3px;
+  padding: 2px;
 `;
 
 const Bottom = styled.div`
@@ -57,7 +58,7 @@ const HeaderContainer = styled.div`
 `;
 
 const HeaderTitle = styled.div`
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   text-wrap: none;
   text-overflow: ellipsis;
@@ -230,7 +231,6 @@ const ControlCommand = ({
 );
 
 const MotorUnitBox: FC<Props> = ({ id }) => {
-  console.log('motor unit box');
   const [name, setName] = useState('unknown');
   const [controlMode, setControlMode] = useState('unknown');
   const [motorStatus, setMotorStatus] = useState('unknown');
@@ -272,7 +272,6 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
     if (id <= 0) {
       return;
     }
-    console.log('write run command');
     const service = IpcService.getInstance();
     service.send<void, ChannelWriteDataProps>(WRITE_REQ, {
       writeData: data,

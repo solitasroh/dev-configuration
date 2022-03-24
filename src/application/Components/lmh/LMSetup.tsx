@@ -32,7 +32,7 @@ export default function LMHSetup(): ReactElement {
         requestType: 'LMManagementSetup',
       })
       .then((r) => {
-        console.log('write complete');
+        // console.log('write complete');
       });
   };
   const selectChanged = (event: any) => {

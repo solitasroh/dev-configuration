@@ -7,9 +7,9 @@ import WrappedElement from '../../Data/WrappedElement';
 
 export class WrappedFileCreateProps implements IpcRequest {
   elements: WrappedElement[];
-  
-  fileType : number;
-  
+
+  fileType: number;
+
   responseChannel?: string;
 }
 
@@ -35,13 +35,13 @@ export class ChannelRequestCreateFile
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'save wrapped elements',
     });
-    
+
     if (!canceled) {
       try {
         const file = `${filePath}`;
-        
+
         this.fileSave(file, elements);
-        
+
         // const fd = await fs.openSync(file, 'w+');
 
         // elements.map((e) => {
@@ -56,30 +56,23 @@ export class ChannelRequestCreateFile
         //   console.log('wrapped register file closed');
         // });
         event.sender.send(request.responseChannel, {
-            result: true,
-            path : file
+          result: true,
+          path: file,
         });
       } catch (error) {
-          console.log(error);
-          event.sender.send(request.responseChannel, {
-              result : false
-          });    
+        event.sender.send(request.responseChannel, {
+          result: false,
+        });
       }
     } else {
       event.sender.send(request.responseChannel, {
-          result: false
+        result: false,
       });
     }
   };
 
-  fileSave = (filePath:string, elements: WrappedElement[]) => {
+  fileSave = (filePath: string, elements: WrappedElement[]) => {
     const data = JSON.stringify(elements);
-    fs.writeFile(filePath, data, 'utf8', (err) => {
-      if (err) { 
-        console.log("error writing file:", err);
-      } else {
-        console.log("file is written successfully!");
-      }
-    });
-} 
+    fs.writeFile(filePath, data, 'utf8', (err) => {});
+  };
 }

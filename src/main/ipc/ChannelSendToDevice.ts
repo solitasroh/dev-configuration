@@ -43,7 +43,7 @@ export class ChannelSendToDevice
     result &= ~0x3;
     result += 4;
     return result;
-  }
+  };
 
   async handle(
     event: IpcMainEvent,
@@ -57,32 +57,27 @@ export class ChannelSendToDevice
     elementToStr.push('#END\r\n');
     let data = Buffer.from(elementToStr.join(''), 'utf-8');
 
-    console.log(`len = ${data.length} bLen = ${data.byteLength}`);
-    console.log(data);
-    
     const service = ModbusService.GetClient();
-    
+
     const type = fileType === 1 ? 2 : 1;
-    console.log(data.byteOffset, data.length>>1);
     const padding = data.length & 0x1;
     const size = data.length + padding;
     if (padding !== 0) {
-      
       const b = Buffer.alloc(1);
       data = Buffer.concat([data, b]);
     }
     // const buffer = new Uint16Array(data.buffer, data.byteOffset, data.length>>1);
-    const buffer = new Uint16Array(data.buffer, data.byteOffset, size>>1);
+    const buffer = new Uint16Array(data.buffer, data.byteOffset, size >> 1);
 
     const result = Array.from(buffer);
-    
+
     const crc = calculateCRC(data, size);
-    
+
     try {
       service.writeRegister(65534, 65535);
 
       const authority = await this.getAuthority();
-      const length = [ size >> 16, size & 0xFFFF];
+      const length = [size >> 16, size & 0xffff];
       if (authority) {
         await service.writeRegister(40202, type);
         await service.writeRegister(40203, crc);
@@ -92,13 +87,11 @@ export class ChannelSendToDevice
         const success = await this.retryReadState(0, 0);
         if (success) {
           const wLen = result.length < 120 ? result.length : 120;
-          console.log(`remaining ${result.length} readLength ${wLen}`);
 
           await this.retryWriteFileContents(result, 0, wLen, result.length);
 
           event.sender.send(request.responseChannel, true);
         } else {
-          console.log('read state failed');
           event.sender.send(request.responseChannel, false);
         }
         await this.returnAuthority();
@@ -116,18 +109,17 @@ export class ChannelSendToDevice
     return result.data[0] === 1;
   };
 
-  
   returnAuthority = async (): Promise<boolean> => {
     const client = ModbusService.GetClient();
 
     if (client.isOpen) {
-        await client.writeRegister(40199, 0xA5A5);
-        return true;
+      await client.writeRegister(40199, 0xa5a5);
+      return true;
     }
 
     return false;
-  }
-  
+  };
+
   getWrappedRegisterWriteState = async (): Promise<number> => {
     const service = ModbusService.GetClient();
     const readRegisters = await service.readHoldingRegisters(40206, 1);
@@ -170,19 +162,11 @@ export class ChannelSendToDevice
     const remaining = remainingLen - wlen;
     const readLength = remaining < 120 ? remaining : wlen;
 
-    console.log(`remaining ${remaining} readLength ${readLength}`);
-
     try {
       await service.writeRegisters(40208, writeBuffer);
       const resultOprationStatus = await service.readHoldingRegisters(40206, 1);
       const resultError = await service.readHoldingRegisters(40207, 1);
-      console.log(`state = ${resultOprationStatus.data[0]} error= ${resultError.data[0]}`);
-      if (resultOprationStatus.data[0] === 4) {
-        if (resultError.data[0] === 1) console.log(`Write error`);
-        else if (resultError.data[0] === 3) console.log(`timeout error`);
-        else if (resultError.data[0] === 4) console.log(`CRC error`);
-        else console.log("no error");
-      }
+
       return await this.retryWriteFileContents(
         data,
         endOffset,

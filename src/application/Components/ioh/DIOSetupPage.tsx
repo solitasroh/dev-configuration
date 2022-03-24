@@ -154,7 +154,7 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
           setValue(`diMappingSetup.${index}.mapping`, s.mapping);
           setValue(`diPolaritySetup.${index}.polarity`, s.polarity);
         });
-        console.log(setup.doSetups);
+
         setup.doSetups.forEach((s, index) => {
           setValue(`doSetup.${index}.mapping`, s.mapping);
         });
@@ -183,11 +183,11 @@ const DIOSetupPage: FC<Props> = ({ moduleId }) => {
     for (let i = 0; i < 6; i += 1) {
       setup.doSetups[i].mapping = doMapping[i];
     }
-    console.log(setup);
+
     const service = IpcService.getInstance();
     service
       .send<void, ChannelWriteDataProps>(WRITE_REQ, {
-        writeData: {id: moduleId, setup},
+        writeData: { id: moduleId, setup },
         requestType: 'IOHDIOSetup',
       })
       .then(() => {});

@@ -61,15 +61,12 @@ export default function LMHUserDefine(): ReactElement {
       (evt, resp) => {
         const data = resp as UserDefineIOData;
         if (data !== undefined && data !== null) {
-          const userIOData = data.definedIO.filter(x => x.type !== 0);
+          const userIOData = data.definedIO.filter((x) => x.type !== 0);
           setItemList(userIOData);
-          console.log('use Once Polling %d', userIOData);
         }
       },
     );
   }, []);
-
- 
 
   const onApply = async () => {
     const data = new UserDefineIOData();
@@ -89,9 +86,8 @@ export default function LMHUserDefine(): ReactElement {
       (evt, resp) => {
         const data = resp as UserDefineIOData;
         if (data !== undefined && data !== null) {
-          const userIOData = data.definedIO.filter(x => x.type !== 0);
+          const userIOData = data.definedIO.filter((x) => x.type !== 0);
           setItemList(userIOData);
-          console.log('use Once Polling %d', userIOData);
         }
       },
     );
@@ -126,18 +122,16 @@ export default function LMHUserDefine(): ReactElement {
         name: values.name,
       };
       setItemList((prev) => [...prev, data]);
-    } else {              
-        console.log(values.name);
-        const changeData: DefinedIO = {
+    } else {
+      const changeData: DefinedIO = {
         key: selectedItem.key,
         type: values.type,
         mapping: values.mapping,
         name: values.name,
       };
-      
-      itemList.splice(selectedItem.key, 1 , changeData)
+
+      itemList.splice(selectedItem.key, 1, changeData);
       setItemList((prev) => [...prev]);
-      console.log(itemList);
     }
 
     myForm.resetFields();
@@ -157,7 +151,6 @@ export default function LMHUserDefine(): ReactElement {
     }
   };
   const itemDoubleClickHandle = (item: DefinedIO) => {
-    console.log(item);
     setSelectedItem(item);
     myForm.setFieldsValue(item);
     showModal();
@@ -215,13 +208,27 @@ export default function LMHUserDefine(): ReactElement {
           size="small"
         >
           <Form.Item label="Type" name="type">
-            <Select options={options} size="small" value={selectedItem?.type} onChange={(e) =>setType(e)} />
+            <Select
+              options={options}
+              size="small"
+              value={selectedItem?.type}
+              onChange={(e) => setType(e)}
+            />
           </Form.Item>
           <Form.Item label="Mapping" name="mapping">
-            <InputNumber style={{ width: '100%' }} value={selectedItem?.mapping} onChange={(e) => setMapping(e)}/>
+            <InputNumber
+              style={{ width: '100%' }}
+              value={selectedItem?.mapping}
+              onChange={(e) => setMapping(e)}
+            />
           </Form.Item>
           <Form.Item label="Name" name="name">
-            <Input type="text" style={{ width: '100%' }} value={selectedItem?.name} onChange={(e) => setName(e.target.value)}/>
+            <Input
+              type="text"
+              style={{ width: '100%' }}
+              value={selectedItem?.name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </Form.Item>
         </Form>
       </Modal>

@@ -80,9 +80,9 @@ const RouterApp: FC = () => {
         </Menu>
       </Sider>
       <ContentWrapper className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          <MissmatchInfo />
-        </Header>
+        {/*<Header className="site-layout-background" style={{ padding: 0 }}>*/}
+        {/*  <MissmatchInfo />*/}
+        {/*</Header>*/}
         <Contents>
           <Outlet />
         </Contents>

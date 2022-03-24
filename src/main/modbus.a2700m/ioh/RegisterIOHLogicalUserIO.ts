@@ -40,16 +40,12 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
 
     return forkJoin([registerModuleId, read, ...observables]).pipe(
       map((data) => {
-        
-        const [ moduleId, access,...units] = data;
-        console.log(`acc: ${access}, id: ${moduleId}`);
+        const [moduleId, access, ...units] = data;
         const buf: number[] = [];
         if (access[0] === 0x8000) {
-          units.forEach(element => {
+          units.forEach((element) => {
             buf.push(...element);
           });
-         // const res = Array.of(...buf);
-          console.log(buf);
           const ioData = this.parse(buf);
           const result = new UserDefineIOData();
           result.definedIO = ioData;
@@ -105,7 +101,6 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
 
     const ob = forkJoin([unlockSetupReg, ...observables]);
     ob.subscribe({
-      next: (value) => console.log('next : ', value),
       complete: () => {
         ModbusService.write(this.accessAddress, [1]).subscribe();
       },
@@ -113,10 +108,8 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
   }
 
   private parse(buffer: number[]) {
-    console.log(this.dataAddress);
-    
     const chucked = chunkArray(buffer, 12);
-    return chucked.map((data,index) => {
+    return chucked.map((data, index) => {
       const nameBuffer = data.slice(2, 12);
       const buf: number[] = [];
       nameBuffer.forEach((b: number) => {
@@ -129,7 +122,7 @@ export default class RegisterIOHLogicalUserIO extends RegisterBase {
         type: data[0],
         mapping: data[1],
         name,
-        key: index
+        key: index,
       };
       return definedIO;
     });

@@ -37,21 +37,21 @@ export class ChannelRequestLoadFile
       return;
     }
     try {
-//      const wrappedElements: WrappedElement[] = [];
+      //      const wrappedElements: WrappedElement[] = [];
       const file = `${filePaths[0]}`;
       const result = await this.loadFile(file);
       let count = 0;
-      const result2 =result.map(e => {
+      const result2 = result.map((e) => {
         e.key = count.toString();
-        count+=1;
+        count += 1;
         return e;
-      })
+      });
       event.sender.send(request.responseChannel, {
         result: true,
         elements: result2,
-        filePath: file
+        filePath: file,
       });
-      
+
       // const instream = fs.createReadStream(file);
 
       // const reader = readline.createInterface({input: instream, crlfDelay: Infinity});
@@ -64,18 +64,18 @@ export class ChannelRequestLoadFile
       //   const length = Number.parseInt(elementArr[2], 10);
       //   const page = Number.parseInt(elementArr[3], 10);
       //   const address = Number.parseInt(elementArr[4], 10);
-        
+
       //   const element = new WrappedElement();
       //   element.wrappedAddress = wrappedAddress;
       //   element.length = length;
       //   element.page = page;
       //   element.address = address;
-        
+
       //   if (elementArr.length === 6) {
       //     const desc = elementArr[5];
       //     element.desc = desc;
       //   }
-          
+
       //   element.key = count.toString();
 
       //   wrappedElements.push(element);
@@ -91,25 +91,22 @@ export class ChannelRequestLoadFile
       // });
 
       // await events.once(reader, 'close');
-      
-      // instream.close();
 
-      
+      // instream.close();
     } catch (error) {
-      console.log(error);
       event.sender.send(request.responseChannel, { result: false });
     }
   };
 
   loadFile = (filePath: string): WrappedElement[] => {
-    try{
+    try {
       const data = fs.readFileSync(filePath, 'utf8');
       const read = JSON.parse(data) as WrappedElement[];
       return read;
-    }catch(err) {
-      console.log("error reading file from disk: ", err);
+    } catch (err) {
+      console.log('error reading file from disk: ', err);
     }
-   
-    return null
-  }
+
+    return null;
+  };
 }

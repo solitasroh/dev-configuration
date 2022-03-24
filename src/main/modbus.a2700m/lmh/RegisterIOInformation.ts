@@ -1,6 +1,6 @@
 import IOHInfoData from '@src/Data/IOHInfoData';
 import A2700Data from '@src/Data/A2700Data';
-import { forkJoin, map, Observable } from 'rxjs';
+import { delay, forkJoin, map, Observable } from 'rxjs';
 import chunkArray from '@src/Utils';
 import ModbusService from '../../ModbusService';
 import RegisterBase from '../RegisterBase';

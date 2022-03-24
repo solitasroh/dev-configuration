@@ -1,4 +1,4 @@
-import { GiftOutlined } from '@ant-design/icons';
+import { GiftOutlined, ControlFilled } from '@ant-design/icons';
 import { usePolling } from '@src/application/hooks/ipcHook';
 import IOHInfoData from '@src/Data/IOHInfoData';
 import { Popover } from 'evergreen-ui';
@@ -17,11 +17,12 @@ type OpreationgProps = {
   status: boolean;
 };
 const Container = styled.div`
-  width: 320px;
-  height: 220px;
+  width: fit-content;
+  height: fit-content;
   border-radius: 4px;
-  border: 1px solid #e0e0e0;
+  border: 0 solid #e0e0e0;
   background: #ffffff;
+  padding: 3px;
 `;
 const HeadContainer = styled.div`
   background-color: white;
@@ -39,26 +40,22 @@ const LMHContainer = styled.div`
   flex-wrap: nowrap;
   width: 100%;
   justify-content: space-between;
-  flex-direction : column; 
+  flex-direction: column;
   padding: 0.2em;
-}
 `;
 const IOHContainer = styled.div`
   background-color: white;
   display: grid;
   flex-wrap: nowrap;
   width: 100%;
-  height : 150px;
+  //height : 150px;
   gap: 10px;
   grid-template-columns: repeat(5, 1fr);
   align-content: center;
- }
 `;
 const LMHStatus = styled.div`
   width: 100px;
-  height: 40px;
-  left: 6px;
-  top: 37px;
+  height: 80px;
   background: #f3abb6;
   border: 0.4px solid #e0e0e0;
   box-sizing: border-box;
@@ -66,12 +63,11 @@ const LMHStatus = styled.div`
   display: flex;
   padding: 0.2em;
   flex-direction: column;
+  margin-bottom: 10px;
 `;
 const IOHStatus = styled.div<OpreationgProps>`
-  width: 50px;
-  height: 35px;
-  left: 6px;
-  top: 72px;
+  width: 150px;
+  height: 80px;
 
   background: ${(props) => (props.status === true ? '#ffcad4' : '#CACACA')};
   border: 0.4px solid #e0e0e0;
@@ -86,7 +82,7 @@ const ItemsLabel = styled.div`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 7px;
 `;
 
@@ -137,7 +133,9 @@ const Mismatch = ({ status }: { status: boolean }) => (
       >
         <MismatchLabel status={status}>Mismatch</MismatchLabel>
       </Popover>
-    ) : <MismatchLabel status={status}>Mismatch</MismatchLabel>}
+    ) : (
+      <MismatchLabel status={status}>Mismatch</MismatchLabel>
+    )}
   </MismatchContainer>
 );
 type Props = {
@@ -173,7 +171,7 @@ export default function LocalUnitBox({
       setOperation(validIO);
       setInformation(infoList);
     },
-    1000,
+    5000,
   );
   return (
     <Container>
@@ -211,7 +209,7 @@ export default function LocalUnitBox({
                       )
                     }
                   >
-                    <GiftOutlined />
+                    <ControlFilled />
                   </Popover>
                 ) : null}
               </ItemsIcon>

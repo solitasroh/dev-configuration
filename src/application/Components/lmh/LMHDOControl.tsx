@@ -45,9 +45,7 @@ export default function LMHDOControl({ doStatus }: Props): ReactElement {
   };
 
   const handleCommand = (value: number, ch: number): void => {
-    console.log(`command ${ch}: ${value}`);
     ioCommand.command(ch, value);
-
     apply();
   };
 

@@ -85,21 +85,16 @@ export default function WrappedMapContents(): ReactElement {
 
   const insertElement = (item: WrappedElement) => {
     if (item.page === 1000) {
-      console.log('coils length = ', coilElements.length);
       if (coilElements.length > 0) {
         const maxkey = coilElements.reduce((max, obj) =>
           parseInt(max.key, 10) > parseInt(obj.key, 10) ? max : obj,
         );
-        console.log(parseInt(maxkey.key, 10));
         item.setKey(`${parseInt(maxkey.key, 10) + 1}`);
       } else {
         item.setKey('0');
       }
 
       setCoilElements((prevList) => {
-        if (prevList === undefined) {
-          console.log('list is null');
-        }
         return [...prevList, item];
       });
     } else {
@@ -113,9 +108,6 @@ export default function WrappedMapContents(): ReactElement {
       }
 
       setRegElements((prevList) => {
-        if (prevList === undefined) {
-          console.log('list is null');
-        }
         return [...prevList, item];
       });
     }
@@ -124,16 +116,10 @@ export default function WrappedMapContents(): ReactElement {
   const insertElements = (type: number, elements: WrappedElement[]) => {
     if (type === 2) {
       setCoilElements((prevList) => {
-        if (prevList === undefined) {
-          console.log('list is null');
-        }
         return [...prevList, ...elements];
       });
     } else {
       setRegElements((prevList) => {
-        if (prevList === undefined) {
-          console.log('list is null');
-        }
         return [...prevList, ...elements];
       });
     }
@@ -180,7 +166,6 @@ export default function WrappedMapContents(): ReactElement {
 
   const handleReadButton = async (type: number) => {
     const service = IpcService.getInstance();
-    console.log('send request data');
     const { result, elements: readElements } = await service.send<
       { result: boolean; elements: WrappedElement[]; filePath: string },
       ChannelReadToDeviceProps
@@ -233,14 +218,11 @@ export default function WrappedMapContents(): ReactElement {
       setIsRegModalVisible(false);
       type = 1;
     }
-    console.log('handle ok add address', add);
     setAddress(add);
     setLength(leng);
     setWrappedAdd(wAdd);
 
     if (index < 0) {
-      console.log(index);
-
       if (enable === true) {
         const array = [];
         let key = getMaxKey(page);
@@ -265,7 +247,7 @@ export default function WrappedMapContents(): ReactElement {
         item.length = parseInt(leng, 10);
         item.page = page;
         item.wrappedAddress = parseInt(wAdd, 10);
-        console.log(`${address}, ${length}, ${wrappedAdd}`);
+
         insertElement(item);
       }
 

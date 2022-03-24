@@ -144,7 +144,6 @@ const LMHDIOSetupPage: FC<Prop> = ({}: Prop) => {
           setValue(`diMappingSetup.${index}.mapping`, s.mapping);
           setValue(`diPolaritySetup.${index}.polarity`, s.polarity);
         });
-        console.log(setup.doSetups);
         setup.doSetups.forEach((s, index) => {
           setValue(`doSetup.${index}.mapping`, s.mapping);
         });

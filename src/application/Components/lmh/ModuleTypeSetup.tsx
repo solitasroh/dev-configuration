@@ -1,6 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useOncePolling } from '@src/application/hooks/ipcHook';
-import IOHLogicalTypeSetup, { LogicModuleType } from '@src/Data/IOHLogicalTypeSetup';
+import IOHLogicalTypeSetup, {
+  LogicModuleType,
+} from '@src/Data/IOHLogicalTypeSetup';
 import { LogicTypeProps } from '@src/Data/LogicModuleSetup';
 import { WRITE_REQ } from '@src/ipcChannels';
 import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
@@ -58,9 +60,9 @@ const defaultModuleTypeFields: LogicModuleType[] = [
   { moduleType: 0 },
   { moduleType: 0 },
 ];
-const ModuleTypeSetup: FC = () => {  
+const ModuleTypeSetup: FC = () => {
   const [typeSetup, setTypeSetup] = useState(defaultModuleTypeFields);
-  const { control, handleSubmit,setValue } = useForm<FormValues>({
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
       logicalModuleTypeSetup: typeSetup,
     },
@@ -88,9 +90,8 @@ const ModuleTypeSetup: FC = () => {
         responseChannel: 'get-lm-logic-type-data',
       },
       (evt, rest) => {
-        console.log("on Refresh");
         const setup = rest as IOHLogicalTypeSetup;
-        
+
         setup.moduleTypes.forEach((s, index) => {
           setValue(`logicalModuleTypeSetup.${index}.moduleType`, s.moduleType);
         });
@@ -146,9 +147,9 @@ const ModuleTypeSetup: FC = () => {
         <Space wrap={false} align="start">
           <Card
             size="small"
-            style={{ width: "500px" }}
+            style={{ width: '500px' }}
             title="Logical Module Type 설정"
-            type="inner"            
+            type="inner"
             extra={<ButtonBox />}
           >
             {typeFields.map((field, index) => (

@@ -4,11 +4,12 @@ import styled from 'styled-components';
 
 const status = ['Active', 'Standby'];
 const Container = styled.div`
-  width: 195px;
-  height: 145;
+  width: 300px;
+  height: auto;
   border-radius: 4px;
   border: 1px solid #e0e0e0;
   background: #ffffff;
+  padding: 5px;
 `;
 
 const HeadContainer = styled.div`
@@ -41,18 +42,18 @@ const BottomContainer = styled.div`
   flex-wrap: nowrap;
   width: 100%;
   justify-content: flex-start;
-  margin-top: 10px;  
+  margin-top: 10px;
   flex-direction: column;
 `;
 const BottomContainer1 = styled.div`
   background-color: white;
-  display: flex;  
+  display: flex;
   padding: 0.2em;
   align-items: center;
 `;
 const BottomStatus = styled.div<BottomProps>`
   width: 35px;
-  height: 9.18px;  
+  height: 10px;
   border-radius: 4px;
   margin-right: 3px;
   background-color: ${(props) =>
@@ -74,16 +75,27 @@ const HeaderLabel = styled.div`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 16px;
   display: flex;
   align-items: center;
 `;
-const HeaderLabel2 = styled.div<HearderProps>`
+
+const UnitHeaderLabel = styled.div`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  font-size: 10px;
+  font-size: 20px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+`;
+
+const ActiveStatusLabel = styled.div<HearderProps>`
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
   line-height: 16px;
   display: flex;
   align-items: center;
@@ -106,31 +118,32 @@ const BottomLabel = styled.div<BottomProps>`
   font-style: normal;
   font-weight: 600;
   font-size: 12px;
-  line-height: 14px;  
+  line-height: 14px;
   color: ${(props) => (props.status === true ? '#29C141' : '#CACACA')};
 `;
 
 type Props = {
-  incommingInfo : IncomingStatus;
+  incommingInfo: IncomingStatus;
 };
 
-export default function IncomingUnitBox( {incommingInfo} : Props): ReactElement {
-
+export default function IncomingUnitBox({
+  incommingInfo,
+}: Props): ReactElement {
   return (
     <Container>
       <HeadContainer>
         <HeaderLabel>{incommingInfo?.mccName}</HeaderLabel>
-        <HeaderLabel2 status={incommingInfo?.ActiveState}>
-          {incommingInfo?.ActiveState=== true ? status[0] : status[1]}
-        </HeaderLabel2>
+        <ActiveStatusLabel status={incommingInfo?.ActiveState}>
+          {incommingInfo?.ActiveState === true ? status[0] : status[1]}
+        </ActiveStatusLabel>
       </HeadContainer>
       <MiddleContainer>
         <UnitContatiner>
-          <HeaderLabel>UNIT 01</HeaderLabel>
+          <UnitHeaderLabel>UNIT 01</UnitHeaderLabel>
           <UnitLabel>{incommingInfo?.Port1Count}</UnitLabel>
         </UnitContatiner>
         <UnitContatiner>
-          <HeaderLabel>UNIT 02</HeaderLabel>
+          <UnitHeaderLabel>UNIT 02</UnitHeaderLabel>
           <UnitLabel>{incommingInfo?.Port2Count}</UnitLabel>
         </UnitContatiner>
       </MiddleContainer>

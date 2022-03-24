@@ -72,7 +72,7 @@ const motorUnits = [
 
 export default function Home(): ReactElement {
   const [targetValue, setTargetValue] = useState<InputValueType>(0);
-  const [incommingInfo , setIncommingInfo] = useState<IncomingStatus>();
+  const [incommingInfo, setIncommingInfo] = useState<IncomingStatus>();
   const [targetSelectValue, setTargetSelectValue] = useState<InputValueType>(
     options[0].value,
   );
@@ -83,7 +83,7 @@ export default function Home(): ReactElement {
     },
     mode: 'onChange',
   });
-  
+
   usePolling(
     {
       responseChannel: 'POLL-LMH-information',
@@ -96,8 +96,8 @@ export default function Home(): ReactElement {
     },
     1000,
   );
+
   const submit = (values: FormValues) => {
-    console.log(`submit value =`, values);
     setTargetValue(values.setupValue);
     setTargetSelectValue(values.selectValue);
   };
@@ -135,9 +135,9 @@ export default function Home(): ReactElement {
 
   return (
     <div>
-      <Space>
-        <IncomingUnitBox incommingInfo = {incommingInfo}/>
-      </Space>
+      <Card title="INCOMING UNIT" size="small" bordered={false}>
+        <IncomingUnitBox incommingInfo={incommingInfo} />
+      </Card>
       <Card title="MOTOR UNIT" size="small" bordered={false}>
         <List
           dataSource={motorUnits}
@@ -153,8 +153,11 @@ export default function Home(): ReactElement {
           )}
         />
       </Card>
-      <Card title="LOCAL UNIT" size="small" bordered={false} >
-        <LocalUnitBox unitInfo = {motorUnits.slice(0, 15)} mismatch = {incommingInfo?.mismatchState}/>
+      <Card title="LOCAL UNIT" size="small" bordered={false}>
+        <LocalUnitBox
+          unitInfo={motorUnits.slice(0, 15)}
+          mismatch={incommingInfo?.mismatchState}
+        />
       </Card>
     </div>
   );

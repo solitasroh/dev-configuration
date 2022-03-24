@@ -30,7 +30,7 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
 
           for (let i = 0; i < 9; i += 1) {
             const doSetup = buffer[i + 18];
-            setup.doSetups[i].mapping = (+doSetup >> 8)& 0xff;
+            setup.doSetups[i].mapping = (+doSetup >> 8) & 0xff;
           }
         }
         return setup;
@@ -48,7 +48,6 @@ export default class RegisterLMLogicIOSetup extends RegisterBase {
         _data.diSetups[i].mapping | (_data.diSetups[i].polarity << 8);
       buffer.push(value);
     }
-    console.log(_data.doSetups);
     for (let i = 0; i < 9; i += 1) {
       const value = _data.doSetups[i].mapping | (0x0 << 8);
       buffer.push(value);

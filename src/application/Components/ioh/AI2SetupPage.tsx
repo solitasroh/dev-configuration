@@ -173,7 +173,7 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
           setValue(`maxValueSetup.${index}.maxValue`, s.maxValue);
           setValue(`minValueSetup.${index}.minValue`, s.minValue);
         });
-        console.log(setup);
+
         setDefaultAISetup(setup.aiSetups);
       },
     );
@@ -315,7 +315,7 @@ const AI2SetupPage: FC<Props> = ({ moduleId }) => {
                     .padStart(2, '0')}`}</SetupLabel>
                   <SetupValue>
                     <Controller
-                      name={`minValueSetup.${index}.minValue` as const}                      
+                      name={`minValueSetup.${index}.minValue` as const}
                       render={({
                         field: { onChange, value },
                         fieldState: { invalid, error },

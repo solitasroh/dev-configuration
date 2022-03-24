@@ -82,7 +82,6 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
 
     const ob = forkJoin([observable, ...observables]);
     ob.subscribe({
-      next: (value) => console.log('next : ', value),
       complete: () => {
         ModbusService.write(this.accessAddress, [1]).subscribe();
       },
@@ -90,7 +89,6 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
   }
 
   private parse(buffer: number[]) {
-    console.log(this.dataAddress);
     const chucked = chunkArray(buffer, 12);
     return chucked.map((data, index) => {
       const nameBuffer = data.slice(2, 12);
@@ -107,7 +105,7 @@ export default class RegisterLMHUserDefineIOSetup extends RegisterBase {
         type: data[0],
         mapping: data[1],
         name,
-        key: index
+        key: index,
       };
       return definedIO;
     });

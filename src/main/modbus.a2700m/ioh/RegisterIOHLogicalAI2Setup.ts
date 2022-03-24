@@ -12,7 +12,6 @@ export default class RegisterIOHLogicalAI2Setup extends RegisterBase {
   private dataAddress = 61934;
 
   getter(_params?: RegisterProps): Observable<A2700Data | A2700Data[]> {
-    console.log('ioh logical ai2 setup access id : ', _params.id);
     const registerAccessID = ModbusService.write(this.idSetAddress, [
       _params.id,
     ]);
@@ -39,21 +38,20 @@ export default class RegisterIOHLogicalAI2Setup extends RegisterBase {
             setup.aiSetups[i].mapping = buffer[off];
           }
           for (let i = 0; i < 12; i += 1, off += 2) {
-            
             const b = Buffer.alloc(4);
             b[0] = buffer[off] >> 8;
             b[1] = buffer[off] & 0xff;
-            b[2] = buffer[off+1] >> 8;
-            b[3] = buffer[off+1]&0xff;
+            b[2] = buffer[off + 1] >> 8;
+            b[3] = buffer[off + 1] & 0xff;
             setup.aiSetups[i].minValue = b.readFloatBE();
           }
 
           for (let i = 0; i < 12; i += 1, off += 2) {
             const b = Buffer.alloc(4);
-            b[0] = buffer[off] >>8;
+            b[0] = buffer[off] >> 8;
             b[1] = buffer[off];
-            b[2] = buffer[off+1]>> 8;
-            b[3] = buffer[off+1];
+            b[2] = buffer[off + 1] >> 8;
+            b[3] = buffer[off + 1];
             setup.aiSetups[i].maxValue = b.readFloatBE();
           }
         }
@@ -80,13 +78,13 @@ export default class RegisterIOHLogicalAI2Setup extends RegisterBase {
       mapping.push(_data.setup.aiSetups[i].mapping);
       const b = Buffer.alloc(4);
       b.writeFloatBE(_data.setup.aiSetups[i].minValue);
-      minValue.push(b[0] << 8 | b[1]);
-      minValue.push(b[2] << 8 | b[3]);
+      minValue.push((b[0] << 8) | b[1]);
+      minValue.push((b[2] << 8) | b[3]);
 
       const c = Buffer.alloc(4);
       c.writeFloatBE(_data.setup.aiSetups[i].maxValue);
-      maxValue.push(c[0] << 8 | c[1]);
-      maxValue.push(c[2] << 8 | c[3]);
+      maxValue.push((c[0] << 8) | c[1]);
+      maxValue.push((c[2] << 8) | c[3]);
     }
 
     buffer.push(...aiTypes, ...units, ...mapping, ...minValue, ...maxValue);

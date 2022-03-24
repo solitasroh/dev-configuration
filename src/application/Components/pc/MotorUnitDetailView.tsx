@@ -305,7 +305,6 @@ function DOBox({ data }: { data: MotorUnitStatusData }): ReactElement {
 }
 
 const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => {
-  console.log(data);
   return (
     <Container>
       <HeaderContainer>
