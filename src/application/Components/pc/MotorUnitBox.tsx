@@ -263,7 +263,7 @@ const MotorUnitBox: FC<Props> = ({ id }) => {
       }
       setData(setup);
     },
-    3000,
+    1000,
   );
   const run = () => {
     const data = new PCCommand();

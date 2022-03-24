@@ -43,7 +43,7 @@ export default function IOHAIStatus({ id }: Props): ReactElement {
     <Card
       title="AI Status"
       size="small"
-      style={{ width: '3s00px' }}
+      style={{ width: '300px' }}
       type="inner"
     >
       {measureData.map((measure) => (

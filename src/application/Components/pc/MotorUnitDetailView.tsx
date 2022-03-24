@@ -262,7 +262,9 @@ function DIBox({ data }: { data: MotorUnitStatusData }): ReactElement {
         <DIOContentsWrapper key={index}>
           <DIOStatusIcon Status={value.sts} />
           <DIOSetupLabel invalid={value.setup === 0}>
-            {DISetupDefinition[value.setup]}
+            {value.setup < 101
+              ? DISetupDefinition[value.setup]
+              : data.generalDIData[value.setup - 101]}
           </DIOSetupLabel>
           <ChannelLabel invalid={value.setup === 0}>
             CH {(index + 1).toString().padStart(2, '0')}
@@ -289,7 +291,9 @@ function DOBox({ data }: { data: MotorUnitStatusData }): ReactElement {
         <DIOContentsWrapper key={index}>
           <DIOStatusIcon Status={value.sts} />
           <DIOSetupLabel invalid={value.setup === 0}>
-            {DOSetupDefinition[value.setup]}
+            {value.setup < 101
+              ? DOSetupDefinition[value.setup]
+              : data.generalDOData[value.setup - 101]}
           </DIOSetupLabel>
           <ChannelLabel invalid={value.setup === 0}>
             CH {(index + 1).toString().padStart(2, '0')}
@@ -300,49 +304,8 @@ function DOBox({ data }: { data: MotorUnitStatusData }): ReactElement {
   );
 }
 
-interface DetailData {
-  id: number;
-  remoteMode: boolean;
-  abnormal: boolean;
-  faultStatus: boolean;
-  diStatus: boolean[];
-  doStatus: boolean[];
-  generaDISetup: string[];
-  currentDISetup: number[];
-  currentDOSetup: number[];
-}
-
-const prevData: MotorUnitStatusData = {
-  type: 1212,
-  moduleId: 1,
-  faultStatus: false,
-  alarmStatus: false,
-  abnormalStatus: false,
-  diStatus: [true, true, false, false, true, true, true, false, false, false],
-  doStatus: [true, false, false, false],
-  generalDIData: ['G-DIO1', 'G-DIO2'],
-  generalDOData: ['G-DIO1', 'G-DIO2'],
-  diSetup: [6, 0, 0, 0, 4, 13, 101, 0, 1, 3],
-  doSetup: [1, 2, 3, 4],
-  controlMode: 1,
-  motorStatus: 1,
-  operationMode: 4,
-  name: 'test',
-};
-
 const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => {
-  // const [data, setData] = useState(prevData);
-  // usePolling(
-  //   {
-  //     requestType: 'MotorUnitStatus',
-  //     responseChannel: 'motor-unit-status-polling',
-  //     props: { id: id },
-  //   },
-  //   (evt, rest) => {
-  //     setData(rest as MotorUnitStatusData);
-  //   },
-  //   1000,
-  // );
+  console.log(data);
   return (
     <Container>
       <HeaderContainer>

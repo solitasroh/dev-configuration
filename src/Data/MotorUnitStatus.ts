@@ -63,25 +63,25 @@ export default class MotorUnitStatusData implements A2700Data {
 
     this.name = name;
 
-    this.diStatus = status.slice(8, 17).map((b) => b.valueOf());
-    this.doStatus = status.slice(18, 21).map((b) => b.valueOf());
+    this.diStatus = status.slice(8, 18).map((b) => b.valueOf());
+    this.doStatus = status.slice(18, 22).map((b) => b.valueOf());
     this.diSetup = diSetup;
     this.doSetup = doSetup;
-    if (generalDIOSetup === undefined || generalDIOSetup.length == 0) {
+    if (generalDIOSetup === undefined || generalDIOSetup.length === 0) {
       return;
     }
 
     this.generalDIData = Array.from({ length: 14 });
     this.generalDOData = Array.from({ length: 14 });
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 14; i+=1) {
       if (generalDIOSetup[i] === undefined) {
         continue;
       }
-      if (generalDIOSetup[i].dioType == 1) {
+      if (generalDIOSetup[i].dioType === 1) {
         this.generalDIData[generalDIOSetup[i].channel - 1] =
           generalDIOSetup[i].name;
-      } else if (generalDIOSetup[i].dioType == 2) {
+      } else if (generalDIOSetup[i].dioType === 2) {
         this.generalDOData[generalDIOSetup[i].channel - 1] =
           generalDIOSetup[i].name;
       }
