@@ -12,6 +12,8 @@ import MotorUnitBox, {
 import NumberInput from '../Shared/NumberInput';
 import IncomingUnitBox from './IncomingUnitBox';
 import LocalUnitBox from '../lmh/LocalUnitBox';
+import { usePolling } from '@src/application/hooks/ipcHook';
+import { IncomingStatus } from '@src/main/modbus.a2700m/m/RegisterIncomingStatus';
 
 const { TabPane } = Tabs;
 
@@ -70,6 +72,7 @@ const motorUnits = [
 
 export default function Home(): ReactElement {
   const [targetValue, setTargetValue] = useState<InputValueType>(0);
+  const [incommingInfo , setIncommingInfo] = useState<IncomingStatus>();
   const [targetSelectValue, setTargetSelectValue] = useState<InputValueType>(
     options[0].value,
   );
@@ -80,7 +83,19 @@ export default function Home(): ReactElement {
     },
     mode: 'onChange',
   });
-
+  
+  usePolling(
+    {
+      responseChannel: 'POLL-LMH-information',
+      requestType: 'IncomingStatus',
+      props: { id: 0 },
+    },
+    (evt, rest) => {
+      const infoList = rest as IncomingStatus;
+      setIncommingInfo(infoList);
+    },
+    1000,
+  );
   const submit = (values: FormValues) => {
     console.log(`submit value =`, values);
     setTargetValue(values.setupValue);
@@ -139,7 +154,7 @@ export default function Home(): ReactElement {
         />
       </Card>
       <Card title="LOCAL UNIT" size="small" bordered={false} >
-        <LocalUnitBox unitInfo = {motorUnits.slice(0, 15)}/>
+        <LocalUnitBox unitInfo = {motorUnits.slice(0, 15)} mismatch = {incommingInfo?.mismatchState}/>
       </Card>
     </div>
   );
