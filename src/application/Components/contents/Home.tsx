@@ -136,7 +136,7 @@ export default function Home(): ReactElement {
   return (
     <div>
       <Space>
-        <IncomingUnitBox/>
+        <IncomingUnitBox incommingInfo = {incommingInfo}/>
       </Space>
       <Card title="MOTOR UNIT" size="small" bordered={false}>
         <List

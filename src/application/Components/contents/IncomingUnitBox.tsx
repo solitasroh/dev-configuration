@@ -1,3 +1,4 @@
+import { IncomingStatus } from '@src/main/modbus.a2700m/m/RegisterIncomingStatus';
 import React, { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 
@@ -108,43 +109,42 @@ const BottomLabel = styled.div<BottomProps>`
   line-height: 14px;  
   color: ${(props) => (props.status === true ? '#29C141' : '#CACACA')};
 `;
-const data : CoilProps = {
-  ringStatus : false,
-  dhConnect : false,
+
+type Props = {
+  incommingInfo : IncomingStatus;
 };
-export default function IncomingUnitBox(): ReactElement {
-  const [activeStatus, setActiveStatus] = useState(false);
-  const [unit1Number, seUunit1Number] = useState(20);
-  const [unit2Number, setUnit2Number] = useState(20);
+
+export default function IncomingUnitBox( {incommingInfo} : Props): ReactElement {
+
   return (
     <Container>
       <HeadContainer>
-        <HeaderLabel>Incoming Name</HeaderLabel>
-        <HeaderLabel2 status={activeStatus}>
-          {activeStatus === true ? status[0] : status[1]}
+        <HeaderLabel>{incommingInfo?.mccName}</HeaderLabel>
+        <HeaderLabel2 status={incommingInfo?.ActiveState}>
+          {incommingInfo?.ActiveState=== true ? status[0] : status[1]}
         </HeaderLabel2>
       </HeadContainer>
       <MiddleContainer>
         <UnitContatiner>
           <HeaderLabel>UNIT 01</HeaderLabel>
-          <UnitLabel>{unit1Number}</UnitLabel>
+          <UnitLabel>{incommingInfo?.Port1Count}</UnitLabel>
         </UnitContatiner>
         <UnitContatiner>
           <HeaderLabel>UNIT 02</HeaderLabel>
-          <UnitLabel>{unit2Number}</UnitLabel>
+          <UnitLabel>{incommingInfo?.Port2Count}</UnitLabel>
         </UnitContatiner>
       </MiddleContainer>
       <BottomContainer>
         <BottomContainer1>
-          <BottomStatus status={data.ringStatus} />
-          <BottomLabel status={data.ringStatus}>
+          <BottomStatus status={incommingInfo?.ModuleRingBroken} />
+          <BottomLabel status={incommingInfo?.ModuleRingBroken}>
             Module Ring broken
           </BottomLabel>
         </BottomContainer1>
         <BottomContainer1>
-          <BottomStatus status={data.dhConnect} />
-          <BottomLabel status={data.dhConnect}>
-            A2750LDH Disconnect
+          <BottomStatus status={incommingInfo?.A2700DHDisconnected} />
+          <BottomLabel status={incommingInfo?.A2700DHDisconnected}>
+            A2700DH Disconnect
           </BottomLabel>
         </BottomContainer1>
       </BottomContainer>
