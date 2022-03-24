@@ -27,6 +27,7 @@ import RegisterCoilMapAlarm from './lmh/RegisterCoilMapAlarm';
 import RegisterLMHUserDefineIOSetup from './lmh/RegisterLMHUserDefineIOSetup';
 import RegisterMotorUnitStatus from '@src/main/modbus.a2700m/pc/RegisterMotorUnitStatus';
 import RegisterIncomingStatus from './m/RegisterIncomingStatus';
+import RegisterMismatchStatus from './m/RegisterMismatchStatus';
 
 const userMap = {
   A2750LMInformation: RegisterLMInformation,
@@ -58,6 +59,7 @@ const userMap = {
   IOHLogicalTypeSetup: RegisterIOHLogicalTypeSetup,
   MotorUnitStatus: RegisterMotorUnitStatus,
   IncomingStatus: RegisterIncomingStatus,
+  MismatchStatus: RegisterMismatchStatus,
 };
 
 export type UserMap = typeof userMap;
