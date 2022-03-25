@@ -1,4 +1,9 @@
-import { GiftOutlined, ControlFilled } from '@ant-design/icons';
+import {
+  GiftOutlined,
+  ControlFilled,
+  MoreOutlined,
+  ProfileOutlined,
+} from '@ant-design/icons';
 import { usePolling } from '@src/application/hooks/ipcHook';
 import IOHInfoData from '@src/Data/IOHInfoData';
 import { Popover } from 'evergreen-ui';
@@ -54,9 +59,9 @@ const IOHContainer = styled.div`
   align-content: center;
 `;
 const LMHStatus = styled.div`
-  width: 100px;
+  width: 150px;
   height: 80px;
-  background: #f3abb6;
+  background: white;
   border: 0.4px solid #e0e0e0;
   box-sizing: border-box;
   border-radius: 4px;
@@ -65,11 +70,26 @@ const LMHStatus = styled.div`
   flex-direction: column;
   margin-bottom: 10px;
 `;
+
+const IOHId = styled.div<OpreationgProps>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  text-wrap: none;
+  font-weight: 600;
+  width: 35px;
+  font-family: Roboto, ui-serif;
+  background-color: ${(props) =>
+    props.status === true ? '#66d45a' : '#CACACA'};
+  border-radius: 2px;
+`;
+
 const IOHStatus = styled.div<OpreationgProps>`
   width: 150px;
   height: 80px;
 
-  background: ${(props) => (props.status === true ? '#ffcad4' : '#CACACA')};
+  background: ${(props) => (props.status === true ? 'white' : '#CACACA')};
   border: 0.4px solid #e0e0e0;
   box-sizing: border-box;
   border-radius: 4px;
@@ -85,7 +105,11 @@ const ItemsLabel = styled.div`
   font-size: 13px;
   line-height: 7px;
 `;
-
+const ItemsHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 const ItemsIcon = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -109,14 +133,14 @@ const MismatchLabel = styled.div<MismatchProps>`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 14px;
   color: ${(props) => (props.status === true ? '#29C141' : '#CACACA')};
   cursor: pointer;
 `;
 const MismatchStatus = styled.div<MismatchProps>`
-  width: 17px;
-  height: 7px;
+  width: 35px;
+  height: 10px;
   border-radius: 4px;
   margin-right: 3px;
   background-color: ${(props) =>
@@ -188,14 +212,17 @@ export default function LocalUnitBox({
               minWidth={300}
               content={() => <LMHDIDetailView />}
             >
-              <GiftOutlined />
+              <ProfileOutlined />
             </Popover>
           </ItemsIcon>
         </LMHStatus>
         <IOHContainer>
           {unitInfo.map((value, index) => (
             <IOHStatus status={operation[index]}>
-              <ItemsLabel>IOH {value.id}</ItemsLabel>
+              <ItemsHeader>
+                <ItemsLabel>IOH - {information[index]?.moduleType} </ItemsLabel>
+                <IOHId status={operation[index]}>ID {value.id}</IOHId>
+              </ItemsHeader>
               <ItemsIcon>
                 {operation[index] === true ? (
                   <Popover
@@ -209,7 +236,7 @@ export default function LocalUnitBox({
                       )
                     }
                   >
-                    <ControlFilled />
+                    <ProfileOutlined />
                   </Popover>
                 ) : null}
               </ItemsIcon>

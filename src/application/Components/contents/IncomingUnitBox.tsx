@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const status = ['Active', 'Standby'];
 const Container = styled.div`
-  width: 300px;
+  width:250px;
   height: auto;
   border-radius: 4px;
   border: 1px solid #e0e0e0;
@@ -85,7 +85,7 @@ const UnitHeaderLabel = styled.div`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 16px;
   display: flex;
   align-items: center;
@@ -106,7 +106,7 @@ const UnitLabel = styled.div`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 14px;
   display: flex;
   align-items: center;

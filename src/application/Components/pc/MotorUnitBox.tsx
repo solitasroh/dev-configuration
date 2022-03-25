@@ -30,8 +30,8 @@ const Container = styled.div`
   background-color: #ffffff;
   border-radius: 4px;
   flex-direction: column;
-  width: 200px;
-  height: 130px;
+  width: 150px;
+  height: 80px;
   border: 1px solid #e0e0e0;
   justify-content: space-between;
   margin: 3px;
@@ -58,7 +58,8 @@ const HeaderContainer = styled.div`
 `;
 
 const HeaderTitle = styled.div`
-  font-size: 18px;
+  font-size: 13px;
+  font-family: 'Roboto';
   font-weight: 600;
   text-wrap: none;
   text-overflow: ellipsis;
@@ -79,7 +80,7 @@ const HeaderId = styled.div<HeaderProps>`
   width: 35px;
   font-family: Roboto, ui-serif;
   background-color: ${(props) =>
-    props.operationMode === 4 ? '#66d45a' : '#efc1c1'};
+    props.operationMode === 4 ? '#66d45a' : '#CACACA'};
   border-radius: 2px;
   cursor: pointer;
 `;
@@ -97,7 +98,7 @@ const UnitHeader = ({
 }) => (
   <HeaderContainer>
     <HeaderTitle>{mccName}</HeaderTitle>
-    {data !== null ? (
+    {data?.operationMode === 4 ? (
       <Popover
         trigger="click"
         minWidth={10}

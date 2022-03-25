@@ -78,7 +78,9 @@ type FaultProps = {
 type DIProps = {
   Status: boolean;
 };
-
+type ModeProps = {
+  mode :boolean;
+};
 const Container = styled.div`
   display: flex;
   background-color: #ffffff;
@@ -140,16 +142,26 @@ const HeaderId = styled.div<HeaderProps>`
   font-family: Roboto, ui-serif;
   border-radius: 2px;
   background-color: ${(props) =>
-    props.operationMode === 4 ? '#40AB64' : '#DF6A51'};
+    props.operationMode === 4 ? '#66d45a' : '#CACACA'};
 `;
 
-const MiddleText = styled.div`
-  font-size: 9px;
+const FaultText = styled.div<FaultProps>`
+  font-size: 12px;
   padding: 0.2em;
-  align-items: flex-start;
+  align-items: flex-end;
   text-wrap: none;
+  color: ${(props) => (props.fault ? '#CACACA' : '#716D6D')};
 `;
 
+const RemoteText = styled.div<ModeProps>`
+font-family: Roboto, ui-serif;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0.2em;
+  align-items: flex-end;
+  text-wrap: none;
+  color: ${(props) => (props.mode ? '#E88B00' : '#7AE060')};
+`;
 const Middle = styled.div`
   display: flex;
   font-family: 'Roboto', serif;
@@ -168,15 +180,14 @@ const Middle1 = styled.div`
   font-size: 8px;
   line-height: 9px;
   align-items: center;
-  justify-content: space-between;
 `;
 
 const MiddleFaultStatus = styled.div<FaultProps>`
   align-items: center;
   border-radius: 10px;
-  width: 8px;
+  width: 10px;
   height: 9px;
-  background-color: ${(props) => (props.fault ? '#40AB64' : '#DF6A51')};
+  background-color: ${(props) => (props.fault ? '#e20202' : '#CACACA')};
 `;
 
 const DIOStatusIcon = styled.div<DIProps>`
@@ -184,24 +195,24 @@ const DIOStatusIcon = styled.div<DIProps>`
   border-radius: 4px;
   width: 35px;
   height: 9.18px;
-  background-color: ${(props) => (props.Status ? '#40AB64' : '#DF6A51')};
+  background-color: ${(props) => (props.Status ? '#66d45a' : '#CACACA')};
 `;
 
 const FaultStatus = ({ status }: { status: boolean }) => (
   <Middle>
     <Middle1>
       <MiddleFaultStatus fault={status === true} />
-      <MiddleText>OCR Fault</MiddleText>
+      <FaultText fault={status === true}>Fault</FaultText>
     </Middle1>
     <Middle1>
       <MiddleFaultStatus fault={status === true} />
-      <MiddleText>Abnormal</MiddleText>
+      <FaultText fault={status === true}>Abnormal</FaultText>
     </Middle1>
   </Middle>
 );
 
 const RemoteMode = ({ mode }: { mode: boolean }) => (
-  <MiddleText>{mode === true ? 'Remote Mode' : 'Local Mode'}</MiddleText>
+  <RemoteText mode ={mode}>{mode === true ? 'REMOTE' : 'LOCAL'}</RemoteText>
 );
 
 type DIOSetupProps = {
@@ -304,8 +315,7 @@ function DOBox({ data }: { data: MotorUnitStatusData }): ReactElement {
   );
 }
 
-const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => {
-  return (
+const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => (
     <Container>
       <HeaderContainer>
         <HeaderTitle>Detail</HeaderTitle>
@@ -323,6 +333,5 @@ const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => {
       </MiddleContainer1>
     </Container>
   );
-};
 
 export default MotorUnitDetailView;
