@@ -150,7 +150,7 @@ const FaultText = styled.div<FaultProps>`
   padding: 0.2em;
   align-items: flex-end;
   text-wrap: none;
-  color: ${(props) => (props.fault ? '#CACACA' : '#716D6D')};
+  color: ${(props) => (props.fault ? '#e20202' : '#716D6D')};
 `;
 
 const RemoteText = styled.div<ModeProps>`

@@ -115,8 +115,12 @@ const ItemsIcon = styled.div`
   justify-content: flex-end;
   flex: 2;
   align-items: flex-end;
-  cursor: pointer;
+  
 `;
+
+const DetailIcon = styled(ProfileOutlined)`
+  cursor: pointer;
+`
 const HeaderLabel = styled.div`
   font-family: 'Roboto';
   font-style: normal;
@@ -212,7 +216,7 @@ export default function LocalUnitBox({
               minWidth={300}
               content={() => <LMHDIDetailView />}
             >
-              <ProfileOutlined />
+              <DetailIcon />
             </Popover>
           </ItemsIcon>
         </LMHStatus>
@@ -236,7 +240,7 @@ export default function LocalUnitBox({
                       )
                     }
                   >
-                    <ProfileOutlined />
+                    <DetailIcon />
                   </Popover>
                 ) : null}
               </ItemsIcon>

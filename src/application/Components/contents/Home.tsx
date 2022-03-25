@@ -1,4 +1,4 @@
-import { Card, List, Space, Tabs } from 'antd';
+import { Card, List, Space, Tabs ,Drawer } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Select, {
@@ -14,6 +14,7 @@ import IncomingUnitBox from './IncomingUnitBox';
 import LocalUnitBox from '../lmh/LocalUnitBox';
 import { usePolling } from '@src/application/hooks/ipcHook';
 import { IncomingStatus } from '@src/main/modbus.a2700m/m/RegisterIncomingStatus';
+import ControlStatus from '../pc/ControlStatus';
 
 const { TabPane } = Tabs;
 
@@ -71,6 +72,8 @@ const motorUnits = [
 ];
 
 export default function Home(): ReactElement {
+  const [open, setOpen] = useState(false);
+  const [moduleID,SetModuleID] = useState(0);
   const [targetValue, setTargetValue] = useState<InputValueType>(0);
   const [incommingInfo, setIncommingInfo] = useState<IncomingStatus>();
   const [targetSelectValue, setTargetSelectValue] = useState<InputValueType>(
@@ -101,64 +104,46 @@ export default function Home(): ReactElement {
     setTargetValue(values.setupValue);
     setTargetSelectValue(values.selectValue);
   };
-
-  function getTabs() {
-    return (
-      <Tabs type="card">
-        <TabPane tab="TEST" key="1">
-          <form onSubmit={handleSubmit(submit)} style={{ height: '500px' }}>
-            <NumberInput
-              name="setupValue"
-              minValue={1}
-              maxValue={100}
-              defaultValue={targetValue}
-              label="test"
-              width="130px"
-              control={control}
-            />
-
-            <Select
-              name="selectValue"
-              label="test"
-              width="130px"
-              defaultValue={targetSelectValue}
-              options={options}
-              control={control}
-            />
-
-            <input type="submit" value="Apply" />
-          </form>
-        </TabPane>
-      </Tabs>
-    );
-  }
-
+  const handleClick = (id : number) => {
+    console.log('clicked!');
+    SetModuleID(id)
+    setOpen((prev) => !prev);
+  };
+  
+  const onClose = () => {
+    setOpen(false);
+  };
   return (
     <div>
-      <Card title="INCOMING UNIT" size="small" bordered={false}>
-        <IncomingUnitBox incommingInfo={incommingInfo} />
-      </Card>
-      <Card title="MOTOR UNIT" size="small" bordered={false}>
-        <List
-          dataSource={motorUnits}
-          split
-          pagination={{
-            pageSize: 5,
-          }}
-          itemLayout="horizontal"
-          renderItem={(item) => (
-            <Space>
-              <MotorUnitBox id={item.id} />
-            </Space>
-          )}
-        />
-      </Card>
-      <Card title="LOCAL UNIT" size="small" bordered={false}>
-        <LocalUnitBox
-          unitInfo={motorUnits.slice(0, 15)}
-          mismatch={incommingInfo?.mismatchState}
-        />
-      </Card>
+      <div>
+        <Card title="INCOMING UNIT" size="small" bordered={false}>
+          <IncomingUnitBox incommingInfo={incommingInfo} />
+        </Card>
+        <Card title="MOTOR UNIT" size="small" bordered={false}>
+          <List
+            dataSource={motorUnits}
+            split
+            pagination={{
+              pageSize: 5,
+            }}
+            itemLayout="horizontal"
+            renderItem={(item) => (
+              <Space>
+                <MotorUnitBox id={item.id} onClick={() => handleClick} />
+              </Space>
+            )}
+          />
+        </Card>
+        <Card title="LOCAL UNIT" size="small" bordered={false}>
+          <LocalUnitBox
+            unitInfo={motorUnits.slice(0, 15)}
+            mismatch={incommingInfo?.mismatchState}
+          />
+        </Card>
+      </div>      
+      <Drawer title="Basic Drawer" placement="right" onClose={onClose} visible={open}>
+        <ControlStatus id = {moduleID}/>
+      </Drawer>
     </div>
   );
 }
