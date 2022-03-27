@@ -45,6 +45,10 @@ export default class MotorUnitStatusData implements A2700Data {
 
   readonly doSetup: number[];
 
+  readonly currentAvg: number[];
+
+  readonly IAvg: number;
+
   constructor(
     id: number,
     name: string,
@@ -53,6 +57,7 @@ export default class MotorUnitStatusData implements A2700Data {
     diSetup: number[],
     doSetup: number[],
     generalDIOSetup: GeneralDIOSetup[],
+    currentAvg: number[],
   ) {
     this.moduleId = id;
     this.motorStatus = status[3] ? 1 : 0;
@@ -60,6 +65,7 @@ export default class MotorUnitStatusData implements A2700Data {
     this.faultStatus = status[7].valueOf();
     this.alarmStatus = status[6].valueOf();
     this.operationMode = operationMode;
+    this.currentAvg = currentAvg;
 
     this.name = name;
 
@@ -74,7 +80,7 @@ export default class MotorUnitStatusData implements A2700Data {
     this.generalDIData = Array.from({ length: 14 });
     this.generalDOData = Array.from({ length: 14 });
 
-    for (let i = 0; i < 14; i+=1) {
+    for (let i = 0; i < 14; i += 1) {
       if (generalDIOSetup[i] === undefined) {
         continue;
       }
@@ -86,5 +92,8 @@ export default class MotorUnitStatusData implements A2700Data {
           generalDIOSetup[i].name;
       }
     }
+
+    const buf = Buffer.from(currentAvg);
+    this.IAvg = buf.readFloatBE(0);
   }
 }

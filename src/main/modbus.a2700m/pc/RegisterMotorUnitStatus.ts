@@ -51,10 +51,19 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       this.getDISetup(id),
       this.getDOSetup(id),
       this.getGeneralDIOSetupName(id),
+      ModbusService.read<number[]>(45001 + id * 8, 2),
     ]).pipe(
       map((resp) => {
-        const [, setup, operation, status, diSetup, doSetup, generalDioSetup] =
-          resp;
+        const [
+          ,
+          setup,
+          operation,
+          status,
+          diSetup,
+          doSetup,
+          generalDioSetup,
+          currentAvg,
+        ] = resp;
 
         const charBuffer: number[] = [];
         setup.slice(16, 31).forEach((b: number) => {
@@ -72,6 +81,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
             diSetup,
             doSetup,
             generalDioSetup,
+            currentAvg,
           );
         } catch (e) {
           return undefined;
