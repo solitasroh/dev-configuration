@@ -10,7 +10,6 @@ import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import PCCommand from '@src/Data/PCCommand';
 import { Popover } from 'evergreen-ui';
 import MotorUnitDetailView from '@src/application/Components/pc/MotorUnitDetailView';
-import { Drawer } from 'antd';
 
 export const ControlModeDefinition = {
   Local: 'LOCAL',
@@ -24,7 +23,7 @@ export const MotorStatusDefinition = {
 
 interface Props {
   id: number;
-  onClick:  (id: number) => void;
+  onClick: (id: number) => void;
 }
 
 const Container = styled.div`
@@ -39,10 +38,7 @@ const Container = styled.div`
   margin: 3px;
   padding: 2px;
   :hover {
-    background-color: #4cb2cc;
-  }
-  :active {
-    background-color: #4cb2cl;
+    border-color: #102010;
   }
 `;
 
@@ -67,7 +63,7 @@ const HeaderContainer = styled.div`
 
 const HeaderTitle = styled.div`
   font-size: 13px;
-  font-family: 'Roboto';
+  font-family: 'Roboto', serif;
   font-weight: 600;
   text-wrap: none;
   text-overflow: ellipsis;
@@ -245,7 +241,7 @@ const MotorUnitBox: FC<Props> = ({ id, onClick }) => {
   const [motorStatus, setMotorStatus] = useState('unknown');
   const [operationMode, setOperationMode] = useState(0);
   const [data, setData] = useState<MotorUnitStatusData>(null);
-  const [selected, setSelected] = useState(false);
+
   usePolling(
     {
       requestType: 'MotorUnitStatus',
@@ -258,7 +254,7 @@ const MotorUnitBox: FC<Props> = ({ id, onClick }) => {
       const setup = rest as MotorUnitStatusData;
 
       if (setup !== null) {
-        setName(setup.name);
+        setName(setup?.name);
         setControlMode(
           setup.controlMode === 1
             ? ControlModeDefinition.Remote
@@ -302,9 +298,7 @@ const MotorUnitBox: FC<Props> = ({ id, onClick }) => {
       requestType: 'PCCommand',
     });
   };
-  const handleSelect = () => {
-    setSelected(true);
-  }
+
   return (
     <Container onClick={() => onClick(id)}>
       <Popover

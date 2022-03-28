@@ -93,7 +93,21 @@ export default class MotorUnitStatusData implements A2700Data {
       }
     }
 
-    const buf = Buffer.from(currentAvg);
-    this.IAvg = buf.readFloatBE(0);
+    try {
+      const buf = MotorUnitStatusData.convertByteArray(currentAvg);
+      this.IAvg = buf.readFloatBE(0);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  private static convertByteArray(buffer: number[]): Buffer {
+    const byteArray = [];
+
+    byteArray.push(buffer[0] << 8);
+    byteArray.push(buffer[0] & 0xff);
+    byteArray.push(buffer[1] << 8);
+    byteArray.push(buffer[1] & 0xff);
+    return Buffer.from(byteArray);
   }
 }
