@@ -20,6 +20,7 @@ type MismatchProps = {
 };
 type OpreationgProps = {
   status: boolean;
+  key: number;
 };
 const Container = styled.div`
   width: fit-content;
@@ -222,10 +223,10 @@ export default function LocalUnitBox({
         </LMHStatus>
         <IOHContainer>
           {unitInfo.map((value, index) => (
-            <IOHStatus status={operation[index]}>
+            <IOHStatus status={operation[index]} key={index}>
               <ItemsHeader>
                 <ItemsLabel>IOH - {information[index]?.moduleType} </ItemsLabel>
-                <IOHId status={operation[index]}>ID {value.id}</IOHId>
+                <IOHId status={operation[index]} key = {index}>ID {value.id}</IOHId>
               </ItemsHeader>
               <ItemsIcon>
                 {operation[index] === true ? (

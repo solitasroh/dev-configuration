@@ -51,7 +51,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       this.getDISetup(id),
       this.getDOSetup(id),
       this.getGeneralDIOSetupName(id),
-      ModbusService.read<number[]>(45001 + id * 8, 2),
+      ModbusService.read<number[]>(45001 + (id-1) * 8, 2),
     ]).pipe(
       map((resp) => {
         const [

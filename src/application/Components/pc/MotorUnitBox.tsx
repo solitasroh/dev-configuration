@@ -10,6 +10,9 @@ import ChannelWriteDataProps from '@src/main/ipc/ChannelWriteDataProps';
 import PCCommand from '@src/Data/PCCommand';
 import { Popover } from 'evergreen-ui';
 import MotorUnitDetailView from '@src/application/Components/pc/MotorUnitDetailView';
+import { ProfileOutlined } from '@ant-design/icons';
+import Toolbar from 'rsuite/esm/DatePicker/Toolbar';
+import { Tooltip } from 'antd';
 
 export const ControlModeDefinition = {
   Local: 'LOCAL',
@@ -32,9 +35,9 @@ const Container = styled.div`
   border-radius: 4px;
   flex-direction: column;
   width: 150px;
-  height: 80px;
+  height: fit-to-content;
   border: 1px solid #e0e0e0;
-  justify-content: space-between;
+  //justify-content: space-between;
   margin: 3px;
   padding: 2px;
   :hover {
@@ -46,8 +49,18 @@ const Bottom = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin-top: 6px;
+  margin-bottom: 3px;
+`;
+
+const Middle = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 12px;
+  font-family: 'Roboto', serif;
+  font-weight: 400;
+  margin-left: 2px;
 `;
 
 const HeaderContainer = styled.div`
@@ -57,19 +70,21 @@ const HeaderContainer = styled.div`
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  padding: 0.2em;
+  margin-left: 2px;
+  margin-right: 2px;
   overflow-wrap: unset;
 `;
 
 const HeaderTitle = styled.div`
+  flex: 1;
   font-size: 13px;
   font-family: 'Roboto', serif;
   font-weight: 600;
   text-wrap: none;
   text-overflow: ellipsis;
-
   white-space: nowrap;
   overflow: hidden;
+  margin-left:5px;
 `;
 type HeaderProps = {
   operationMode: number;
@@ -86,9 +101,10 @@ const HeaderId = styled.div<HeaderProps>`
   background-color: ${(props) =>
     props.operationMode === 4 ? '#66d45a' : '#CACACA'};
   border-radius: 2px;
+`;
+const DetailIcon = styled(ProfileOutlined)`
   cursor: pointer;
 `;
-
 const UnitHeader = ({
   mccName,
   id,
@@ -101,7 +117,6 @@ const UnitHeader = ({
   data: MotorUnitStatusData;
 }) => (
   <HeaderContainer>
-    <HeaderTitle>{mccName}</HeaderTitle>
     {data?.operationMode === 4 ? (
       <Popover
         trigger="click"
@@ -114,11 +129,15 @@ const UnitHeader = ({
           />
         )}
       >
-        <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
+        <DetailIcon />
       </Popover>
-    ) : (
-      <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
-    )}
+    ) : null}
+    <Tooltip title={mccName}>
+      <HeaderTitle >
+        {mccName}
+      </HeaderTitle>
+    </Tooltip>
+    <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
   </HeaderContainer>
 );
 
@@ -298,26 +317,18 @@ const MotorUnitBox: FC<Props> = ({ id, onClick }) => {
       requestType: 'PCCommand',
     });
   };
-
+  const handleClick = (e:any) => {
+    onClick(id)
+  }
   return (
-    <Container onClick={() => onClick(id)}>
-      <Popover
-        trigger="click"
-        minWidth={10}
-        content={() => (
-          <div>
-            {' '}
-            <div>test</div>
-          </div>
-        )}
-      >
-        <UnitHeader
-          id={id}
-          mccName={name}
-          operationMode={operationMode}
-          data={data}
-        />
-      </Popover>
+    <Container onClick={handleClick}>
+      <UnitHeader
+        id={id}
+        mccName={name}
+        operationMode={operationMode}
+        data={data}
+      />
+      <Middle>IAvg : {data?.IAvg.toFixed(2)}A</Middle>
       <Bottom>
         <ControlMode controlMode={controlMode} />
         <ControlCommand

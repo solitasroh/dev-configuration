@@ -1,5 +1,5 @@
-import { Card, List, Space, Tabs ,Drawer } from 'antd';
-import React, { ReactElement, useState } from 'react';
+import { Card, List, Space, Tabs, Drawer } from 'antd';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Select, {
   SelectOptionType,
@@ -15,6 +15,8 @@ import LocalUnitBox from '../lmh/LocalUnitBox';
 import { usePolling } from '@src/application/hooks/ipcHook';
 import { IncomingStatus } from '@src/main/modbus.a2700m/m/RegisterIncomingStatus';
 import ControlStatus from '../pc/ControlStatus';
+import { ValidMotorUnitList } from '@src/main/modbus.a2700m/pc/RegisterValidMotorUnit';
+import IpcService from '@src/main/IPCService';
 
 const { TabPane } = Tabs;
 
@@ -73,9 +75,10 @@ const motorUnits = [
 
 export default function Home(): ReactElement {
   const [open, setOpen] = useState(false);
-  const [moduleID,SetModuleID] = useState(0);
+  const [moduleID, SetModuleID] = useState(0);
   const [targetValue, setTargetValue] = useState<InputValueType>(0);
   const [incommingInfo, setIncommingInfo] = useState<IncomingStatus>();
+  const [pcList, setPCList] = useState<boolean[]>();
   const [targetSelectValue, setTargetSelectValue] = useState<InputValueType>(
     options[0].value,
   );
@@ -100,16 +103,32 @@ export default function Home(): ReactElement {
     1000,
   );
 
+  useEffect( () => {
+    const service = IpcService.getInstance();
+    const eventHandler = (evt:any, resp : any) => {
+      const state = resp as boolean[];
+      if(state !== undefined){
+        setPCList(state);
+      }
+    };
+
+    service.on('PC_STATUS_CHAGNED', eventHandler);
+    return() => {
+      service.removeListner('PC_STATUS_CHAGNED', eventHandler);
+    };
+  }, []);
+  
+
   const submit = (values: FormValues) => {
     setTargetValue(values.setupValue);
     setTargetSelectValue(values.selectValue);
   };
-  const handleClick = (id : number) => {
+  const handleClick = (id: number) => {
     console.log('clicked!');
-    SetModuleID(id)
+    SetModuleID(id);
     setOpen((prev) => !prev);
   };
-  
+
   const onClose = () => {
     setOpen(false);
   };
@@ -127,11 +146,20 @@ export default function Home(): ReactElement {
               pageSize: 5,
             }}
             itemLayout="horizontal"
-            renderItem={(item) => (
-              <Space>
-                <MotorUnitBox id={item.id} onClick={() => handleClick} />
-              </Space>
-            )}
+            renderItem={(item) => {
+              if (pcList === null || pcList === undefined || pcList === undefined) {
+                return (<></>)
+              }
+              return (
+                <Space>
+                  {pcList[item.id - 1] === true? (
+                    <MotorUnitBox id={item.id} onClick={handleClick} />
+                  ) : (
+                    <></>
+                  )}
+                </Space>
+              )}
+            }
           />
         </Card>
         <Card title="LOCAL UNIT" size="small" bordered={false}>
@@ -140,9 +168,14 @@ export default function Home(): ReactElement {
             mismatch={incommingInfo?.mismatchState}
           />
         </Card>
-      </div>      
-      <Drawer title="Basic Drawer" placement="right" onClose={onClose} visible={open}>
-        <ControlStatus id = {moduleID}/>
+      </div>
+      <Drawer
+        title="Basic Drawer"
+        placement="right"
+        onClose={onClose}
+        visible={open}
+      >
+        <ControlStatus id={moduleID} />
       </Drawer>
     </div>
   );
