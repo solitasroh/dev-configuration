@@ -15,7 +15,7 @@ const fadeIn = keyframes`
     opacity: 0;
   }
   100%{
-    oapcity: 1;
+    opacity: 1;
   }
 `;
 
@@ -24,7 +24,6 @@ function connectionColor(connectionStatus: boolean): string {
 }
 
 const ConnecionState = styled.div<{ connected: boolean }>`
-  color: #fafafa;
   font-size: 10px;
   margin-bottom: 5px;
   opacity: 1;

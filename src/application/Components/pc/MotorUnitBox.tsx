@@ -11,7 +11,6 @@ import PCCommand from '@src/Data/PCCommand';
 import { Popover } from 'evergreen-ui';
 import MotorUnitDetailView from '@src/application/Components/pc/MotorUnitDetailView';
 import { ProfileOutlined } from '@ant-design/icons';
-import Toolbar from 'rsuite/esm/DatePicker/Toolbar';
 import { Tooltip } from 'antd';
 
 export const ControlModeDefinition = {
@@ -35,7 +34,7 @@ const Container = styled.div`
   border-radius: 4px;
   flex-direction: column;
   width: 150px;
-  height: fit-to-content;
+  height: fit-content;
   border: 1px solid #e0e0e0;
   //justify-content: space-between;
   margin: 3px;
@@ -84,7 +83,7 @@ const HeaderTitle = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  margin-left:5px;
+  margin-left: 5px;
 `;
 type HeaderProps = {
   operationMode: number;
@@ -116,7 +115,7 @@ const UnitHeader = ({
   operationMode: number;
   data: MotorUnitStatusData;
 }) => (
-  <HeaderContainer>
+  <HeaderContainer onClick={(e) => e.stopPropagation()}>
     {data?.operationMode === 4 ? (
       <Popover
         trigger="click"
@@ -133,8 +132,8 @@ const UnitHeader = ({
       </Popover>
     ) : null}
     <Tooltip title={mccName}>
-      <HeaderTitle >
-        {mccName}
+      <HeaderTitle>
+        {mccName} [{data?.UnitType}]
       </HeaderTitle>
     </Tooltip>
     <HeaderId operationMode={operationMode}>ID {id.toString(10)}</HeaderId>
@@ -224,7 +223,12 @@ const ButtonContents = styled.div`
 `;
 
 const ControlButton = ({ status, children, command }: Prop) => (
-  <ButtonContainer onClick={() => command()}>
+  <ButtonContainer
+    onClick={(e) => {
+      e.stopPropagation();
+      command();
+    }}
+  >
     <ButtonStatus status={status} />
     <ButtonContents>{children}</ButtonContents>
   </ButtonContainer>
@@ -290,6 +294,7 @@ const MotorUnitBox: FC<Props> = ({ id, onClick }) => {
     },
     1000,
   );
+
   const run = () => {
     const data = new PCCommand();
     data.command = 1;
@@ -317,9 +322,11 @@ const MotorUnitBox: FC<Props> = ({ id, onClick }) => {
       requestType: 'PCCommand',
     });
   };
-  const handleClick = (e:any) => {
-    onClick(id)
-  }
+
+  const handleClick = () => {
+    onClick(id);
+  };
+
   return (
     <Container onClick={handleClick}>
       <UnitHeader

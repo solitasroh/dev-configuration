@@ -1,7 +1,5 @@
-import React, { FC, ReactElement, useState } from 'react';
+import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
-import { usePolling } from '@src/application/hooks/ipcHook';
-import IOHInfoData from '@src/Data/IOHInfoData';
 import MotorUnitStatusData from '@src/Data/MotorUnitStatus';
 
 /// TODO:  설정 데이터를 통해 아래 배열에서 참조하여 화면 표시해야함
@@ -28,18 +26,6 @@ const DISetupDefinition = [
 ];
 
 /// TODO: 101 ~ 115 까지 의 값으로 맵핑됨 (, 아래 배열 인덱스 - 101 을 해야함)
-const GeneraDIDefinition = [
-  'General DI1',
-  'General DI2',
-  'General DI3',
-  'General DI4',
-  'General DI5',
-  'General DI6',
-  'General DI7',
-  'General DI8',
-  'General DI9',
-  'General DI10',
-];
 
 const DOSetupDefinition = [
   'No Use',
@@ -49,13 +35,6 @@ const DOSetupDefinition = [
   'Fault',
   'INV RUN1',
   'INV RUN2',
-];
-// 101 ~ 113
-const GeneralDODefinition = [
-  'General DO1',
-  'General DO2',
-  'General DO3',
-  'General DO4',
 ];
 
 interface Props {
@@ -79,17 +58,17 @@ type DIProps = {
   Status: boolean;
 };
 type ModeProps = {
-  mode :boolean;
+  remoteMode: boolean;
 };
 const Container = styled.div`
   display: flex;
   background-color: #ffffff;
-  border: 0.5px solid rgba(0, 0, 0, 0.7);
+  // border: 0.5px solid rgba(0, 0, 0, 0.7);
   box-shadow: 3px 4px 3px 1px rgba(0, 0, 0, 0.25);
   border-radius: 2px;
   flex-direction: column;
   justify-content: space-between;
-  margin: 3px;
+  padding: 1px;
 `;
 
 const HeaderContainer = styled.div`
@@ -154,13 +133,13 @@ const FaultText = styled.div<FaultProps>`
 `;
 
 const RemoteText = styled.div<ModeProps>`
-font-family: Roboto, ui-serif;
+  font-family: Roboto, ui-serif;
   font-size: 12px;
   font-weight: 800;
   padding: 0.2em;
   align-items: flex-end;
   text-wrap: none;
-  color: ${(props) => (props.mode ? '#E88B00' : '#7AE060')};
+  color: ${(props) => (props?.remoteMode === true ? '#E88B00' : '#7AE060')};
 `;
 const Middle = styled.div`
   display: flex;
@@ -211,9 +190,13 @@ const FaultStatus = ({ status }: { status: boolean }) => (
   </Middle>
 );
 
-const RemoteMode = ({ mode }: { mode: boolean }) => (
-  <RemoteText mode ={mode}>{mode === true ? 'REMOTE' : 'LOCAL'}</RemoteText>
-);
+const RemoteMode = ({ remoteMode }: { remoteMode: boolean }) => {
+  return (
+    <RemoteText remoteMode={remoteMode}>
+      {remoteMode === true ? 'REMOTE' : 'LOCAL'}
+    </RemoteText>
+  );
+};
 
 type DIOSetupProps = {
   invalid: boolean;
@@ -316,22 +299,22 @@ function DOBox({ data }: { data: MotorUnitStatusData }): ReactElement {
 }
 
 const MotorUnitDetailView: FC<Props> = ({ id, operationMode, data }) => (
-    <Container>
-      <HeaderContainer>
-        <HeaderTitle>Detail</HeaderTitle>
-        <HeaderId operationMode={operationMode}>ID {id}</HeaderId>
-      </HeaderContainer>
-      <MiddleContainer>
-        <FaultStatus status={data.faultStatus} />
-        <RemoteMode mode={data.controlMode === 1} />
-      </MiddleContainer>
-      <MiddleContainer1>
-        <DIBox data={data} />
-      </MiddleContainer1>
-      <MiddleContainer1>
-        <DOBox data={data} />
-      </MiddleContainer1>
-    </Container>
-  );
+  <Container>
+    <HeaderContainer>
+      <HeaderTitle>Detail</HeaderTitle>
+      <HeaderId operationMode={operationMode}>ID {id}</HeaderId>
+    </HeaderContainer>
+    <MiddleContainer>
+      <FaultStatus status={data.faultStatus} />
+      <RemoteMode remoteMode={data.controlMode === 1} />
+    </MiddleContainer>
+    <MiddleContainer1>
+      <DIBox data={data} />
+    </MiddleContainer1>
+    <MiddleContainer1>
+      <DOBox data={data} />
+    </MiddleContainer1>
+  </Container>
+);
 
 export default MotorUnitDetailView;

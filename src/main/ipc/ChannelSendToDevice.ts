@@ -2,8 +2,6 @@ import { IpcMainEvent } from 'electron';
 import { REQ_SEND_TO_DEVICE } from '@src/ipcChannels';
 
 import WrappedElement from '@src/Data/WrappedElement';
-import * as fs from 'fs';
-import { async } from 'rxjs';
 import { calculateCRC } from '@src/Utils';
 import { IpcChannel } from './IPCChannel';
 
@@ -132,7 +130,7 @@ export class ChannelSendToDevice
     }
 
     const readState = await this.getWrappedRegisterWriteState();
-    console.log(`read state = ${readState}`);
+    // console.log(`read state = ${readState}`);
     const c = count + 1;
 
     if (c === 10) {

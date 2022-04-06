@@ -6,6 +6,10 @@ import RegisterIOHLogicalAI2Setup from '@src/main/modbus.a2700m/ioh/RegisterIOHL
 import RegisterIOHLogicalTypeSetup from '@src/main/modbus.a2700m/ioh/RegisterIOHLogicalTypeSetup';
 import RegisterMotorUnitStatus from '@src/main/modbus.a2700m/pc/RegisterMotorUnitStatus';
 import RegisterValidMotorUnit from '@src/main/modbus.a2700m/pc/RegisterValidMotorUnit';
+import {
+  RegisterDISetup,
+  RegisterDOSetup,
+} from '@src/main/modbus.a2700m/pc/RegisterDISetup';
 import RegisterLMSetup from './lmh/RegisterLMSetup';
 import RegisterLMInformation from './lmh/RegisterLMInformation';
 import RegisterLDInformation from './lmh/RegisterLDInformation';
@@ -62,6 +66,8 @@ const userMap = {
   IncomingStatus: RegisterIncomingStatus,
   MismatchStatus: RegisterMismatchStatus,
   MotorUnitValid: RegisterValidMotorUnit,
+  MotorUnitDoSetup: RegisterDOSetup,
+  MotorUnitDiSetup: RegisterDISetup,
 };
 
 export type UserMap = typeof userMap;

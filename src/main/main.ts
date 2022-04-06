@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, Tray } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
 import WindowInformation, {
   debugWindowConfig,
   loadWindowConfig,
@@ -71,41 +71,41 @@ class Main {
     this.registerIpcChannels(ipcChannels);
   }
 
-  private modbusConnected() {
-    if (this.mainWindow !== null) this.mainWindow.webContents.send(CONNECTION);
-  }
+  // private modbusConnected() {
+  //   if (this.mainWindow !== null) this.mainWindow.webContents.send(CONNECTION);
+  // }
+  //
+  // private modbusDisconnected() {
+  //   if (this.mainWindow !== null) this.mainWindow.webContents.send(DISCONNECT);
+  // }
 
-  private modbusDisconnected() {
-    if (this.mainWindow !== null) this.mainWindow.webContents.send(DISCONNECT);
-  }
-
-  private initTray() {
-    const iconImage = nativeImage.createFromPath(
-      './src/assets/icons/win/icon.ico',
-    );
-    const tray = new Tray(iconImage);
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: 'program exit',
-        type: 'normal',
-        click: () => {
-          if (this.mainWindow.isEnabled()) this.mainWindow.destroy();
-          app.quit();
-        },
-      },
-    ]);
-
-    tray.setToolTip('File-Watcher');
-    tray.setTitle('File-Watcher');
-    tray.setContextMenu(contextMenu);
-    tray.on('click', () => {
-      if (this.mainWindow != null) {
-        if (!this.mainWindow.isVisible()) {
-          this.mainWindow.show();
-        }
-      }
-    });
-  }
+  // private initTray() {
+  //   const iconImage = nativeImage.createFromPath(
+  //     './src/assets/icons/win/icon.ico',
+  //   );
+  //   const tray = new Tray(iconImage);
+  //   const contextMenu = Menu.buildFromTemplate([
+  //     {
+  //       label: 'program exit',
+  //       type: 'normal',
+  //       click: () => {
+  //         if (this.mainWindow.isEnabled()) this.mainWindow.destroy();
+  //         app.quit();
+  //       },
+  //     },
+  //   ]);
+  //
+  //   tray.setToolTip('File-Watcher');
+  //   tray.setTitle('File-Watcher');
+  //   tray.setContextMenu(contextMenu);
+  //   tray.on('click', () => {
+  //     if (this.mainWindow != null) {
+  //       if (!this.mainWindow.isVisible()) {
+  //         this.mainWindow.show();
+  //       }
+  //     }
+  //   });
+  // }
 
   private onWindowClosed = (): void => {
     app.quit();
@@ -139,7 +139,7 @@ class Main {
         contextIsolation: false,
         nativeWindowOpen: true,
       },
-      // show: false,
+      show: false,
       icon: iconImage,
     });
 
@@ -149,9 +149,7 @@ class Main {
     // Open the DevTools.
     this.mainWindow.webContents.openDevTools();
 
-    this.mainWindow.on('close', (e) => {
-      // e.preventDefault();
-      // this.mainWindow.hide();
+    this.mainWindow.on('close', () => {
       ModbusService.modbusRelease();
       if (this.windowInformation.x === undefined) {
         const [x, y] = this.mainWindow.getPosition();
@@ -203,6 +201,7 @@ class Main {
 
     this.motorUnitManagement.start(this.mainWindow.webContents);
     let forcedCount = 0;
+
     setInterval(() => {
       const { connectionState } = ModbusService.getInstance();
       if (this.modbusStatusOld !== connectionState) {

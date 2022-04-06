@@ -49,6 +49,8 @@ export default class MotorUnitStatusData implements A2700Data {
 
   readonly IAvg: number;
 
+  readonly UnitType: string;
+
   constructor(
     id: number,
     name: string,
@@ -58,6 +60,7 @@ export default class MotorUnitStatusData implements A2700Data {
     doSetup: number[],
     generalDIOSetup: GeneralDIOSetup[],
     currentAvg: number[],
+    unitTypeRaw: number,
   ) {
     this.moduleId = id;
     this.motorStatus = status[3] ? 1 : 0;
@@ -96,9 +99,16 @@ export default class MotorUnitStatusData implements A2700Data {
     try {
       const buf = MotorUnitStatusData.convertByteArray(currentAvg);
       this.IAvg = buf.readFloatBE(0);
-      console.log(buf);
     } catch (e) {
       console.log(e);
+    }
+
+    if (unitTypeRaw === 0) {
+      this.UnitType = 'P';
+    } else if (unitTypeRaw === 1) {
+      this.UnitType = 'PC';
+    } else if (unitTypeRaw === 2) {
+      this.UnitType = 'PH';
     }
   }
 

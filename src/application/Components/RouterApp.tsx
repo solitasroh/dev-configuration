@@ -4,9 +4,8 @@ import { Layout, Menu } from 'antd';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { FolderOutlined, HomeOutlined } from '@ant-design/icons';
 import ConnectWrapper from './Login/ConnectWrapper';
-import MissmatchInfo from './lmh/MissmatchInfo';
 
-const { Header, Content, Sider, Footer } = Layout;
+const { Content, Sider, Footer } = Layout;
 
 const ContentWrapper = styled(Layout)`
   display: flex;
@@ -71,12 +70,12 @@ const RouterApp: FC = () => {
           <Menu.Item key="4" icon={<FolderOutlined />}>
             <NavLink to="/WrappedMapContents">User Map</NavLink>
           </Menu.Item>
-          <Menu.Item key="5" icon={<FolderOutlined />}>
-            <NavLink to="/LogicSetupContents">Logic Setup</NavLink>
-          </Menu.Item>
-          <Menu.Item key="6" icon={<FolderOutlined />}>
-            <NavLink to="/CoilMapAlarmContent">Coil Map Alarm</NavLink>
-          </Menu.Item>
+          {/*<Menu.Item key="5" icon={<FolderOutlined />}>*/}
+          {/*  <NavLink to="/LogicSetupContents">Logic Setup</NavLink>*/}
+          {/*</Menu.Item>*/}
+          {/*<Menu.Item key="6" icon={<FolderOutlined />}>*/}
+          {/*  <NavLink to="/CoilMapAlarmContent">Coil Map Alarm</NavLink>*/}
+          {/*</Menu.Item>*/}
         </Menu>
       </Sider>
       <ContentWrapper className="site-layout">

@@ -1,34 +1,14 @@
-import { Card, List, Space, Tabs, Drawer } from 'antd';
+import { Card, List, Space, Drawer } from 'antd';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import Select, {
-  SelectOptionType,
-} from '@src/application/Components/Shared/Select';
-import { InputValueType } from '@src/application/Components/Shared/Shared';
-import MotorUnitBox, {
-  ControlModeDefinition,
-  MotorStatusDefinition,
-} from '@src/application/Components/pc/MotorUnitBox';
-import NumberInput from '../Shared/NumberInput';
+
 import IncomingUnitBox from './IncomingUnitBox';
 import LocalUnitBox from '../lmh/LocalUnitBox';
 import { usePolling } from '@src/application/hooks/ipcHook';
 import { IncomingStatus } from '@src/main/modbus.a2700m/m/RegisterIncomingStatus';
-import ControlStatus from '../pc/ControlStatus';
-import { ValidMotorUnitList } from '@src/main/modbus.a2700m/pc/RegisterValidMotorUnit';
 import IpcService from '@src/main/IPCService';
-
-const { TabPane } = Tabs;
-
-const options: SelectOptionType[] = [
-  { label: 'label1', value: 1 },
-  { label: 'label2', value: 2 },
-];
-
-type FormValues = {
-  setupValue: InputValueType;
-  selectValue: InputValueType;
-};
+import MotorUnitDOSetup from '@src/application/Components/pc/MotorUnitDOSetup';
+import MotorUnitDISetup from '@src/application/Components/pc/MotorUnitDISetup';
+import MotorUnitBox from '@src/application/Components/pc/MotorUnitBox';
 
 const motorUnits = [
   { key: 1, id: 1 },
@@ -76,19 +56,8 @@ const motorUnits = [
 export default function Home(): ReactElement {
   const [open, setOpen] = useState(false);
   const [moduleID, SetModuleID] = useState(0);
-  const [targetValue, setTargetValue] = useState<InputValueType>(0);
-  const [incommingInfo, setIncommingInfo] = useState<IncomingStatus>();
+  const [incomingStatus, setIncomingStatus] = useState<IncomingStatus>();
   const [pcList, setPCList] = useState<boolean[]>();
-  const [targetSelectValue, setTargetSelectValue] = useState<InputValueType>(
-    options[0].value,
-  );
-  const { control, handleSubmit } = useForm<FormValues>({
-    defaultValues: {
-      setupValue: 0,
-      selectValue: 1,
-    },
-    mode: 'onChange',
-  });
 
   usePolling(
     {
@@ -98,33 +67,27 @@ export default function Home(): ReactElement {
     },
     (evt, rest) => {
       const infoList = rest as IncomingStatus;
-      setIncommingInfo(infoList);
+      setIncomingStatus(infoList);
     },
     1000,
   );
 
-  useEffect( () => {
+  useEffect(() => {
     const service = IpcService.getInstance();
-    const eventHandler = (evt:any, resp : any) => {
+    const eventHandler = (evt: any, resp: any) => {
       const state = resp as boolean[];
-      if(state !== undefined){
+      if (state !== undefined) {
         setPCList(state);
       }
     };
 
     service.on('PC_STATUS_CHAGNED', eventHandler);
-    return() => {
+    return () => {
       service.removeListner('PC_STATUS_CHAGNED', eventHandler);
     };
   }, []);
-  
 
-  const submit = (values: FormValues) => {
-    setTargetValue(values.setupValue);
-    setTargetSelectValue(values.selectValue);
-  };
   const handleClick = (id: number) => {
-    console.log('clicked!');
     SetModuleID(id);
     setOpen((prev) => !prev);
   };
@@ -135,10 +98,18 @@ export default function Home(): ReactElement {
   return (
     <div>
       <div>
-        <Card title="INCOMING UNIT" size="small" bordered={false}>
-          <IncomingUnitBox incommingInfo={incommingInfo} />
+        <Card
+          title="INCOMING UNIT (Accura 2700M)"
+          size="small"
+          bordered={false}
+        >
+          <IncomingUnitBox incommingInfo={incomingStatus} />
         </Card>
-        <Card title="MOTOR UNIT" size="small" bordered={false}>
+        <Card
+          title="MOTOR UNIT (Accura 2750P[C])"
+          size="small"
+          bordered={false}
+        >
           <List
             dataSource={motorUnits}
             split
@@ -147,35 +118,36 @@ export default function Home(): ReactElement {
             }}
             itemLayout="horizontal"
             renderItem={(item) => {
-              if (pcList === null || pcList === undefined || pcList === undefined) {
-                return (<></>)
+              if (pcList === null || pcList === undefined) {
+                return <></>;
               }
               return (
                 <Space>
-                  {pcList[item.id - 1] === true? (
+                  {pcList[item.id - 1] === true ? (
                     <MotorUnitBox id={item.id} onClick={handleClick} />
                   ) : (
                     <></>
                   )}
                 </Space>
-              )}
-            }
+              );
+            }}
           />
         </Card>
-        <Card title="LOCAL UNIT" size="small" bordered={false}>
+        <Card title="LOCAL UNIT (Accura 2750LMH)" size="small" bordered={false}>
           <LocalUnitBox
             unitInfo={motorUnits.slice(0, 15)}
-            mismatch={incommingInfo?.mismatchState}
+            mismatch={incomingStatus?.mismatchState}
           />
         </Card>
       </div>
       <Drawer
-        title="Basic Drawer"
+        title={`Motor Unit ${moduleID} Setup`}
         placement="right"
         onClose={onClose}
         visible={open}
       >
-        <ControlStatus id={moduleID} />
+        <MotorUnitDISetup moduleId={moduleID} />
+        <MotorUnitDOSetup moduleId={moduleID} />
       </Drawer>
     </div>
   );

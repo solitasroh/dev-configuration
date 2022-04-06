@@ -1,7 +1,6 @@
 import WrappedElement from '@src/Data/WrappedElement';
-import { Button, Modal, Form, Input, InputNumber, Checkbox } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import React, { FC, useState, useEffect } from 'react';
+import { Button, Modal, Form, InputNumber, Checkbox } from 'antd';
+import React, { FC, useState } from 'react';
 
 interface Props {
   isModalVisible: boolean;
@@ -34,9 +33,6 @@ const wrappedMapModal: FC<Props> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [myForm] = Form.useForm();
-  useEffect(() => {
-    console.log('modal use effect', item);
-  }, []);
 
   myForm.setFieldsValue(item);
 
@@ -84,7 +80,7 @@ const wrappedMapModal: FC<Props> = ({
       >
         <Form.Item name="A2750PC" valuePropName="checked">
           <Checkbox
-            onChange={(e) => setIsVisible(!isVisible)}
+            onChange={() => setIsVisible(!isVisible)}
             disabled={selectedIndex > -1}
           >
             A2750PC

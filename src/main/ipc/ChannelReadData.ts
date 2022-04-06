@@ -21,10 +21,10 @@ export class ChannelReadData implements IpcChannel<ChannelReadDataProps> {
   }
 
   handle(event: IpcMainEvent, request: ChannelReadDataProps): void {
-    console.log(`REQUEST  : ${request.requestType}`);
+    // console.log(`REQUEST  : ${request.requestType}`);
     this.register.Get(request.requestType, request.props).subscribe(
       (res) => {
-        console.log(`RESPONSE : ${request.requestType}`);
+        // console.log(`RESPONSE : ${request.requestType}`);
         event.sender.send(request.responseChannel, res);
       },
       () => {},

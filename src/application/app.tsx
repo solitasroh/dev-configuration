@@ -3,16 +3,15 @@ import { HashRouter } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import MainRouter from './Routers/MainRouter';
-import 'typeface-roboto/index.css'
+import 'typeface-roboto/index.css';
 
 const GlobalStyle = createGlobalStyle`
-  ${reset}
+  ${reset}, 
   /* other styles */
   * {
     box-sizing: border-box;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;

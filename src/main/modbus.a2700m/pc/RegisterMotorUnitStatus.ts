@@ -14,7 +14,7 @@ export interface GeneralDIOSetup {
 }
 
 export default class RegisterMotorUnitStatus extends RegisterBase {
-  setter = (data: A2700Data): void => {
+  setter = (): void => {
     console.log('empty setter');
   };
 
@@ -33,7 +33,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       setupLen,
     );
 
-    const opStatus = ModbusService.read<number[]>(opStatusAddress, 1);
+    const opStatus = ModbusService.read<number[]>(opStatusAddress, 14);
 
     const statusRegister = ModbusService.read<Boolean[]>(
       statusAddress,
@@ -51,7 +51,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       this.getDISetup(id),
       this.getDOSetup(id),
       this.getGeneralDIOSetupName(id),
-      ModbusService.read<number[]>(45001 + (id-1) * 8, 2),
+      ModbusService.read<number[]>(45001 + (id - 1) * 8, 2),
     ]).pipe(
       map((resp) => {
         const [
@@ -82,6 +82,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
             doSetup,
             generalDioSetup,
             currentAvg,
+            operation[13],
           );
         } catch (e) {
           return undefined;
@@ -128,7 +129,7 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       ModbusService.read<number[]>(54403, 140),
     ]).pipe(
       map((resp) => {
-        const [, access, data] = resp;
+        const [, , data] = resp;
         const setupBuffer = chunkArray(data, 10);
 
         return setupBuffer.map((setup: number[]) => {
@@ -143,16 +144,6 @@ export default class RegisterMotorUnitStatus extends RegisterBase {
       }),
     );
   };
-
-  private static getCharCode(s: string) {
-    const charCodeArr = [];
-
-    for (let i = 0; i < s.length; i += 1) {
-      const code = s.charCodeAt(i);
-      charCodeArr.push(code);
-    }
-    return charCodeArr;
-  }
 
   private static getNameBuffer(nameBuffer: number[]): string {
     const buf: number[] = [];
